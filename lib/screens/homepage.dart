@@ -61,7 +61,7 @@ class _HomepageState extends State<Homepage>
       print("exception honme roomdata");
     }
     setState(() {
-      // 
+      //
       _isRoomfetched = false;
     });
   }
@@ -185,35 +185,40 @@ class _HomepageState extends State<Homepage>
                         }),
                   ),
                   // new Divider(),
-                  Card(
-                    child: new ListTile(
-                        title: Row(
-                          children: <Widget>[
-                            Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(2.0, 0.0, 10.0, 0),
-                              child: new Icon(
-                                Icons.phonelink_erase,
-                                color: Color(0xff79848b),
-                                size: 10,
+                  InkWell(
+                    onTap: () {
+                      FirebaseAuth.instance.signOut();
+                    },
+                    child: Card(
+                      child: new ListTile(
+                          title: Row(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    2.0, 0.0, 10.0, 0),
+                                child: new Icon(
+                                  Icons.phonelink_erase,
+                                  color: Color(0xff79848b),
+                                  size: 10,
+                                ),
                               ),
-                            ),
-                            new Text(
-                              "Log out",
-                              style: TextStyle(
-                                  fontFamily: "Amelia-Basic-Light",
-                                  fontSize: 16,
-                                  color: Color(0xff79848b)),
-                            ),
-                          ],
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_right,
-                          color: Color(0xff79848b),
-                        ),
-                        onTap: () async {
-                          FirebaseAuth.instance.signOut();
-                        }),
+                              new Text(
+                                "Log out",
+                                style: TextStyle(
+                                    fontFamily: "Amelia-Basic-Light",
+                                    fontSize: 16,
+                                    color: Color(0xff79848b)),
+                              ),
+                            ],
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_right,
+                            color: Color(0xff79848b),
+                          ),
+                          onTap: () async {
+                            FirebaseAuth.instance.signOut();
+                          }),
+                    ),
                   ),
                 ],
               ),
@@ -563,12 +568,6 @@ _addroom(BuildContext context) async {
                                     "circuit": -1
                                   });
 
-                                  dbref
-                                      .child(
-                                          FirebaseAuth.instance.currentUser.uid)
-                                      .child("info")
-                                      .child("noofrooms")
-                                      .set(noofrooms);
                                   setState(() async {
                                     Navigator.pop(context);
                                     Navigator.pushReplacement(
