@@ -57,10 +57,11 @@ class _switchesState extends State<switches> {
                               setState(() {
                                 edit[index] = true;
                               });
+                              Navigator.pop(context);
                             },
                             child: Row(
                               children: <Widget>[
-                                Icon(Icons.delete),
+                                Icon(Icons.edit),
                                 SizedBox(
                                   width: 25,
                                 ),
@@ -85,26 +86,7 @@ class _switchesState extends State<switches> {
                   },
 
                   //switches//////////////////////////////////////////////////////////////////////////////////
-                  onTap: () {
-                    int flag = 1;
-                    if (fulldataofrooms
-                            .switches["a" + (index + 1).toString()] ==
-                        1) {
-                      flag = 0;
-                    }
-                    fulldataofrooms.switches["a" + (index + 1).toString()] =
-                        flag;
-                    dbref
-                        .child(user.uid)
-                        .child("rooms")
-                        .child(
-                            fulldataofrooms.roomidarray[fulldataofrooms.index])
-                        .child("circuit")
-                        .child(fulldataofrooms
-                            .boardidarray[fulldataofrooms.boardindex])
-                        .child("a" + (index + 1).toString())
-                        .set(flag);
-                  },
+                  onTap: () {},
                   child: Container(
                     child: Column(
                       children: [
@@ -113,11 +95,14 @@ class _switchesState extends State<switches> {
                         ),
                         Center(
                           child: Container(
-                            height: 40,
-                            width: 120,
+                            height: 5 * SizeConfig.heightMultiplier,
+                            width: 30 * SizeConfig.widthMultiplier,
                             margin: EdgeInsets.all(10),
                             child: LiteRollingSwitch(
-                              value: true,
+                              value: fulldataofrooms.switches[
+                                      "a" + (index + 1).toString()]["val"]==1
+                                  ? true
+                                  : false,
                               textOn: 'Active',
                               textOff: 'Inactive',
                               colorOn: Colors.greenAccent,
@@ -127,6 +112,24 @@ class _switchesState extends State<switches> {
                               textSize: 14,
                               onChanged: (bool state) {
                                 print('turned ${(state) ? 'on' : 'off'}');
+                                int flag = 0;
+                                if (state) {
+                                  flag = 1;
+                                }
+                                fulldataofrooms
+                                        .switches["a" + (index + 1).toString()]
+                                    ["val"] = flag;
+                                dbref
+                                    .child(user.uid)
+                                    .child("rooms")
+                                    .child(fulldataofrooms
+                                        .roomidarray[fulldataofrooms.index])
+                                    .child("circuit")
+                                    .child(fulldataofrooms.boardidarray[
+                                        fulldataofrooms.boardindex])
+                                    .child("a" + (index + 1).toString())
+                                    .child("val")
+                                    .set(flag);
                               },
                             ),
                           ),
@@ -139,8 +142,10 @@ class _switchesState extends State<switches> {
                             width: 15 * SizeConfig.heightMultiplier,
                             child: TextField(
                               focusNode: new FocusNode(),
+                              controller:TextEditingController()..text = fulldataofrooms
+                                .switches["a" + (index + 1).toString()]["name"],
                               expands: false,
-                              enabled: true,
+                              enabled: edit[index],
                               textInputAction: TextInputAction.go,
                               keyboardType: TextInputType.text,
                               style: TextStyle(
@@ -150,21 +155,25 @@ class _switchesState extends State<switches> {
                               ),
                               onSubmitted: (name) {
                                 setState(() {
-                                  edit.clear();
+                                  fulldataofrooms.switches["a" +
+                                      (index + 1).toString()]["name"] = name;
+                                  dbref
+                                      .child(user.uid)
+                                      .child("rooms")
+                                      .child(fulldataofrooms
+                                          .roomidarray[fulldataofrooms.index])
+                                      .child("circuit")
+                                      .child(fulldataofrooms.boardidarray[
+                                          fulldataofrooms.boardindex])
+                                      .child("a" + (index + 1).toString())
+                                      .child("name")
+                                      .set(name);
                                   edit = List.filled(5, false);
                                 });
                               },
                             ),
                           ),
                         ),
-                        Text(
-                            // button name
-                            "Button",
-                            style: TextStyle(
-                              fontFamily: "Amelia-Basic-Light",
-                              fontSize: 16,
-                              color: Color(0xff79848b),
-                            )),
                       ],
                     ),
                     height: 147.00,

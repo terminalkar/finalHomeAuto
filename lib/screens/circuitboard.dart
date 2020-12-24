@@ -274,11 +274,26 @@ class _CircuittState extends State<Circuit> {
                                         .child("board" + noofboards.toString())
                                         .set({
                                       "bid": id.text,
-                                      "a1": 0,
-                                      "a2": 0,
-                                      "a3": 0,
-                                      "a4": 0,
-                                      "a5": 0
+                                      "a1": {
+                                        "val":0,
+                                        "name":"switch1"
+                                      },
+                                      "a2":  {
+                                        "val":0,
+                                        "name":"switch2"
+                                      },
+                                      "a3": {
+                                        "val":0,
+                                        "name":"switch3"
+                                      },
+                                      "a4": {
+                                        "val":0,
+                                        "name":"switch4"
+                                      },
+                                      "a5":  {
+                                        "val":0,
+                                        "name":"switch5"
+                                      },
                                     });
 
                                     setState(() async {
