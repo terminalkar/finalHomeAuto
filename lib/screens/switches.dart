@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:home_automation_app/screens/main_data.dart';
 
 class switches extends StatefulWidget {
@@ -12,6 +13,7 @@ class _switchesState extends State<switches> {
   var _tapPosition;
   final dbref = FirebaseDatabase.instance.reference().child("Users");
   User user = FirebaseAuth.instance.currentUser;
+  var edit = List.filled(5, false);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -50,7 +52,11 @@ class _switchesState extends State<switches> {
                         PopupMenuItem(
                           value: index,
                           child: GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              setState(() {
+                                edit[index] = true;
+                              });
+                            },
                             child: Row(
                               children: <Widget>[
                                 Icon(Icons.delete),
@@ -114,14 +120,29 @@ class _switchesState extends State<switches> {
                             Text(index.toString())
                           ],
                         ),
-                        Text(
-                            // button name
-                            "buttons",
-                            style: TextStyle(
-                              fontFamily: "Amelia-Basic-Light",
-                              fontSize: 16,
-                              color: Color(0xff79848b),
-                            )),
+                        Center(
+                          child: Container(
+                            width: 15 * SizeConfig.heightMultiplier,
+                            child: TextField(
+                              focusNode: new FocusNode(),
+                              expands: false,
+                              enabled: true,
+                              textInputAction: TextInputAction.go,
+                              keyboardType: TextInputType.text,
+                              style: TextStyle(
+                                fontFamily: "Amelia-Basic-Light",
+                                fontSize: 16,
+                                color: Color(0xff79848b),
+                              ),
+                              onSubmitted: (name) {
+                                setState(() {
+                                  edit.clear();
+                                  edit = List.filled(5, false);
+                                });
+                              },
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     height: 147.00,
