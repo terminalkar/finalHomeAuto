@@ -27,12 +27,6 @@ class _HomepageState extends State<Homepage>
   var _isRoomfetched = true;
   var image = new Map();
 
-  // "assets/Children's_Room.png",
-  // "assets/Children's_Room.png",
-  // "assets/Children's_Room.png",
-  // "assets/Children's_Room.png",
-  // "assets/logo.png",
-
   final dbref = FirebaseDatabase.instance.reference().child('Users');
   User user = FirebaseAuth.instance.currentUser;
   @override
@@ -551,8 +545,7 @@ _addroom(BuildContext context) async {
                                     noofrooms = "0" + max.toString();
                                   else
                                     noofrooms = max.toString();
-                                  print("sdf");
-                                  print(noofrooms);
+                                  
                                   dbref
                                       .child(
                                           FirebaseAuth.instance.currentUser.uid)
