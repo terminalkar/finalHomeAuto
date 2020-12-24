@@ -38,7 +38,6 @@ class _switchesState extends State<switches> {
                 child: InkWell(
                   onTapDown: (TapDownDetails details) {
                     _tapPosition = details.globalPosition;
-                    print("ontapdown");
                   },
                   //delete
                   onLongPress: () {
@@ -80,15 +79,16 @@ class _switchesState extends State<switches> {
 
                   //switches//////////////////////////////////////////////////////////////////////////////////
                   onTap: () {
-                    print("asdf");
                     int flag = 1;
                     if (fulldataofrooms
                             .switches["a" + (index + 1).toString()] ==
                         1) {
                       flag = 0;
                     }
-                    print(flag);
+                    fulldataofrooms.switches["a" + (index + 1).toString()] =
+                        flag;
                     dbref
+                        .child(user.uid)
                         .child("rooms")
                         .child(
                             fulldataofrooms.roomidarray[fulldataofrooms.index])
