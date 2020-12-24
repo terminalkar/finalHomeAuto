@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flip_card/flip_card.dart';
 
 class AuthForm extends StatefulWidget {
   AuthForm(this.submitFn, this.isLoading);
@@ -18,19 +19,27 @@ class AuthForm extends StatefulWidget {
 
 class _AuthFormState extends State<AuthForm> {
   final _formkey = GlobalKey<FormState>();
+  final _formkey2 = GlobalKey<FormState>();
   var _isLogin = true;
   var _userEmail = '';
   var _userMobile = '';
   var _userPassword = '';
-
+  GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
   void _trySubmit() {
-    final isValid = _formkey.currentState.validate();
-
     //removes keyboard after form submission
     FocusScope.of(context).unfocus();
 
-    if (isValid) {
+    if (_isLogin && _formkey.currentState.validate()) {
       _formkey.currentState.save();
+      widget.submitFn(
+        _userEmail.trim(),
+        _userPassword.trim(),
+        _userMobile.trim(),
+        _isLogin,
+        context,
+      );
+    } else if (!_isLogin && _formkey2.currentState.validate()) {
+      _formkey2.currentState.save();
       widget.submitFn(
         _userEmail.trim(),
         _userPassword.trim(),
@@ -92,221 +101,171 @@ class _AuthFormState extends State<AuthForm> {
 
             Align(
               alignment: Alignment.bottomCenter,
-              child: Card(
-                // Card contains scrollview to stop overflow
-                shadowColor: Colors.blue,
-                margin: EdgeInsets.all(18),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.all(15),
+              child: FlipCard(
+                key: cardKey,
+                flipOnTouch: false,
+                front: Card(
+                  // Card contains scrollview to stop overflow
+                  shadowColor: Colors.blue,
+                  margin: EdgeInsets.all(18),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.all(15),
 
-                    /////////Form starts here
-                    child: Form(
-                      key: _formkey,
-                      child: Column(
-                        //mainAxisSize: MainAxisSize.min, //This is for so that column takes place only that reqires
-                        children: [
-                          //For Space
-                          SizedBox(height: 30),
+                      /////////Form starts here
+                      child: Form(
+                        key: _formkey,
+                        child: Column(
+                          //mainAxisSize: MainAxisSize.min, //This is for so that column takes place only that reqires
+                          children: [
+                            //For Space
+                            SizedBox(height: 30),
 
-                          //Email
-                          Container(
-                            //external decortion
-                            height: 60.00,
-                            width: 400.00,
-                            decoration: BoxDecoration(
-                              color: Color(0xffffffff).withOpacity(0.59),
-                              boxShadow: [
-                                BoxShadow(
-                                  offset: Offset(0.00, 5.00),
-                                  color: Color(0xff0792ef).withOpacity(0.19),
-                                  blurRadius: 14,
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(21.50),
-                            ),
-
-                            //internal textfield
-                            child: TextFormField(
-                              key: ValueKey('email'),
-                              //validotor logic needs to improve
-                              validator: (value) {
-                                if (value.isEmpty || !value.contains('@')) {
-                                  return 'Please enter valid Email.';
-                                }
-                                return null;
-                              },
-
-                              //Saving email
-                              onSaved: (value) {
-                                _userEmail = value;
-                              },
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: InputDecoration(
-                                //andar ka decoration ko none kiya hai
-                                hintText: 'Email',
-                                contentPadding: EdgeInsets.all(20),
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                              ),
-                            ),
-                          ),
-
-                          //Username
-                          if (!_isLogin)
-                            Column(
-                              children: [
-                                //For Space
-                                SizedBox(height: 30),
-
-                                Container(
-                                  //external decortion
-                                  height: 60.00,
-                                  width: 400.00,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xffffffff).withOpacity(0.59),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        offset: Offset(0.00, 5.00),
-                                        color:
-                                            Color(0xff0792ef).withOpacity(0.19),
-                                        blurRadius: 14,
-                                      ),
-                                    ],
-                                    borderRadius: BorderRadius.circular(21.50),
-                                  ),
-
-                                  //internal textfield
-                                  child: TextFormField(
-                                    key: ValueKey('mobile'),
-                                    //validotor logic needs to improve
-                                    validator: (value) {
-                                      if (value.isEmpty || value.length < 10) {
-                                        return 'Username must contain  10 integers.';
-                                      }
-                                      return null;
-                                    },
-
-                                    //Saving Username
-                                    onSaved: (value) {
-                                      _userMobile = value;
-                                    },
-                                    keyboardType: TextInputType.phone,
-                                    decoration: InputDecoration(
-                                      //andar ka decoration ko none kiya hai
-                                      hintText: 'Mobile Number',
-                                      contentPadding: EdgeInsets.all(20),
-                                      border: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      errorBorder: InputBorder.none,
-                                      disabledBorder: InputBorder.none,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                          //For Space
-                          SizedBox(height: 30),
-
-                          //Password
-                          Container(
-                            //external decortion
-                            height: 60.00,
-                            width: 400.00,
-                            decoration: BoxDecoration(
-                              color: Color(0xffffffff).withOpacity(0.59),
-                              boxShadow: [
-                                BoxShadow(
-                                  offset: Offset(0.00, 5.00),
-                                  color: Color(0xff0792ef).withOpacity(0.19),
-                                  blurRadius: 14,
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(21.50),
-                            ),
-
-                            //internal textfield
-                            child: TextFormField(
-                              key: ValueKey('password'),
-                              //validotor logic needs to improve
-                              validator: (value) {
-                                if (value.isEmpty || value.length < 7) {
-                                  return 'Password must contain minimum of 7 characters.';
-                                }
-                                return null;
-                              },
-
-                              //Saving Password
-                              onSaved: (value) {
-                                _userPassword = value;
-                              },
-                              keyboardType: TextInputType.visiblePassword,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                //andar ka decoration ko none kiya hai
-                                hintText: 'Password',
-                                contentPadding: EdgeInsets.all(20),
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                              ),
-                            ),
-                          ),
-                          //For Space
-                          SizedBox(height: 30),
-
-                          //login button iska design baki hai
-                          if (widget.isLoading) CircularProgressIndicator(),
-                          if (!widget.isLoading)
+                            //Email
                             Container(
-                              height: 43.00,
-                              width: 146.00,
+                              //external decortion
+                              height: 60.00,
+                              width: 400.00,
                               decoration: BoxDecoration(
-                                color: Color(0xff0792ef),
+                                color: Color(0xffffffff).withOpacity(0.59),
                                 boxShadow: [
                                   BoxShadow(
                                     offset: Offset(0.00, 5.00),
-                                    color: Color(0xff0792ef).withOpacity(0.32),
+                                    color: Color(0xff0792ef).withOpacity(0.19),
                                     blurRadius: 14,
                                   ),
                                 ],
                                 borderRadius: BorderRadius.circular(21.50),
                               ),
-                              child: FlatButton(
-                                child: Text(
-                                  _isLogin ? 'Login' : 'Sign Up',
-                                  style: TextStyle(color: Colors.white),
+
+                              //internal textfield
+                              child: TextFormField(
+                                key: ValueKey('email'),
+                                //validotor logic needs to improve
+                                validator: (value) {
+                                  if (value.isEmpty || !value.contains('@')) {
+                                    return 'Please enter valid Email.';
+                                  }
+                                  return null;
+                                },
+
+                                //Saving email
+                                onChanged: (value) {
+                                  _userEmail = value;
+                                },
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: InputDecoration(
+                                  //andar ka decoration ko none kiya hai
+                                  hintText: 'Email',
+                                  contentPadding: EdgeInsets.all(20),
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  errorBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
                                 ),
-                                onPressed: _trySubmit,
                               ),
                             ),
 
-                          //For Space
-                          SizedBox(height: 30),
+                            //Username
 
-                          Container(
-                              child: Text(
-                            "--------------------- Or go with ---------------------",
-                            style: TextStyle(
-                              fontFamily: "Roboto",
-                              fontSize: 15,
-                              color: Color(0xff707070),
+                            //For Space
+                            SizedBox(height: 30),
+
+                            //Password
+                            Container(
+                              //external decortion
+                              height: 60.00,
+                              width: 400.00,
+                              decoration: BoxDecoration(
+                                color: Color(0xffffffff).withOpacity(0.59),
+                                boxShadow: [
+                                  BoxShadow(
+                                    offset: Offset(0.00, 5.00),
+                                    color: Color(0xff0792ef).withOpacity(0.19),
+                                    blurRadius: 14,
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(21.50),
+                              ),
+
+                              //internal textfield
+                              child: TextFormField(
+                                key: ValueKey('password'),
+                                //validotor logic needs to improve
+                                validator: (value) {
+                                  if (value.isEmpty || value.length < 7) {
+                                    return 'Password must contain minimum of 7 characters.';
+                                  }
+                                  return null;
+                                },
+
+                                //Saving Password
+                                onChanged: (value) {
+                                  _userPassword = value;
+                                },
+                                keyboardType: TextInputType.visiblePassword,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  //andar ka decoration ko none kiya hai
+                                  hintText: 'Password',
+                                  contentPadding: EdgeInsets.all(20),
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  errorBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
+                                ),
+                              ),
                             ),
-                          )),
+                            //For Space
+                            SizedBox(height: 30),
 
-                          //For Space
-                          SizedBox(height: 30),
+                            //login button iska design baki hai
+                            if (widget.isLoading) CircularProgressIndicator(),
+                            if (!widget.isLoading)
+                              Container(
+                                height: 43.00,
+                                width: 146.00,
+                                decoration: BoxDecoration(
+                                  color: Color(0xff0792ef),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      offset: Offset(0.00, 5.00),
+                                      color:
+                                          Color(0xff0792ef).withOpacity(0.32),
+                                      blurRadius: 14,
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.circular(21.50),
+                                ),
+                                child: FlatButton(
+                                  child: Text(
+                                    'Login',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: _trySubmit,
+                                ),
+                              ),
 
-                          //Row of 2 buttons....Forgot password logic baki hai
-                          if (!widget.isLoading)
-                            if (_isLogin)
+                            //For Space
+                            SizedBox(height: 30),
+
+                            Container(
+                                child: Text(
+                              "--------------------- Or go with ---------------------",
+                              style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontSize: 15,
+                                color: Color(0xff707070),
+                              ),
+                            )),
+
+                            //For Space
+                            SizedBox(height: 30),
+
+                            //Row of 2 buttons....Forgot password logic baki hai
+                            if (!widget.isLoading)
                               Row(
                                 children: [
                                   Container(
@@ -327,9 +286,7 @@ class _AuthFormState extends State<AuthForm> {
                                     ),
                                     child: FlatButton(
                                       child: Text(
-                                        _isLogin
-                                            ? 'Create new account'
-                                            : 'I already have an account',
+                                        'Create new account',
                                         style: TextStyle(
                                           fontFamily: "Roboto",
                                           fontSize: 15,
@@ -338,6 +295,7 @@ class _AuthFormState extends State<AuthForm> {
                                       ),
                                       onPressed: () {
                                         setState(() {
+                                          cardKey.currentState.toggleCard();
                                           _isLogin = !_isLogin;
                                         });
                                       },
@@ -381,9 +339,232 @@ class _AuthFormState extends State<AuthForm> {
                                 ],
                               ),
 
-                          ////////////////////////SINGLE BIG BUTTON
-                          if (!widget.isLoading)
-                            if (!_isLogin)
+                            ////////////////////////SINGLE BIG BUTTON
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                ///////////////////////////////////////////
+                ///flipping///////////////////////////////////////////////////////////////
+                back: Card(
+                  // Card contains scrollview to stop overflow
+                  shadowColor: Colors.blue,
+                  margin: EdgeInsets.all(18),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.all(15),
+
+                      /////////Form starts here
+                      child: Form(
+                        key: _formkey2,
+                        child: Column(
+                          //mainAxisSize: MainAxisSize.min, //This is for so that column takes place only that reqires
+                          children: [
+                            //For Space
+                            SizedBox(height: 30),
+
+                            //Email
+                            Container(
+                              //external decortion
+                              height: 60.00,
+                              width: 400.00,
+                              decoration: BoxDecoration(
+                                color: Color(0xffffffff).withOpacity(0.59),
+                                boxShadow: [
+                                  BoxShadow(
+                                    offset: Offset(0.00, 5.00),
+                                    color: Color(0xff0792ef).withOpacity(0.19),
+                                    blurRadius: 14,
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(21.50),
+                              ),
+
+                              //internal textfield
+                              child: TextFormField(
+                                key: ValueKey('email'),
+                                //validotor logic needs to improve
+                                validator: (value) {
+                                  if (value.isEmpty || !value.contains('@')) {
+                                    return 'Please enter valid Email.';
+                                  }
+                                  return null;
+                                },
+
+                                //Saving email
+                                onChanged: (value) {
+                                  _userEmail = value;
+                                },
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: InputDecoration(
+                                  //andar ka decoration ko none kiya hai
+                                  hintText: 'Email',
+                                  contentPadding: EdgeInsets.all(20),
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  errorBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
+                                ),
+                              ),
+                            ),
+
+                            //Username
+
+                            Column(
+                              children: [
+                                //For Space
+                                SizedBox(height: 30),
+
+                                Container(
+                                  //external decortion
+                                  height: 60.00,
+                                  width: 400.00,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffffffff).withOpacity(0.59),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        offset: Offset(0.00, 5.00),
+                                        color:
+                                            Color(0xff0792ef).withOpacity(0.19),
+                                        blurRadius: 14,
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(21.50),
+                                  ),
+
+                                  //internal textfield
+                                  child: TextFormField(
+                                    key: ValueKey('mobile'),
+                                    //validotor logic needs to improve
+                                    validator: (value) {
+                                      if (value.isEmpty || value.length < 10) {
+                                        return 'Username must contain  10 integers.';
+                                      }
+                                      return null;
+                                    },
+
+                                    //Saving Username
+                                    onChanged: (value) {
+                                      _userMobile = value;
+                                    },
+                                    keyboardType: TextInputType.phone,
+                                    decoration: InputDecoration(
+                                      //andar ka decoration ko none kiya hai
+                                      hintText: 'Mobile Number',
+                                      contentPadding: EdgeInsets.all(20),
+                                      border: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      errorBorder: InputBorder.none,
+                                      disabledBorder: InputBorder.none,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            //For Space
+                            SizedBox(height: 30),
+
+                            //Password
+                            Container(
+                              //external decortion
+                              height: 60.00,
+                              width: 400.00,
+                              decoration: BoxDecoration(
+                                color: Color(0xffffffff).withOpacity(0.59),
+                                boxShadow: [
+                                  BoxShadow(
+                                    offset: Offset(0.00, 5.00),
+                                    color: Color(0xff0792ef).withOpacity(0.19),
+                                    blurRadius: 14,
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(21.50),
+                              ),
+
+                              //internal textfield
+                              child: TextFormField(
+                                key: ValueKey('password'),
+                                //validotor logic needs to improve
+                                validator: (value) {
+                                  if (value.isEmpty || value.length < 7) {
+                                    return 'Password must contain minimum of 7 characters.';
+                                  }
+                                  return null;
+                                },
+
+                                //Saving Password
+                                onSaved: (value) {
+                                  _userPassword = value;
+                                },
+                                keyboardType: TextInputType.visiblePassword,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  //andar ka decoration ko none kiya hai
+                                  hintText: 'Password',
+                                  contentPadding: EdgeInsets.all(20),
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  errorBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            //For Space
+                            SizedBox(height: 30),
+
+                            //login button iska design baki hai
+                            if (widget.isLoading) CircularProgressIndicator(),
+                            if (!widget.isLoading)
+                              Container(
+                                height: 43.00,
+                                width: 146.00,
+                                decoration: BoxDecoration(
+                                  color: Color(0xff0792ef),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      offset: Offset(0.00, 5.00),
+                                      color:
+                                          Color(0xff0792ef).withOpacity(0.32),
+                                      blurRadius: 14,
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.circular(21.50),
+                                ),
+                                child: FlatButton(
+                                  child: Text(
+                                    'Sign Up',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: _trySubmit,
+                                ),
+                              ),
+
+                            //For Space
+                            SizedBox(height: 30),
+
+                            Container(
+                                child: Text(
+                              "--------------------- Or go with ---------------------",
+                              style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontSize: 15,
+                                color: Color(0xff707070),
+                              ),
+                            )),
+
+                            //For Space
+                            SizedBox(height: 30),
+
+                            //Row of 2 buttons....Forgot password logic baki hai
+
+                            ////////////////////////SINGLE BIG BUTTON
+                            if (!widget.isLoading)
                               Container(
                                 height: 54.00,
                                 width: 200.00,
@@ -401,9 +582,7 @@ class _AuthFormState extends State<AuthForm> {
                                 ),
                                 child: FlatButton(
                                   child: Text(
-                                    _isLogin
-                                        ? 'Create new account'
-                                        : 'I already have an account',
+                                    'I already have an account',
                                     style: TextStyle(
                                       fontFamily: "Roboto",
                                       fontSize: 15,
@@ -412,12 +591,14 @@ class _AuthFormState extends State<AuthForm> {
                                   ),
                                   onPressed: () {
                                     setState(() {
+                                      cardKey.currentState.toggleCard();
                                       _isLogin = !_isLogin;
                                     });
                                   },
                                 ),
                               ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
