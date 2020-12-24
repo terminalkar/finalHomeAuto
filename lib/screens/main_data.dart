@@ -15,7 +15,7 @@ class fulldataofrooms {
       Map map = snap.value;
 
       noofrooms = map["noofrooms"];
-      noofboards = map["noofboards"];
+      noofboards = map["noofboards"]; //change
     });
     String name, type;
     await dbref.child(user.uid).child("rooms").once().then((snap) {
