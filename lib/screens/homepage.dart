@@ -21,7 +21,9 @@ class _HomepageState extends State<Homepage>
     with SingleTickerProviderStateMixin {
   List<String> _list = [];
   var _tapPosition;
-  var _imgIndex;
+  var assetImageString;
+  var assetImage;
+  var image1;
   var _isRoomfetched = true;
   var image = new Map();
 
@@ -36,12 +38,12 @@ class _HomepageState extends State<Homepage>
   @override
   void initState() {
     image.addAll({
-      'Hall': "assets/Children's_Room.png",
-      'Kitchen': "assets/Children's_Room.png",
-      'Bedroom': "assets/logo.png",
-      'Bathroom': "assets/Children's_Room.png",
+      'Hall': "assets/hall.png",
+      'Kitchen': "assets/kitchen.png",
+      'Bedroom': "assets/bedroom.png",
+      'Bathroom': "assets/bathroom.png",
       "Children's Room": "assets/Children's_Room.png",
-      'Other': "assets/Children's_Room.png"
+      'Other': "assets/logo.png"
     });
     super.initState();
     _roomData();
@@ -335,10 +337,12 @@ class _HomepageState extends State<Homepage>
                                         height: 100,
                                         width: 100,
                                         margin: EdgeInsets.all(10),
-                                        child: Image.asset(
-                                          image[fulldataofrooms.roomidmap[
-                                              fulldataofrooms
-                                                  .roomidarray[index]]["type"]],
+                                        child: Image(
+                                          image: AssetImage(image[
+                                              fulldataofrooms.roomidmap[
+                                                      fulldataofrooms
+                                                          .roomidarray[index]]
+                                                  ["type"]]),
                                         ),
                                       ),
                                       Text(index.toString())

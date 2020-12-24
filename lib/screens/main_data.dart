@@ -12,6 +12,7 @@ class fulldataofrooms {
 
     User user = FirebaseAuth.instance.currentUser;
 
+    
     String name, type;
     try {
       await dbref.child(user.uid).child("rooms").once().then((snap) {
