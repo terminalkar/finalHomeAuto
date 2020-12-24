@@ -41,8 +41,6 @@ class _AuthScreenState extends State<AuthScreen> {
             .set({
           'mobile': mobile,
           'email': email,
-          'noofrooms': 0,
-          'noofboards': 0
         });
       }
     } on PlatformException catch (err) {
@@ -74,15 +72,19 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor:
-          Theme.of(context).primaryColor, // Theame set kraychi bakiye
 
-      body: AuthForm(
-        _submitAuthForm,
-        _isLoading,
-      ),
-    );
+    return Scaffold(
+        resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomPadding: true,
+        backgroundColor:
+      Theme.of(context).primaryColor, // Theame set kraychi bakiye
+
+        body: SingleChildScrollView(
+                  child: AuthForm(
+    _submitAuthForm,
+    _isLoading,
+          ),
+        ),
+      );
   }
 }

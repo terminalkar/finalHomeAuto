@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'circuitboard.dart';
 import 'main_data.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 ////import 'package:home_automation/Login_page.dart';
@@ -50,9 +51,15 @@ class _HomepageState extends State<Homepage>
     setState(() {
       _isRoomfetched = true;
     });
-    fulldataofrooms d = new fulldataofrooms();
-    await d.fetchrooms();
+    try {
+      fulldataofrooms d = new fulldataofrooms();
+      await d.fetchrooms();
+      fulldataofrooms.roomidarray.sort();
+    } catch (Ex) {
+      print("exception honme roomdata");
+    }
     setState(() {
+      // 
       _isRoomfetched = false;
     });
   }
@@ -307,10 +314,17 @@ class _HomepageState extends State<Homepage>
                                 fulldataofrooms.boardidarray = fulldataofrooms
                                     .array[fulldataofrooms.roomidarray[index]];
                               });
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (context) => Circuit()));
+                              if (fulldataofrooms.boardidarray == null ||
+                                  fulldataofrooms.boardid == null) {
+                                fulldataofrooms.boardidarray = [];
+                                fulldataofrooms.boardid = new Map();
+                              } else {
+                                fulldataofrooms.boardidarray.sort();
+                              }
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Circuit()));
                             },
                             child: Container(
                               child: Column(
@@ -516,14 +530,29 @@ _addroom(BuildContext context) async {
                         onPressed: pressed
                             ? null
                             : () async {
-                                if (room != "Select") {
-                                  fulldataofrooms.noofrooms++;
+                                if (room != "Select" && name.text != "") {
+                                  String noofrooms;
+                                  int max = 0;
+                                  for (int i = 0;
+                                      i < fulldataofrooms.roomidarray.length;
+                                      i++) {
+                                    String s = fulldataofrooms.roomidarray[i];
+
+                                    int n = int.parse(s.substring(4));
+                                    if (n > max) max = n;
+                                  }
+                                  max++;
+                                  if (max < 10)
+                                    noofrooms = "0" + max.toString();
+                                  else
+                                    noofrooms = max.toString();
+                                  print("sdf");
+                                  print(noofrooms);
                                   dbref
                                       .child(
                                           FirebaseAuth.instance.currentUser.uid)
                                       .child("rooms")
-                                      .child("room" +
-                                          fulldataofrooms.noofrooms.toString())
+                                      .child("room" + noofrooms)
                                       .set({
                                     "name": name.text,
                                     "type": room,
@@ -535,21 +564,18 @@ _addroom(BuildContext context) async {
                                           FirebaseAuth.instance.currentUser.uid)
                                       .child("info")
                                       .child("noofrooms")
-                                      .set(fulldataofrooms.noofrooms);
+                                      .set(noofrooms);
+                                  setState(() async {
+                                    Navigator.pop(context);
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Homepage()));
+                                  });
                                 } else {
                                   Fluttertoast.showToast(
                                       msg: "Please select the type of room");
                                 }
-
-                                // fulldataofrooms d = new fulldataofrooms();
-                                setState(() async {
-                                  // await d.fetchrooms();
-                                  Navigator.pop(context);
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Homepage()));
-                                });
                               }),
                   ),
                   Container(
