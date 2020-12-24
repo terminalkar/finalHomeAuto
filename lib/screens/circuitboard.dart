@@ -56,6 +56,7 @@ class _CircuittState extends State<Circuit> {
       resizeToAvoidBottomInset: false,
       resizeToAvoidBottomPadding: true,
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: Text(
           'Board',
           style: TextStyle(color: Colors.white),
@@ -75,34 +76,58 @@ class _CircuittState extends State<Circuit> {
                           height: SizeConfig.grp <= 4
                               ? 10 * SizeConfig.heightMultiplier
                               : 8.8 * SizeConfig.heightMultiplier,
-                          child: Card(
-                            elevation: 20,
-                            shape: new RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(15.0)),
-                            child: ListTile(
-                              onLongPress: () async {},
-                              onTap: () async {
-                                fulldataofrooms.switches =
-                                    fulldataofrooms.boardid[
-                                        fulldataofrooms.boardidarray[index]];
-                                fulldataofrooms.boardindex = index;
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => switches(),
-                                    ));
-                              },
-                              isThreeLine: false,
-                              leading: Text("hello",
-                                  style: TextStyle(
-                                      fontSize: 2.2 * SizeConfig.textMultiplier,
-                                      color: Color(0xffac3973))),
-                              title: Text(
-                                fulldataofrooms.boardidarray[index],
-                                style: TextStyle(
-                                  fontSize: 2 * SizeConfig.textMultiplier,
-                                  color: Color(0xff997a00),
+                          child: Container(
+                            height: 300.00,
+                            width: 400.00,
+                            margin: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              boxShadow: [
+                                BoxShadow(
+                                  offset: Offset(0.00, 5.00),
+                                  color: Color(0xff0792ef).withOpacity(0.60),
+                                  blurRadius: 18,
                                 ),
+                              ],
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Card(
+                              //elevation: 20,
+                              // shape: new RoundedRectangleBorder(
+                              //     borderRadius:
+                              //         new BorderRadius.circular(15.0)),
+                              child: ListTile(
+                                onLongPress: () async {},
+                                onTap: () async {
+                                  fulldataofrooms.switches =
+                                      fulldataofrooms.boardid[
+                                          fulldataofrooms.boardidarray[index]];
+                                  fulldataofrooms.boardindex = index;
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => switches(),
+                                      ));
+                                },
+                                isThreeLine: false,
+                                // leading: Text("hello",
+                                //     style: TextStyle(
+                                //       fontFamily: "Amelia-Basic-Light",
+                                //       color: Color(0xff79848b),
+                                //       fontSize: 2.2 * SizeConfig.textMultiplier,
+                                //     )),
+                                leading: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Icon(Icons.bookmark_border_outlined),
+                                ),
+                                title: Text(
+                                  fulldataofrooms.boardidarray[index],
+                                  style: TextStyle(
+                                    fontSize: 2 * SizeConfig.textMultiplier,
+                                    color: Color(0xff997a00),
+                                  ),
+                                ),
+                                trailing: Icon(Icons.navigate_next_outlined),
                               ),
                             ),
                           ),

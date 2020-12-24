@@ -330,22 +330,18 @@ class _HomepageState extends State<Homepage>
                             child: Container(
                               child: Column(
                                 children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        height: 100,
-                                        width: 100,
-                                        margin: EdgeInsets.all(10),
-                                        child: Image(
-                                          image: AssetImage(image[
-                                              fulldataofrooms.roomidmap[
-                                                      fulldataofrooms
-                                                          .roomidarray[index]]
-                                                  ["type"]]),
-                                        ),
+                                  Center(
+                                    child: Container(
+                                      height: 100,
+                                      width: 100,
+                                      margin: EdgeInsets.all(10),
+                                      child: Image(
+                                        image: AssetImage(image[fulldataofrooms
+                                                .roomidmap[
+                                            fulldataofrooms
+                                                .roomidarray[index]]["type"]]),
                                       ),
-                                      Text(index.toString())
-                                    ],
+                                    ),
                                   ),
                                   Text(
                                       fulldataofrooms.roomidmap[fulldataofrooms

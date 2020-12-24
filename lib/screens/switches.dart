@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:home_automation_app/screens/main_data.dart';
+import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 
 class switches extends StatefulWidget {
   @override
@@ -41,7 +42,7 @@ class _switchesState extends State<switches> {
                   onTapDown: (TapDownDetails details) {
                     _tapPosition = details.globalPosition;
                   },
-                  //delete
+                  //Rename
                   onLongPress: () {
                     final RenderBox overlay =
                         Overlay.of(context).context.findRenderObject();
@@ -107,18 +108,31 @@ class _switchesState extends State<switches> {
                   child: Container(
                     child: Column(
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              height: 100,
-                              width: 100,
-                              margin: EdgeInsets.all(10),
-                              child: Image(
-                                image: AssetImage("assets/logo.png"),
-                              ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Center(
+                          child: Container(
+                            height: 40,
+                            width: 120,
+                            margin: EdgeInsets.all(10),
+                            child: LiteRollingSwitch(
+                              value: true,
+                              textOn: 'Active',
+                              textOff: 'Inactive',
+                              colorOn: Colors.greenAccent,
+                              colorOff: Color(0xff79848b),
+                              iconOn: Icons.lightbulb_outline,
+                              iconOff: Icons.power_settings_new,
+                              textSize: 14,
+                              onChanged: (bool state) {
+                                print('turned ${(state) ? 'on' : 'off'}');
+                              },
                             ),
-                            Text(index.toString())
-                          ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
                         ),
                         Center(
                           child: Container(
@@ -143,6 +157,14 @@ class _switchesState extends State<switches> {
                             ),
                           ),
                         ),
+                        Text(
+                            // button name
+                            "Button",
+                            style: TextStyle(
+                              fontFamily: "Amelia-Basic-Light",
+                              fontSize: 16,
+                              color: Color(0xff79848b),
+                            )),
                       ],
                     ),
                     height: 147.00,
