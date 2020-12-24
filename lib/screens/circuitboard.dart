@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/main_data.dart';
+import 'package:home_automation_app/screens/switches.dart';
 
 class Circuit extends StatefulWidget {
   @override
@@ -80,7 +81,17 @@ class _CircuittState extends State<Circuit> {
                                 borderRadius: new BorderRadius.circular(15.0)),
                             child: ListTile(
                               onLongPress: () async {},
-                              onTap: () async {},
+                              onTap: () async {
+                                fulldataofrooms.switches =
+                                    fulldataofrooms.boardid[
+                                        fulldataofrooms.boardidarray[index]];
+                                fulldataofrooms.boardindex = index;
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => switches(),
+                                    ));
+                              },
                               isThreeLine: false,
                               leading: Text("hello",
                                   style: TextStyle(

@@ -7,12 +7,14 @@ class fulldataofrooms {
   static var id = Map();
   static var roomidarray = [], boardidarray = [], array = Map();
   static int index;
+  static var switches = Map();
+  static var boardindex;
+
   Future<void> fetchrooms() async {
     final dbref = FirebaseDatabase.instance.reference().child('Users');
 
     User user = FirebaseAuth.instance.currentUser;
 
-    
     String name, type;
     try {
       await dbref.child(user.uid).child("rooms").once().then((snap) {
