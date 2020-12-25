@@ -41,8 +41,6 @@ class _AuthScreenState extends State<AuthScreen> {
             .set({
           'mobile': mobile,
           'email': email,
-          'noofrooms': 0,
-          'noofboards': 0
         });
       }
     } on PlatformException catch (err) {

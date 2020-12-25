@@ -20,7 +20,6 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage>
     with SingleTickerProviderStateMixin {
-  List<String> _list = [];
   var _tapPosition;
   var assetImageString;
   var assetImage;
@@ -531,8 +530,11 @@ _addroom(BuildContext context) async {
                           ),
                         ),
                         onPressed: pressed
-                            ? null
+                            ?()=> print("df")
                             : () async {
+                                setState(() {
+                                  pressed = true;
+                                });
                                 if (room != "Select" && name.text != "") {
                                   String noofrooms;
                                   int max = 0;
@@ -550,7 +552,7 @@ _addroom(BuildContext context) async {
                                   else
                                     noofrooms = max.toString();
 
-                                  dbref
+                                  await dbref
                                       .child(
                                           FirebaseAuth.instance.currentUser.uid)
                                       .child("rooms")
@@ -572,6 +574,9 @@ _addroom(BuildContext context) async {
                                   Fluttertoast.showToast(
                                       msg: "Please select the type of room");
                                 }
+                                 setState(() {
+                                  pressed = false;
+                                });
                               }),
                   ),
                   Container(
