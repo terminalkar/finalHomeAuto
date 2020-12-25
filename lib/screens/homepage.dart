@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:home_automation_app/screens/profile_screen.dart';
 import 'circuitboard.dart';
 import 'main_data.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -143,7 +144,10 @@ class _HomepageState extends State<Homepage>
                           color: Color(0xff79848b),
                         ),
                         onTap: () {
-                          //Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => profile()));
                         }),
                   ),
                   //new Divider(),
@@ -545,7 +549,7 @@ _addroom(BuildContext context) async {
                                     noofrooms = "0" + max.toString();
                                   else
                                     noofrooms = max.toString();
-                                  
+
                                   dbref
                                       .child(
                                           FirebaseAuth.instance.currentUser.uid)

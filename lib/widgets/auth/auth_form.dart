@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:home_automation_app/responsive/Screensize.dart';
 
 class AuthForm extends StatefulWidget {
   AuthForm(this.submitFn, this.isLoading);
@@ -67,14 +70,14 @@ class _AuthFormState extends State<AuthForm> {
         child: Column(
           children: [
             //For Space
-            SizedBox(height: 50),
+            SizedBox(height: 3.0 * SizeConfig.heightMultiplier),
             //LOGO
             ////////////////////////////////////////////////////
             Container(
               child: Center(child: Image(image: AssetImage('assets/logo.png'))),
-              height: 172.00,
-              width: 172.00,
-              margin: EdgeInsets.all(20),
+              height: 20 * SizeConfig.heightMultiplier,
+              width: 20 * SizeConfig.heightMultiplier,
+              margin: EdgeInsets.all(4 * SizeConfig.imageSizeMultiplier),
               decoration: BoxDecoration(
                 color: Color(0xffffffff),
                 border: Border.all(
@@ -93,9 +96,6 @@ class _AuthFormState extends State<AuthForm> {
             ),
             /////////////////////////////////////////////////////
 
-            //For Space
-            SizedBox(height: 20),
-
             ///Card
             /////////////////////////////////////////////////////////////////////////////////////
 
@@ -110,7 +110,7 @@ class _AuthFormState extends State<AuthForm> {
                   margin: EdgeInsets.all(18),
                   child: SingleChildScrollView(
                     child: Padding(
-                      padding: EdgeInsets.all(15),
+                       padding: EdgeInsets.all(2.1 * SizeConfig.textMultiplier),
 
                       /////////Form starts here
                       child: Form(
@@ -118,14 +118,12 @@ class _AuthFormState extends State<AuthForm> {
                         child: Column(
                           //mainAxisSize: MainAxisSize.min, //This is for so that column takes place only that reqires
                           children: [
-                            //For Space
-                            SizedBox(height: 30),
-
+                            SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
                             //Email
                             Container(
                               //external decortion
-                              height: 60.00,
-                              width: 400.00,
+                              height: 7.5 * SizeConfig.heightMultiplier,
+                              width: 100 * SizeConfig.widthMultiplier,
                               decoration: BoxDecoration(
                                 color: Color(0xffffffff).withOpacity(0.59),
                                 boxShadow: [
@@ -141,13 +139,8 @@ class _AuthFormState extends State<AuthForm> {
                               //internal textfield
                               child: TextFormField(
                                 key: ValueKey('email'),
-                                //validotor logic needs to improve
-                                validator: (value) {
-                                  if (value.isEmpty || !value.contains('@')) {
-                                    return 'Please enter valid Email.';
-                                  }
-                                  return null;
-                                },
+                                //validotor  improved
+                                validator: validateEmail,
 
                                 //Saving email
                                 onChanged: (value) {
@@ -170,13 +163,13 @@ class _AuthFormState extends State<AuthForm> {
                             //Username
 
                             //For Space
-                            SizedBox(height: 30),
+                            SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
 
                             //Password
                             Container(
                               //external decortion
-                              height: 60.00,
-                              width: 400.00,
+                              height: 7 * SizeConfig.heightMultiplier,
+                              width: 100 * SizeConfig.widthMultiplier,
                               decoration: BoxDecoration(
                                 color: Color(0xffffffff).withOpacity(0.59),
                                 boxShadow: [
@@ -192,13 +185,9 @@ class _AuthFormState extends State<AuthForm> {
                               //internal textfield
                               child: TextFormField(
                                 key: ValueKey('password'),
-                                //validotor logic needs to improve
-                                validator: (value) {
-                                  if (value.isEmpty || value.length < 7) {
-                                    return 'Password must contain minimum of 7 characters.';
-                                  }
-                                  return null;
-                                },
+
+                                //validotor  improved
+                                validator: validatePassword,
 
                                 //Saving Password
                                 onChanged: (value) {
@@ -219,7 +208,7 @@ class _AuthFormState extends State<AuthForm> {
                               ),
                             ),
                             //For Space
-                            SizedBox(height: 30),
+                            SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
 
                             //login button iska design baki hai
                             if (widget.isLoading) CircularProgressIndicator(),
@@ -249,28 +238,28 @@ class _AuthFormState extends State<AuthForm> {
                               ),
 
                             //For Space
-                            SizedBox(height: 30),
+                            SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
 
                             Container(
                                 child: Text(
                               "--------------------- Or go with ---------------------",
                               style: TextStyle(
                                 fontFamily: "Roboto",
-                                fontSize: 15,
+                                fontSize: 2.1 * SizeConfig.textMultiplier,
                                 color: Color(0xff707070),
                               ),
                             )),
 
                             //For Space
-                            SizedBox(height: 30),
+                            SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
 
                             //Row of 2 buttons....Forgot password logic baki hai
                             if (!widget.isLoading)
                               Row(
                                 children: [
                                   Container(
-                                    height: 54.00,
-                                    width: 150.00,
+                                    height: 6.5 * SizeConfig.heightMultiplier,
+                                    width: 35 * SizeConfig.widthMultiplier,
                                     decoration: BoxDecoration(
                                       color: Color(0xffffffff),
                                       boxShadow: [
@@ -289,7 +278,8 @@ class _AuthFormState extends State<AuthForm> {
                                         'Create new account',
                                         style: TextStyle(
                                           fontFamily: "Roboto",
-                                          fontSize: 15,
+                                          fontSize:
+                                              2.1 * SizeConfig.textMultiplier,
                                           color: Color(0xff707070),
                                         ),
                                       ),
@@ -303,12 +293,13 @@ class _AuthFormState extends State<AuthForm> {
                                   ),
 
                                   //For Space
-                                  SizedBox(width: 20),
+                                  SizedBox(
+                                      width: SizeConfig.widthMultiplier *6),
 
                                   //forgot password////////////////////////////////////
                                   Container(
-                                    height: 54.00,
-                                    width: 150.00,
+                                    height: 6.5 * SizeConfig.heightMultiplier,
+                                    width: 35 * SizeConfig.widthMultiplier,
                                     decoration: BoxDecoration(
                                       color: Color(0xffffffff),
                                       boxShadow: [
@@ -327,12 +318,14 @@ class _AuthFormState extends State<AuthForm> {
                                         "Forgot Password",
                                         style: TextStyle(
                                           fontFamily: "Roboto",
-                                          fontSize: 15,
+                                          fontSize:
+                                              2.1 * SizeConfig.textMultiplier,
                                           color: Color(0xff707070),
                                         ),
                                       ),
                                       onPressed: () {
                                         //Forgot password logic goes here
+                                        fun(context);
                                       },
                                     ),
                                   ),
@@ -354,7 +347,7 @@ class _AuthFormState extends State<AuthForm> {
                   margin: EdgeInsets.all(18),
                   child: SingleChildScrollView(
                     child: Padding(
-                      padding: EdgeInsets.all(15),
+                      padding: EdgeInsets.all(2.1 * SizeConfig.textMultiplier),
 
                       /////////Form starts here
                       child: Form(
@@ -363,13 +356,13 @@ class _AuthFormState extends State<AuthForm> {
                           //mainAxisSize: MainAxisSize.min, //This is for so that column takes place only that reqires
                           children: [
                             //For Space
-                            SizedBox(height: 30),
+                            SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
 
                             //Email
                             Container(
                               //external decortion
-                              height: 60.00,
-                              width: 400.00,
+                              height: 8 * SizeConfig.heightMultiplier,
+                              width: 100 * SizeConfig.widthMultiplier,
                               decoration: BoxDecoration(
                                 color: Color(0xffffffff).withOpacity(0.59),
                                 boxShadow: [
@@ -385,13 +378,8 @@ class _AuthFormState extends State<AuthForm> {
                               //internal textfield
                               child: TextFormField(
                                 key: ValueKey('email'),
-                                //validotor logic needs to improve
-                                validator: (value) {
-                                  if (value.isEmpty || !value.contains('@')) {
-                                    return 'Please enter valid Email.';
-                                  }
-                                  return null;
-                                },
+                                //validotor  improved
+                                validator: validateEmail,
 
                                 //Saving email
                                 onChanged: (value) {
@@ -416,12 +404,14 @@ class _AuthFormState extends State<AuthForm> {
                             Column(
                               children: [
                                 //For Space
-                                SizedBox(height: 30),
+                                SizedBox(
+                                    height: 3.5 * SizeConfig.heightMultiplier),
 
                                 Container(
                                   //external decortion
-                                  height: 60.00,
-                                  width: 400.00,
+                                  height: 8 * SizeConfig.heightMultiplier,
+                                  width: 100 * SizeConfig.widthMultiplier,
+
                                   decoration: BoxDecoration(
                                     color: Color(0xffffffff).withOpacity(0.59),
                                     boxShadow: [
@@ -438,13 +428,8 @@ class _AuthFormState extends State<AuthForm> {
                                   //internal textfield
                                   child: TextFormField(
                                     key: ValueKey('mobile'),
-                                    //validotor logic needs to improve
-                                    validator: (value) {
-                                      if (value.isEmpty || value.length < 10) {
-                                        return 'Username must contain  10 integers.';
-                                      }
-                                      return null;
-                                    },
+                                    //validotor  improved
+                                    validator: validatenumber,
 
                                     //Saving Username
                                     onChanged: (value) {
@@ -467,13 +452,14 @@ class _AuthFormState extends State<AuthForm> {
                             ),
 
                             //For Space
-                            SizedBox(height: 30),
+                            SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
 
                             //Password
                             Container(
                               //external decortion
-                              height: 60.00,
-                              width: 400.00,
+                              height: 8 * SizeConfig.heightMultiplier,
+                              width: 100 * SizeConfig.widthMultiplier,
+
                               decoration: BoxDecoration(
                                 color: Color(0xffffffff).withOpacity(0.59),
                                 boxShadow: [
@@ -489,13 +475,8 @@ class _AuthFormState extends State<AuthForm> {
                               //internal textfield
                               child: TextFormField(
                                 key: ValueKey('password'),
-                                //validotor logic needs to improve
-                                validator: (value) {
-                                  if (value.isEmpty || value.length < 7) {
-                                    return 'Password must contain minimum of 7 characters.';
-                                  }
-                                  return null;
-                                },
+                                //validotor  improved
+                                validator: validatePassword,
 
                                 //Saving Password
                                 onSaved: (value) {
@@ -516,14 +497,14 @@ class _AuthFormState extends State<AuthForm> {
                               ),
                             ),
                             //For Space
-                            SizedBox(height: 30),
+                            SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
 
                             //login button iska design baki hai
                             if (widget.isLoading) CircularProgressIndicator(),
                             if (!widget.isLoading)
                               Container(
-                                height: 43.00,
-                                width: 146.00,
+                                height: 6.5 * SizeConfig.heightMultiplier,
+                                width: 35 * SizeConfig.widthMultiplier,
                                 decoration: BoxDecoration(
                                   color: Color(0xff0792ef),
                                   boxShadow: [
@@ -546,7 +527,7 @@ class _AuthFormState extends State<AuthForm> {
                               ),
 
                             //For Space
-                            SizedBox(height: 30),
+                            SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
 
                             Container(
                                 child: Text(
@@ -559,15 +540,15 @@ class _AuthFormState extends State<AuthForm> {
                             )),
 
                             //For Space
-                            SizedBox(height: 30),
+                            SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
 
                             //Row of 2 buttons....Forgot password logic baki hai
 
                             ////////////////////////SINGLE BIG BUTTON
                             if (!widget.isLoading)
                               Container(
-                                height: 54.00,
-                                width: 200.00,
+                                height: 7 * SizeConfig.heightMultiplier,
+                                width: 50 * SizeConfig.widthMultiplier,
                                 decoration: BoxDecoration(
                                   color: Color(0xffffffff),
                                   boxShadow: [
@@ -585,7 +566,7 @@ class _AuthFormState extends State<AuthForm> {
                                     'I already have an account',
                                     style: TextStyle(
                                       fontFamily: "Roboto",
-                                      fontSize: 15,
+                                      fontSize: 2.1 * SizeConfig.textMultiplier,
                                       color: Color(0xff707070),
                                     ),
                                   ),
@@ -612,4 +593,171 @@ class _AuthFormState extends State<AuthForm> {
       ),
     );
   }
+}
+
+fun(BuildContext context) async {
+  bool pressed = false;
+  final formKey = new GlobalKey<FormState>();
+  String disp = "";
+  FocusNode focusNode1 = new FocusNode();
+  TextEditingController _controller = TextEditingController();
+  return showGeneralDialog(
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionBuilder: (context, a1, a2, widget) {
+        return StatefulBuilder(
+            // transform: Matrix4.translationValues(0.0, curvedValue * 200, 0.0),
+            builder: (context, setState) {
+          return Opacity(
+            opacity: a1.value,
+            child: AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              title: Column(
+                children: <Widget>[
+                  new Icon(
+                    Icons.email,
+                    color: Colors.blue,
+                    size: 4.2 * SizeConfig.heightMultiplier,
+                  ),
+                  Text(
+                    'Enter registered email',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color(0xff00004d),
+                    ),
+                  )
+                ],
+              ),
+              content: Container(
+                height: 12 * SizeConfig.heightMultiplier,
+                child: Column(
+                  children: <Widget>[
+                    //    new Padding(padding: EdgeInsets.only(top:5)),
+                    new Form(
+                      key: formKey,
+                      child: TextFormField(
+                        controller: _controller,
+                        cursorColor: Color(0xff00004d),
+                        focusNode: focusNode1,
+                        style: TextStyle(
+                            fontFamily: 'BalooChettan2',
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff00004d),
+                            fontSize: 2.4 * SizeConfig.textMultiplier),
+                        decoration: new InputDecoration(
+                            contentPadding:
+                                EdgeInsets.only(left: 20.00, right: 20.00),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xff00004d)),
+                                borderRadius: BorderRadius.circular(10.00)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xff800000)),
+                                borderRadius: BorderRadius.circular(10.0)),
+                            labelText: "Enter here",
+                            labelStyle: TextStyle(
+                                color: Colors.grey,
+                                // fontWeight: FontWeight.bold,
+                                fontSize: 2.3 * SizeConfig.textMultiplier)),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: validateEmail,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                new FlatButton(
+                    child: new Text(
+                      'send email',
+                      style: TextStyle(
+                          color: Color(0xff00004d),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 2.3 * SizeConfig.textMultiplier),
+                    ),
+                    onPressed: pressed == false
+                        ? () async {
+                            if (formKey.currentState.validate()) {
+                              resetPassword(_controller.text.toLowerCase());
+                              setState(() {
+                                disp = "email sent";
+                              });
+                              Fluttertoast.showToast(
+                                  msg: "Check mail inbox",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.CENTER,
+                                  backgroundColor: Colors.green,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0);
+                            }
+                            setState(() {
+                              pressed = true;
+                            });
+                          }
+                        : null),
+                new FlatButton(
+                  child: new Text(
+                    'cancel',
+                    style: TextStyle(
+                        color: Color(0xff00004d),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 2.3 * SizeConfig.textMultiplier),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ),
+          );
+        });
+      },
+      // transitionDuration: Duration(milliseconds: 1000),
+      barrierDismissible: true,
+      barrierLabel: '',
+      context: context,
+      pageBuilder: (context, animation1, animation2) {});
+}
+
+@override
+Future<void> resetPassword(String email) async {
+  await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+}
+
+String validateEmail(String value) {
+  Pattern pattern =
+      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+  RegExp regex = new RegExp(pattern);
+  if (value.isEmpty || !regex.hasMatch(value)) {
+    return "invalid Email";
+  } else {
+    return null;
+  }
+}
+
+String validatePassword(String value) {
+  if (value.trim().isEmpty) {
+    return 'Password cannot be empty';
+  } else if (value.length < 6) {
+    return 'Password too short';
+  }
+  return null;
+}
+
+String validatenumber(String value) {
+  RegExp re = RegExp(r'^[1-9]\d*$');
+  if (value.trim().isEmpty) {
+    return 'number cannot be empty';
+  } else if (value.length != 10 || !re.hasMatch(value)) {
+    return 'Ennter a valid number';
+  }
+  return null;
+}
+
+String validate(String value) {
+  if (value.isEmpty)
+    return "please! update the field";
+  else
+    return null;
 }

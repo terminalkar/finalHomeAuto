@@ -11,7 +11,7 @@ class switches extends StatefulWidget {
 }
 
 class _switchesState extends State<switches> {
-  var _tapPosition;
+  var _tapPosition, focusnode = List.filled(5, false);
   final dbref = FirebaseDatabase.instance.reference().child("Users");
   User user = FirebaseAuth.instance.currentUser;
   var edit = List.filled(5, false);
@@ -55,7 +55,9 @@ class _switchesState extends State<switches> {
                           child: GestureDetector(
                             onTap: () {
                               setState(() {
+                                edit = List.filled(5, false);
                                 edit[index] = true;
+                                focusnode[index] = true;
                               });
                               Navigator.pop(context);
                             },
@@ -99,8 +101,9 @@ class _switchesState extends State<switches> {
                             width: 30 * SizeConfig.widthMultiplier,
                             margin: EdgeInsets.all(10),
                             child: LiteRollingSwitch(
-                              value: fulldataofrooms.switches[
-                                      "a" + (index + 1).toString()]["val"]==1
+                              value: fulldataofrooms.switches["a" +
+                                          (index + 1).toString()]["val"] ==
+                                      1
                                   ? true
                                   : false,
                               textOn: 'Active',
@@ -141,9 +144,12 @@ class _switchesState extends State<switches> {
                           child: Container(
                             width: 15 * SizeConfig.heightMultiplier,
                             child: TextField(
+                              autofocus: focusnode[index],
                               focusNode: new FocusNode(),
-                              controller:TextEditingController()..text = fulldataofrooms
-                                .switches["a" + (index + 1).toString()]["name"],
+                              controller: TextEditingController()
+                                ..text = fulldataofrooms
+                                        .switches["a" + (index + 1).toString()]
+                                    ["name"],
                               expands: false,
                               enabled: edit[index],
                               textInputAction: TextInputAction.go,
@@ -169,6 +175,7 @@ class _switchesState extends State<switches> {
                                       .child("name")
                                       .set(name);
                                   edit = List.filled(5, false);
+                                  focusnode = List.filled(5, false);
                                 });
                               },
                             ),
