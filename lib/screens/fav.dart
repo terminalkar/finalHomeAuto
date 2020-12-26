@@ -20,25 +20,29 @@ class _favouriteState extends State<favourite> {
         children: List.generate(
           fulldataofrooms.favroomsarray.length - 1,
           (index) {
-            Center(
+            return InkWell(
+              child: Center(
                 child: Container(
-              width: 14 * SizeConfig.heightMultiplier,
-              child: TextField(
-                focusNode: new FocusNode(),
-                controller: TextEditingController()..text = "text",
-                expands: false,
-                textInputAction: TextInputAction.go,
-                keyboardType: TextInputType.text,
-                style: TextStyle(
-                  fontFamily: "Amelia-Basic-Light",
-                  fontSize: 16,
-                  color: Color(0xff79848b),
+                  width: 14 * SizeConfig.heightMultiplier,
+                  child: TextField(
+                    focusNode: new FocusNode(),
+                    controller: TextEditingController()
+                      ..text = fulldataofrooms.favroomsarray[index],
+                    expands: false,
+                    textInputAction: TextInputAction.go,
+                    keyboardType: TextInputType.text,
+                    style: TextStyle(
+                      fontFamily: "Amelia-Basic-Light",
+                      fontSize: 16,
+                      color: Color(0xff79848b),
+                    ),
+                    onSubmitted: (name) {
+                      setState(() {});
+                    },
+                  ),
                 ),
-                onSubmitted: (name) {
-                  setState(() {});
-                },
               ),
-            ));
+            );
           },
         ),
       ),
