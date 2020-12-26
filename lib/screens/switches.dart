@@ -59,9 +59,7 @@ class _switchesState extends State<switches> {
                             items: <PopupMenuEntry>[
                               PopupMenuItem(
                                 value: index,
-                                child: Column(
-                                  children: [
-                                    InkWell(
+                                child: InkWell(
                                       onTap: () {
                                         print("rename");
                                         setState(() {
@@ -87,32 +85,32 @@ class _switchesState extends State<switches> {
                                           ),
                                         ],
                                       ),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        print("favourites");
-                                        //logic///////////////////////
-                                        Navigator.pop(context);
-                                        favouritesdialogbox(context, index);
-                                      },
-                                      child: Row(
-                                        children: <Widget>[
-                                          Icon(Icons.edit),
-                                          SizedBox(
-                                            width: 25,
-                                          ),
-                                          Text(
-                                            "Add to Favourites",
-                                            style: TextStyle(
-                                                fontFamily:
-                                                    "Amelia-Basic-Light",
-                                                fontSize: 16,
-                                                color: Color(0xff79848b)),
-                                          ),
-                                        ],
+                                    ),),
+                              PopupMenuItem(
+                                value: index,
+                                child: InkWell(
+                                  onTap: () {
+                                    print("favourites");
+                                    //logic///////////////////////
+                                    Navigator.pop(context);
+                                    favouritesdialogbox(context, index);
+                                  },
+                                  child: Row(
+                                    children: <Widget>[
+                                      Icon(Icons.edit),
+                                      SizedBox(
+                                        width: 25,
                                       ),
-                                    )
-                                  ],
+                                      Text(
+                                        "Add to Favourites",
+                                        style: TextStyle(
+                                            fontFamily:
+                                                "Amelia-Basic-Light",
+                                            fontSize: 16,
+                                            color: Color(0xff79848b)),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               )
                             ],
