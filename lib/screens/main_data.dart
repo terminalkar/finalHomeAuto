@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:home_automation_app/screens/fav.dart';
 
 class fulldataofrooms {
   static var roomidmap = Map();
@@ -9,6 +10,8 @@ class fulldataofrooms {
   static int index;
   static var switches = Map();
   static var boardindex;
+  static List<String> favroomsarray = [];
+  static var favouriteroomscontents = Map();
 
   Future<void> fetchrooms() async {
     final dbref = FirebaseDatabase.instance.reference().child('Users');
@@ -80,6 +83,29 @@ class fulldataofrooms {
         }
       } catch (ex) {
         print("Exception in board maindata");
+      }
+    });
+  }
+
+  Future<void> fetchfavourites() async {
+    favroomsarray.clear();
+    favroomsarray.add("Select");
+    favouriteroomscontents.clear();
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
+
+    await dbref.child(user.uid).child("favourites").once().then((snap) {
+      Map id = snap.value;
+      try {
+        for (final i in id.keys) {
+          print("fetchfavourites");
+          print(i);
+          favroomsarray.add(i);
+          favouriteroomscontents.addAll(id[i]);
+          print(id[i]);
+        }
+      } catch (ex) {
+        print("Exception in fav maindata");
       }
     });
   }

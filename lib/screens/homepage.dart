@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_automation_app/screens/profile_screen.dart';
 import 'circuitboard.dart';
+import 'fav.dart';
 import 'main_data.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 ////import 'package:home_automation/Login_page.dart';
@@ -177,7 +178,13 @@ class _HomepageState extends State<Homepage>
                           Icons.arrow_right,
                           color: Color(0xff79848b),
                         ),
-                        onTap: () {
+                        onTap: () async {
+                          fulldataofrooms f1 = new fulldataofrooms();
+                          await f1.fetchfavourites();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => favourite()));
                           //Navigator.pop(context);
                         }),
                   ),
@@ -530,7 +537,7 @@ _addroom(BuildContext context) async {
                           ),
                         ),
                         onPressed: pressed
-                            ?()=> print("df")
+                            ? () => print("df")
                             : () async {
                                 setState(() {
                                   pressed = true;
@@ -574,7 +581,7 @@ _addroom(BuildContext context) async {
                                   Fluttertoast.showToast(
                                       msg: "Please select the type of room");
                                 }
-                                 setState(() {
+                                setState(() {
                                   pressed = false;
                                 });
                               }),

@@ -93,12 +93,13 @@ class _CircuittState extends State<Circuit> {
                             ),
                             child: Card(
                               child: ListTile(
-                                onLongPress: () async {},
                                 onTap: () async {
                                   fulldataofrooms.switches =
                                       fulldataofrooms.boardid[
                                           fulldataofrooms.boardidarray[index]];
                                   fulldataofrooms.boardindex = index;
+                                  fulldataofrooms f1 = new fulldataofrooms();
+                                  f1.fetchfavourites();
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -235,10 +236,10 @@ class _CircuittState extends State<Circuit> {
                           onPressed: pressed
                               ? null
                               : () async {
-                                  setState(()  {
+                                  setState(() {
                                     pressed = true;
                                   });
- 
+
                                   if (id.text != "") {
                                     String noofboards;
                                     int max = 0;

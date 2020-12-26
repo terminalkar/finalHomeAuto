@@ -5,18 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:flutter/widgets.dart';
 
-
-
 class profile extends StatefulWidget {
   @override
   profileState createState() => profileState();
 }
 
 class profileState extends State<profile> {
- 
-
   FocusNode focusNode = new FocusNode();
-
 
   final dbref = FirebaseDatabase.instance.reference();
   final FocusNode myFocusNode = FocusNode();
@@ -38,7 +33,6 @@ class profileState extends State<profile> {
         body: new Container(
       color: Colors.white,
       child: Column(
-      
         children: <Widget>[
           new Container(
             height: 35 * SizeConfig.heightMultiplier,
@@ -52,8 +46,8 @@ class profileState extends State<profile> {
             child: new Column(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(
-                      top: 5.5 * SizeConfig.heightMultiplier),
+                  padding:
+                      EdgeInsets.only(top: 5.5 * SizeConfig.heightMultiplier),
                   child: new Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -77,8 +71,7 @@ class profileState extends State<profile> {
             ),
           ),
           Expanded(
-                      child: new Container(
-
+            child: new Container(
               decoration: BoxDecoration(
                   border: Border(
                     top: BorderSide(
@@ -91,8 +84,8 @@ class profileState extends State<profile> {
                       end: Alignment.bottomCenter,
                       colors: [Color(0xffffffff), Colors.blue[300]])),
               child: Padding(
-                padding: EdgeInsets.only(
-                    bottom: 3.5 * SizeConfig.heightMultiplier),
+                padding:
+                    EdgeInsets.only(bottom: 3.5 * SizeConfig.heightMultiplier),
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -136,8 +129,7 @@ class profileState extends State<profile> {
                                 new Text(
                                   'Email ID',
                                   style: TextStyle(
-                                      fontSize:
-                                          2.2 * SizeConfig.textMultiplier,
+                                      fontSize: 2.2 * SizeConfig.textMultiplier,
                                       fontWeight: FontWeight.bold),
                                 ),
                               ],
@@ -178,8 +170,7 @@ class profileState extends State<profile> {
                                 new Text(
                                   'UID',
                                   style: TextStyle(
-                                      fontSize:
-                                          2.2 * SizeConfig.textMultiplier,
+                                      fontSize: 2.2 * SizeConfig.textMultiplier,
                                       fontWeight: FontWeight.bold),
                                 ),
                               ],
