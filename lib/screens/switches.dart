@@ -60,32 +60,32 @@ class _switchesState extends State<switches> {
                               PopupMenuItem(
                                 value: index,
                                 child: InkWell(
-                                      onTap: () {
-                                        print("rename");
-                                        setState(() {
-                                          edit = List.filled(5, false);
-                                          edit[index] = true;
-                                          focusnode[index] = true;
-                                        });
-                                        Navigator.pop(context);
-                                      },
-                                      child: Row(
-                                        children: <Widget>[
-                                          Icon(Icons.edit),
-                                          SizedBox(
-                                            width: 25,
-                                          ),
-                                          Text(
-                                            "Rename",
-                                            style: TextStyle(
-                                                fontFamily:
-                                                    "Amelia-Basic-Light",
-                                                fontSize: 16,
-                                                color: Color(0xff79848b)),
-                                          ),
-                                        ],
+                                  onTap: () {
+                                    print("rename");
+                                    setState(() {
+                                      edit = List.filled(5, false);
+                                      edit[index] = true;
+                                      focusnode[index] = true;
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                  child: Row(
+                                    children: <Widget>[
+                                      Icon(Icons.edit),
+                                      SizedBox(
+                                        width: 25,
                                       ),
-                                    ),),
+                                      Text(
+                                        "Rename",
+                                        style: TextStyle(
+                                            fontFamily: "Amelia-Basic-Light",
+                                            fontSize: 16,
+                                            color: Color(0xff79848b)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               PopupMenuItem(
                                 value: index,
                                 child: InkWell(
@@ -104,8 +104,7 @@ class _switchesState extends State<switches> {
                                       Text(
                                         "Add to Favourites",
                                         style: TextStyle(
-                                            fontFamily:
-                                                "Amelia-Basic-Light",
+                                            fontFamily: "Amelia-Basic-Light",
                                             fontSize: 16,
                                             color: Color(0xff79848b)),
                                       ),
@@ -548,6 +547,13 @@ class _switchesState extends State<switches> {
                                   if (id.text != null && id.text != "") {
                                     print("asdf");
                                     flag = id.text;
+                                    dbref
+                                        .child(FirebaseAuth
+                                            .instance.currentUser.uid)
+                                        .child("favourites")
+                                        .child(flag)
+                                        .child("val")
+                                        .set(0);
                                   } else {
                                     flag = dropdownfavouriteroom;
                                   }

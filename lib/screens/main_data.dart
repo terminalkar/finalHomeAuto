@@ -120,30 +120,35 @@ class fulldataofrooms {
     User user = FirebaseAuth.instance.currentUser;
     favouritecontentnamesmap.clear();
     path.clear();
-    for (final i in favouriteroomscontents.keys) {
-      Map m = favouriteroomscontents[i];
-      var dummy = [];
+    try {
+      for (final i in favouriteroomscontents.keys) {
+        Map m = favouriteroomscontents[i];
+        var dummy = [];
 
-      for (final j in m.keys) {
-        String s = m[j].toString();
-        var list = s.split(" ");
-        //Fluttertoast.showToast(msg: list.toString());
-        //logic
-        await dbref
-            .child(user.uid)
-            .child("rooms")
-            .child(list[0])
-            .child("circuit")
-            .child(list[1])
-            .child(list[2])
-            .once()
-            .then((value) {
-          Map map = value.value;
-          dummy.add(map["name"]);
-          path.addAll({map["name"]: j});
-        });
+        for (final j in m.keys) {
+          if (j.toString() == "val") continue;
+          String s = m[j].toString();
+          var list = s.split(" ");
+          //Fluttertoast.showToast(msg: list.toString());
+          //logic
+          await dbref
+              .child(user.uid)
+              .child("rooms")
+              .child(list[0])
+              .child("circuit")
+              .child(list[1])
+              .child(list[2])
+              .once()
+              .then((value) {
+            Map map = value.value;
+            dummy.add(map["name"]);
+            path.addAll({map["name"]: j});
+          });
+        }
+        favouritecontentnamesmap.addAll({i: dummy});
       }
-      favouritecontentnamesmap.addAll({i: dummy});
+    } catch (Ex) {
+      print("EXception in favourite content");
     }
   }
 }
