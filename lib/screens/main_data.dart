@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/fav.dart';
 
 class fulldataofrooms {
@@ -12,6 +13,8 @@ class fulldataofrooms {
   static var boardindex;
   static List<String> favroomsarray = [];
   static var favouriteroomscontents = Map();
+  static var favouritecontentnamesmap = Map();
+  static var path = Map();
 
   Future<void> fetchrooms() async {
     final dbref = FirebaseDatabase.instance.reference().child('Users');
@@ -101,12 +104,46 @@ class fulldataofrooms {
           print("fetchfavourites");
           print(i);
           favroomsarray.add(i);
-          favouriteroomscontents.addAll(id[i]);
+
+          favouriteroomscontents.addAll({i: id[i]});
           print(id[i]);
         }
+        Fluttertoast.showToast(msg: favouriteroomscontents.length.toString());
       } catch (ex) {
         print("Exception in fav maindata");
       }
     });
+  }
+
+  Future<void> fetchfavouritescontentdata() async {
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
+    favouritecontentnamesmap.clear();
+    path.clear();
+    for (final i in favouriteroomscontents.keys) {
+      Map m = favouriteroomscontents[i];
+      var dummy = [];
+
+      for (final j in m.keys) {
+        String s = m[j].toString();
+        var list = s.split(" ");
+        //Fluttertoast.showToast(msg: list.toString());
+        //logic
+        await dbref
+            .child(user.uid)
+            .child("rooms")
+            .child(list[0])
+            .child("circuit")
+            .child(list[1])
+            .child(list[2])
+            .once()
+            .then((value) {
+          Map map = value.value;
+          dummy.add(map["name"]);
+          path.addAll({map["name"]: j});
+        });
+      }
+      favouritecontentnamesmap.addAll({i: dummy});
+    }
   }
 }
