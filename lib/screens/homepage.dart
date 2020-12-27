@@ -51,6 +51,7 @@ class _HomepageState extends State<Homepage>
     try {
       fulldataofrooms d = new fulldataofrooms();
       await d.fetchrooms();
+
       fulldataofrooms.roomidarray.sort();
     } catch (Ex) {
       print("exception honme roomdata");
@@ -181,6 +182,7 @@ class _HomepageState extends State<Homepage>
                         onTap: () async {
                           fulldataofrooms f1 = new fulldataofrooms();
                           await f1.fetchfavourites();
+                          await f1.fetchfavouritescontentdata();
                           Navigator.push(
                               context,
                               MaterialPageRoute(

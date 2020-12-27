@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:home_automation_app/screens/main_data.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -10,10 +13,18 @@ class favourite extends StatefulWidget {
 
 class _favouriteState extends State<favourite> {
   var _tapPosition;
+  int globalindex;
+  String globalvalue;
 
-  List<PopupMenuItem> fun(BuildContext context) {
+  List<PopupMenuItem> fun(BuildContext context, String name) {
     try {
-      List<PopupMenuItem> t = fulldataofrooms.favroomsarray
+      Fluttertoast.showToast(msg: name);
+      var elements = fulldataofrooms.favouritecontentnamesmap[name];
+      var sList = List<String>.from(elements);
+      // var l = elements.Cast<String>().ToList();
+      Fluttertoast.showToast(msg: sList.runtimeType.toString());
+
+      List<PopupMenuItem> t = sList
           .map((String e) => PopupMenuItem<String>(
                 value: e,
                 child: Text(e),
@@ -21,7 +32,9 @@ class _favouriteState extends State<favourite> {
           .toList();
       // print(fulldataofrooms.favroomsarray.length);
       return t;
-    } catch (ex) {}
+    } catch (ex) {
+      Fluttertoast.showToast(msg: "null");
+    }
   }
 
   @override
@@ -33,7 +46,7 @@ class _favouriteState extends State<favourite> {
         mainAxisSpacing: 10.0,
         shrinkWrap: true,
         children: List.generate(
-          4,
+          fulldataofrooms.favroomsarray.length - 1,
           (index) {
             return Padding(
               padding: const EdgeInsets.all(10.0),
@@ -48,7 +61,27 @@ class _favouriteState extends State<favourite> {
                 },
 
                 //switches//////////////////////////////////////////////////////////////////////////////////
-                onTap: () {},
+
+                onTap: () async {
+                  final dbref =
+                      FirebaseDatabase.instance.reference().child('Users');
+                  User user = FirebaseAuth.instance.currentUser;
+                  Map m = fulldataofrooms.favouriteroomscontents[
+                      fulldataofrooms.favroomsarray[index + 1]];
+                  for (final i in m.values) {
+                    String s = m[i].toString();
+                    var list = s.split(" ");
+                    await dbref
+                        .child(user.uid)
+                        .child("rooms")
+                        .child(list[0])
+                        .child("circuit")
+                        .child(list[1])
+                        .child(list[2])
+                        .child("val")
+                        .set(1);
+                  }
+                },
                 child: Container(
                   child: Column(
                     children: [
@@ -62,10 +95,13 @@ class _favouriteState extends State<favourite> {
                                 height: 5 * SizeConfig.heightMultiplier,
                                 width: 30 * SizeConfig.widthMultiplier,
                                 child: IconButton(
-                                  icon: new Icon(
-                                    Icons.lightbulb_outline,
-                                    size: 15 * SizeConfig.widthMultiplier,
-                                    color: Color(0xff79848b),
+                                  icon: Column(
+                                    //add icon here///////////
+
+                                    children: [
+                                      Text(fulldataofrooms
+                                          .favroomsarray[index + 1])
+                                    ],
                                   ),
                                   onPressed: () {
                                     setState(() {});
@@ -77,11 +113,11 @@ class _favouriteState extends State<favourite> {
                                   borderRadius:
                                       new BorderRadius.circular(10.0)),
                               onSelected: (val) {
-                                print(val);
-                                confirm();
+                                confirm(index, val, context);
                               },
-                              itemBuilder: (BuildContext context) =>
-                                  fun(context),
+                              itemBuilder: (BuildContext context) => fun(
+                                  context,
+                                  fulldataofrooms.favroomsarray[index + 1]),
                             ),
                           ],
                         ),
@@ -114,7 +150,7 @@ class _favouriteState extends State<favourite> {
     );
   }
 
-  Future<void> confirm() async {
+  Future<void> confirm(int index, String value, context) async {
     await Alert(
       context: context,
       type: AlertType.warning,
@@ -140,7 +176,23 @@ class _favouriteState extends State<favourite> {
                 color: Colors.white, fontSize: 2.5 * SizeConfig.textMultiplier),
           ),
           // ignore: missing_return
-          onPressed: () {},
+          onPressed: () async {
+            final dbref = FirebaseDatabase.instance.reference().child('Users');
+            User user = FirebaseAuth.instance.currentUser;
+
+            dbref
+                .child(user.uid)
+                .child("favourites")
+                .child(fulldataofrooms.favroomsarray[index + 1])
+                .child(fulldataofrooms.path[value])
+                .remove();
+            fulldataofrooms f = new fulldataofrooms();
+            await f.fetchfavourites();
+            await f.fetchfavouritescontentdata();
+            Navigator.pop(context);
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => favourite()));
+          },
           color: Color.fromRGBO(0, 179, 134, 1.0),
         ),
         DialogButton(
