@@ -12,7 +12,6 @@ class fulldataofrooms {
   static var boardindex;
   static List<String> favroomsarray = [];
   static var favouriteroomscontents = Map();
-
   Future<void> fetchrooms() async {
     final dbref = FirebaseDatabase.instance.reference().child('Users');
 
@@ -108,5 +107,9 @@ class fulldataofrooms {
         print("Exception in fav maindata");
       }
     });
+  }
+
+  Future<void> displayfav() async {
+    for (int i = 1; i < favroomsarray.length; i++) {}
   }
 }
