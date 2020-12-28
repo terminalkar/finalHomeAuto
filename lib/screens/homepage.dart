@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:home_automation_app/screens/profile_screen.dart';
 import 'circuitboard.dart';
+import 'fav.dart';
 import 'main_data.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 ////import 'package:home_automation/Login_page.dart';
@@ -19,7 +21,6 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage>
     with SingleTickerProviderStateMixin {
-  List<String> _list = [];
   var _tapPosition;
   var assetImageString;
   var assetImage;
@@ -50,6 +51,7 @@ class _HomepageState extends State<Homepage>
     try {
       fulldataofrooms d = new fulldataofrooms();
       await d.fetchrooms();
+
       fulldataofrooms.roomidarray.sort();
     } catch (Ex) {
       print("exception honme roomdata");
@@ -143,7 +145,10 @@ class _HomepageState extends State<Homepage>
                           color: Color(0xff79848b),
                         ),
                         onTap: () {
-                          //Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => profile()));
                         }),
                   ),
                   //new Divider(),
@@ -174,7 +179,14 @@ class _HomepageState extends State<Homepage>
                           Icons.arrow_right,
                           color: Color(0xff79848b),
                         ),
-                        onTap: () {
+                        onTap: () async {
+                          fulldataofrooms f1 = new fulldataofrooms();
+                          await f1.fetchfavourites();
+                          await f1.fetchfavouritescontentdata();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => favourite()));
                           //Navigator.pop(context);
                         }),
                   ),
@@ -527,8 +539,11 @@ _addroom(BuildContext context) async {
                           ),
                         ),
                         onPressed: pressed
-                            ? null
+                            ? () => print("df")
                             : () async {
+                                setState(() {
+                                  pressed = true;
+                                });
                                 if (room != "Select" && name.text != "") {
                                   String noofrooms;
                                   int max = 0;
@@ -545,8 +560,8 @@ _addroom(BuildContext context) async {
                                     noofrooms = "0" + max.toString();
                                   else
                                     noofrooms = max.toString();
-                                  
-                                  dbref
+
+                                  await dbref
                                       .child(
                                           FirebaseAuth.instance.currentUser.uid)
                                       .child("rooms")
@@ -568,6 +583,9 @@ _addroom(BuildContext context) async {
                                   Fluttertoast.showToast(
                                       msg: "Please select the type of room");
                                 }
+                                setState(() {
+                                  pressed = false;
+                                });
                               }),
                   ),
                   Container(

@@ -77,8 +77,8 @@ class _CircuittState extends State<Circuit> {
                               ? 10 * SizeConfig.heightMultiplier
                               : 8.8 * SizeConfig.heightMultiplier,
                           child: Container(
-                            height: 300.00,
-                            width: 400.00,
+                            height: 38 * SizeConfig.heightMultiplier,
+                            width: 95 * SizeConfig.widthMultiplier,
                             margin: EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: Color(0xffffffff),
@@ -92,17 +92,14 @@ class _CircuittState extends State<Circuit> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             child: Card(
-                              //elevation: 20,
-                              // shape: new RoundedRectangleBorder(
-                              //     borderRadius:
-                              //         new BorderRadius.circular(15.0)),
                               child: ListTile(
-                                onLongPress: () async {},
                                 onTap: () async {
                                   fulldataofrooms.switches =
                                       fulldataofrooms.boardid[
                                           fulldataofrooms.boardidarray[index]];
                                   fulldataofrooms.boardindex = index;
+                                  fulldataofrooms f1 = new fulldataofrooms();
+                                  f1.fetchfavourites();
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -110,12 +107,6 @@ class _CircuittState extends State<Circuit> {
                                       ));
                                 },
                                 isThreeLine: false,
-                                // leading: Text("hello",
-                                //     style: TextStyle(
-                                //       fontFamily: "Amelia-Basic-Light",
-                                //       color: Color(0xff79848b),
-                                //       fontSize: 2.2 * SizeConfig.textMultiplier,
-                                //     )),
                                 leading: Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Icon(Icons.bookmark_border_outlined),
@@ -174,13 +165,13 @@ class _CircuittState extends State<Circuit> {
                     'Details',
                     style: TextStyle(
                       fontFamily: "Amelia-Basic-Light",
-                      fontSize: 20,
+                      fontSize: 3 * SizeConfig.textMultiplier,
                       color: Color(0xff79848b),
                     ),
                   ),
                   content: Container(
-                    height: 200,
-                    width: 400,
+                    height: 25 * SizeConfig.heightMultiplier,
+                    width: 95 * SizeConfig.widthMultiplier,
                     child: Column(
                       children: <Widget>[
                         Form(
@@ -192,7 +183,7 @@ class _CircuittState extends State<Circuit> {
                             focusNode: focusNode,
                             style: TextStyle(
                               fontFamily: "Amelia-Basic-Light",
-                              fontSize: 16,
+                              fontSize: 2.4 * SizeConfig.textMultiplier,
                               color: Color(0xff79848b),
                             ),
                             decoration: new InputDecoration(
@@ -220,8 +211,8 @@ class _CircuittState extends State<Circuit> {
                   ),
                   actions: <Widget>[
                     Container(
-                      height: 40.00,
-                      width: 100.00,
+                      height: 5 * SizeConfig.heightMultiplier,
+                      width: 25 * SizeConfig.widthMultiplier,
                       decoration: BoxDecoration(
                         color: Color(0xffffffff),
                         boxShadow: [
@@ -238,13 +229,17 @@ class _CircuittState extends State<Circuit> {
                             'Submit',
                             style: TextStyle(
                               fontFamily: "Amelia-Basic-Light",
-                              fontSize: 16,
+                              fontSize: 2.5 * SizeConfig.textMultiplier,
                               color: Color(0xff79848b),
                             ),
                           ),
                           onPressed: pressed
                               ? null
                               : () async {
+                                  setState(() {
+                                    pressed = true;
+                                  });
+
                                   if (id.text != "") {
                                     String noofboards;
                                     int max = 0;
@@ -263,6 +258,28 @@ class _CircuittState extends State<Circuit> {
                                       noofboards = "0" + max.toString();
                                     else
                                       noofboards = max.toString();
+                                    //
+                                    String room = fulldataofrooms
+                                        .roomidarray[fulldataofrooms.index];
+                                    String board =
+                                        "board" + noofboards.toString();
+
+                                    for (int i = 1; i <= 5; i++) {
+                                      dbref
+                                          .child(FirebaseAuth
+                                              .instance.currentUser.uid)
+                                          .child("index")
+                                          .child(
+                                              room + board + "a" + i.toString())
+                                          .set(room +
+                                              " " +
+                                              board +
+                                              " " +
+                                              "a" +
+                                              i.toString());
+                                    }
+
+                                    //
 
                                     dbref
                                         .child(FirebaseAuth
@@ -273,28 +290,35 @@ class _CircuittState extends State<Circuit> {
                                         .child("circuit")
                                         .child("board" + noofboards.toString())
                                         .set({
-                                      "bid": id.text,
                                       "a1": {
-                                        "val":0,
-                                        "name":"switch1"
+                                        "name": room + board + "a1",
+                                        "val": 0,
+                                        "icon": "null"
                                       },
-                                      "a2":  {
-                                        "val":0,
-                                        "name":"switch2"
+                                      "a2": {
+                                        "name": room + board + "a2",
+                                        "val": 0,
+                                        "icon": "null"
                                       },
                                       "a3": {
-                                        "val":0,
-                                        "name":"switch3"
+                                        "name": room + board + "a3",
+                                        "val": 0,
+                                        "icon": "null"
                                       },
                                       "a4": {
-                                        "val":0,
-                                        "name":"switch4"
+                                        "name": room + board + "a4",
+                                        "val": 0,
+                                        "icon": "null"
                                       },
-                                      "a5":  {
-                                        "val":0,
-                                        "name":"switch5"
+                                      "a5": {
+                                        "name": room + board + "a5",
+                                        "val": 0,
+                                        "icon": "null"
                                       },
                                     });
+
+                                    fulldataofrooms f1 = new fulldataofrooms();
+                                    f1.fetchindex();
 
                                     setState(() async {
                                       Navigator.pop(context);
@@ -307,11 +331,14 @@ class _CircuittState extends State<Circuit> {
                                     Fluttertoast.showToast(
                                         msg: "Please Enter valid Id");
                                   }
+                                  setState(() {
+                                    pressed = false;
+                                  });
                                 }),
                     ),
                     Container(
-                      height: 40.00,
-                      width: 100.00,
+                      height: 5 * SizeConfig.heightMultiplier,
+                      width: 25 * SizeConfig.widthMultiplier,
                       margin: EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Color(0xffffffff),
@@ -325,20 +352,17 @@ class _CircuittState extends State<Circuit> {
                         borderRadius: BorderRadius.circular(13.00),
                       ),
                       child: new FlatButton(
-                        child: new Text(
-                          'Cancel',
-                          style: TextStyle(
-                            fontFamily: "Amelia-Basic-Light",
-                            fontSize: 16,
-                            color: Color(0xff79848b),
+                          child: new Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontFamily: "Amelia-Basic-Light",
+                              fontSize: 16,
+                              color: Color(0xff79848b),
+                            ),
                           ),
-                        ),
-                        onPressed: pressed == false
-                            ? () async {
-                                Navigator.of(context).pop();
-                              }
-                            : null,
-                      ),
+                          onPressed: () async {
+                            Navigator.of(context).pop();
+                          }),
                     )
                   ],
                 ),

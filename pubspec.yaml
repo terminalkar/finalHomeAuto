@@ -25,7 +25,8 @@ dependencies:
     sdk: flutter
   firebase_core: "^0.5.3"
   firebase_auth: "^0.18.4+1"
-  
+  rflutter_alert: ^1.1.0
+
   flip_card: ^0.4.4
   cloud_functions: "^0.7.2"
   firebase_database: "^4.4.0"
