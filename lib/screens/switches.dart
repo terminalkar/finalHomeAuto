@@ -99,8 +99,9 @@ class _switchesState extends State<switches> {
                             width: 30 * SizeConfig.widthMultiplier,
                             margin: EdgeInsets.all(10),
                             child: LiteRollingSwitch(
-                              value: fulldataofrooms.switches[
-                                      "a" + (index + 1).toString()]["val"]==1
+                              value: fulldataofrooms.switches["a" +
+                                          (index + 1).toString()]["val"] ==
+                                      1
                                   ? true
                                   : false,
                               textOn: 'Active',
@@ -141,9 +142,18 @@ class _switchesState extends State<switches> {
                           child: Container(
                             width: 15 * SizeConfig.heightMultiplier,
                             child: TextField(
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                              ),
                               focusNode: new FocusNode(),
-                              controller:TextEditingController()..text = fulldataofrooms
-                                .switches["a" + (index + 1).toString()]["name"],
+                              controller: TextEditingController()
+                                ..text = fulldataofrooms
+                                        .switches["a" + (index + 1).toString()]
+                                    ["name"],
                               expands: false,
                               enabled: edit[index],
                               textInputAction: TextInputAction.go,
