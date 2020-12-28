@@ -237,24 +237,61 @@ class _switchesState extends State<switches> {
                                       fontSize: 16,
                                       color: Color(0xff79848b),
                                     ),
-                                    onSubmitted: (name) {
+                                    onSubmitted: (name) async {
                                       setState(() {
-                                        fulldataofrooms.switches[
-                                                "a" + (index + 1).toString()]
-                                            ["name"] = name;
-                                        dbref
-                                            .child(user.uid)
-                                            .child("rooms")
-                                            .child(fulldataofrooms.roomidarray[
-                                                fulldataofrooms.index])
-                                            .child("circuit")
-                                            .child(fulldataofrooms.boardidarray[
-                                                fulldataofrooms.boardindex])
-                                            .child("a" + (index + 1).toString())
-                                            .child("name")
-                                            .set(name);
-                                        edit = List.filled(5, false);
-                                        focusnode = List.filled(5, false);
+                                        if (fulldataofrooms.indexlist
+                                                .contains(name) ==
+                                            true) {
+                                          Fluttertoast.showToast(
+                                              msg: "Please use different Name");
+                                        } else {
+                                          dbref
+                                              .child(user.uid)
+                                              .child("index")
+                                              .child(fulldataofrooms.switches[
+                                                  "a" +
+                                                      (index + 1)
+                                                          .toString()]["name"])
+                                              .remove();
+                                          fulldataofrooms.indexlist.remove(
+                                              fulldataofrooms.switches["a" +
+                                                      (index + 1).toString()]
+                                                  ["name"]);
+                                          fulldataofrooms.indexlist.add(name);
+                                          fulldataofrooms.switches[
+                                                  "a" + (index + 1).toString()]
+                                              ["name"] = name;
+                                          dbref
+                                              .child(user.uid)
+                                              .child("rooms")
+                                              .child(
+                                                  fulldataofrooms.roomidarray[
+                                                      fulldataofrooms.index])
+                                              .child("circuit")
+                                              .child(fulldataofrooms
+                                                      .boardidarray[
+                                                  fulldataofrooms.boardindex])
+                                              .child(
+                                                  "a" + (index + 1).toString())
+                                              .child("name")
+                                              .set(name);
+
+                                          dbref
+                                              .child(user.uid)
+                                              .child("index")
+                                              .child(name)
+                                              .set(fulldataofrooms.roomidarray[
+                                                      fulldataofrooms.index] +
+                                                  " " +
+                                                  fulldataofrooms.boardidarray[
+                                                      fulldataofrooms
+                                                          .boardindex] +
+                                                  " " +
+                                                  "a" +
+                                                  (index + 1).toString());
+                                          edit = List.filled(5, false);
+                                          focusnode = List.filled(5, false);
+                                        }
                                       });
                                     },
                                   ),

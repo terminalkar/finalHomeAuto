@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,7 +12,7 @@ class fulldataofrooms {
   static var roomidarray = [], boardidarray = [], array = Map();
   static int index;
   static var switches = Map();
-  static var boardindex;
+  static var boardindex, indexlist = [];
   static List<String> favroomsarray = [];
   static var favouriteroomscontents = Map();
   static var favouritecontentnamesmap = Map();
@@ -150,5 +152,17 @@ class fulldataofrooms {
     } catch (Ex) {
       print("EXception in favourite content");
     }
+  }
+
+  Future<void> fetchindex() async {
+    Map m1 = new Map();
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
+    await dbref.child(user.uid).child("index").once().then((snap) {
+      m1 = snap.value;
+      for (final k in m1.keys) {
+        indexlist.add(k);
+      }
+    });
   }
 }
