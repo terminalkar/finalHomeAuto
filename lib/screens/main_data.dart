@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,7 +12,7 @@ class fulldataofrooms {
   static var roomidarray = [], boardidarray = [], array = Map();
   static int index;
   static var switches = Map();
-  static var boardindex;
+  static var boardindex, indexlist = [];
   static List<String> favroomsarray = [];
   static var favouriteroomscontents = Map();
   static var favouritecontentnamesmap = Map();
@@ -152,7 +154,21 @@ class fulldataofrooms {
     }
   }
 
-  List<String> solvequery(String s) {
+  Future<void> fetchindex() async {
+    Map m1 = new Map();
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
+    await dbref.child(user.uid).child("index").once().then((snap) {
+      m1 = snap.value;
+      for (final k in m1.keys) {
+        indexlist.add(k);
+      }
+    });
+  }
+
+  Future<List<String>> solvequery(String s) async {
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
     //String s = "Switch on tubelight 1";
     List<String> stopwords = ["the", "a", "an", "turn", "switch", "on", "off"];
     List<String> l = s.split(" ");
@@ -183,7 +199,27 @@ class fulldataofrooms {
       }
     }
     // return [flag.toString(), key];
-    try {} catch (E) {
+    try {
+      String indexpath;
+      if (indexlist.contains(key) == true) {
+        await dbref
+            .child(user.uid)
+            .child("index")
+            .child(key)
+            .once()
+            .then((snap) => indexpath = snap.value);
+        var list = indexpath.split(" ");
+        await dbref
+            .child(user.uid)
+            .child("rooms")
+            .child(list[0])
+            .child("circuit")
+            .child(list[1])
+            .child(list[2])
+            .child("val")
+            .set(flag);
+      }
+    } catch (E) {
       print("caught in sppech func");
     }
   }
