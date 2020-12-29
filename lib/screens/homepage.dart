@@ -1,3 +1,4 @@
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_automation_app/screens/profile_screen.dart';
@@ -5,7 +6,7 @@ import 'circuitboard.dart';
 import 'fav.dart';
 import 'main_data.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-////import 'package:home_automation/Login_page.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 //import 'package:home_automation/responsive/Screesize.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
@@ -27,7 +28,10 @@ class _HomepageState extends State<Homepage>
   var image1;
   var _isRoomfetched = true;
   var image = new Map();
-
+  stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _text = 'Press the button and start speaking';
+  double _confidence = 1.0;
   final dbref = FirebaseDatabase.instance.reference().child('Users');
   User user = FirebaseAuth.instance.currentUser;
   @override
@@ -42,6 +46,7 @@ class _HomepageState extends State<Homepage>
     });
     super.initState();
     _roomData();
+    _speech = stt.SpeechToText();
   }
 
   _roomData() async {
@@ -62,17 +67,78 @@ class _HomepageState extends State<Homepage>
     });
   }
 
+  void _listen() async {
+    // _speech.listen(
+    //     onResult: (val) => setState(() {
+    //           _text = val.recognizedWords;
+    //           if (val.hasConfidenceRating && val.confidence > 0) {
+    //             _confidence = val.confidence;
+    //           }
+    //         }),
+    //     listenFor: Duration(seconds: 15),
+    //     pauseFor: Duration(seconds: 15),
+    //     partialResults: false,
+    //     // onSoundLevelChange: soundLevelListener,
+    //     cancelOnError: true,
+    //     listenMode: stt.ListenMode.confirmation);
+    // setState(() {});
+    if (!_speech.isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) => print('onStatus: $val'),
+        onError: (val) => print('onError: $val'),
+      );
+
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(
+            onResult: (val) => setState(() {
+                  _text = val.recognizedWords;
+                  if (val.hasConfidenceRating && val.confidence > 0) {
+                    _confidence = val.confidence;
+                  }
+                  fulldataofrooms f = new fulldataofrooms();
+                  print(f.solvequery(_text));
+                }),
+            listenFor: Duration(seconds: 10),
+            pauseFor: Duration(seconds: 10),
+            partialResults: false,
+            cancelOnError: true,
+            listenMode: stt.ListenMode.confirmation);
+      } else {
+        setState(() => _isListening = false);
+        _speech.stop();
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
+     
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text(
-            'Home',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
+            title: Text(
+              'Home',
+              style: TextStyle(color: Colors.white),
+            ),
+            actions: [
+              AvatarGlow(
+                  animate: _speech.isListening,
+                  glowColor: Theme.of(context).primaryColor,
+                  endRadius: 75.0,
+                  duration: const Duration(milliseconds: 2000),
+                  repeatPauseDuration: const Duration(milliseconds: 100),
+                  repeat: true,
+                  child: IconButton(
+                    icon:
+                        Icon(_speech.isListening ? Icons.mic : Icons.mic_none),
+                    onPressed: _listen,
+                  ))
+            ]),
 
         ////Drawer
         drawer: Theme(
@@ -243,146 +309,155 @@ class _HomepageState extends State<Homepage>
                         fontSize: 16,
                         color: Color(0xff79848b)),
                   ))
-                : GridView.count(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10.0,
-                    mainAxisSpacing: 10.0,
-                    shrinkWrap: true,
-                    children: List.generate(
-                      fulldataofrooms.roomidarray.length,
-                      (index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: InkWell(
-                            onTapDown: (TapDownDetails details) {
-                              _tapPosition = details.globalPosition;
-                            },
-                            //delete
-                            onLongPress: () {
-                              final RenderBox overlay = Overlay.of(context)
-                                  .context
-                                  .findRenderObject();
-                              showMenu(
-                                shape: new RoundedRectangleBorder(
-                                    borderRadius:
-                                        new BorderRadius.circular(10.0)),
-                                items: <PopupMenuEntry>[
-                                  PopupMenuItem(
-                                    value: index,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        try {
-                                          dbref
-                                              .child(user.uid)
-                                              .child("rooms")
-                                              .child(fulldataofrooms
-                                                  .roomidarray[index])
-                                              .remove();
-                                          setState(() {
-                                            fulldataofrooms.roomidmap.remove(
-                                                fulldataofrooms
-                                                    .roomidarray[index]);
-                                            fulldataofrooms.roomidarray.remove(
-                                                fulldataofrooms
-                                                    .roomidarray[index]);
-                                          });
-                                        } catch (ex) {
-                                          print("pop");
-                                        }
-                                        Navigator.pop(context);
-                                      },
-                                      child: Row(
-                                        children: <Widget>[
-                                          Icon(Icons.delete),
-                                          SizedBox(
-                                            width: 25,
+                : Column(
+                    children: [
+                      GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0,
+                        shrinkWrap: true,
+                        children: List.generate(
+                          fulldataofrooms.roomidarray.length,
+                          (index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: InkWell(
+                                onTapDown: (TapDownDetails details) {
+                                  _tapPosition = details.globalPosition;
+                                },
+                                //delete
+                                onLongPress: () {
+                                  final RenderBox overlay = Overlay.of(context)
+                                      .context
+                                      .findRenderObject();
+                                  showMenu(
+                                    shape: new RoundedRectangleBorder(
+                                        borderRadius:
+                                            new BorderRadius.circular(10.0)),
+                                    items: <PopupMenuEntry>[
+                                      PopupMenuItem(
+                                        value: index,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            try {
+                                              dbref
+                                                  .child(user.uid)
+                                                  .child("rooms")
+                                                  .child(fulldataofrooms
+                                                      .roomidarray[index])
+                                                  .remove();
+                                              setState(() {
+                                                fulldataofrooms.roomidmap
+                                                    .remove(fulldataofrooms
+                                                        .roomidarray[index]);
+                                                fulldataofrooms.roomidarray
+                                                    .remove(fulldataofrooms
+                                                        .roomidarray[index]);
+                                              });
+                                            } catch (ex) {
+                                              print("pop");
+                                            }
+                                            Navigator.pop(context);
+                                          },
+                                          child: Row(
+                                            children: <Widget>[
+                                              Icon(Icons.delete),
+                                              SizedBox(
+                                                width: 25,
+                                              ),
+                                              Text(
+                                                "Delete slot",
+                                                style: TextStyle(
+                                                    fontFamily:
+                                                        "Amelia-Basic-Light",
+                                                    fontSize: 16,
+                                                    color: Color(0xff79848b)),
+                                              ),
+                                            ],
                                           ),
-                                          Text(
-                                            "Delete slot",
-                                            style: TextStyle(
-                                                fontFamily:
-                                                    "Amelia-Basic-Light",
-                                                fontSize: 16,
-                                                color: Color(0xff79848b)),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                ],
-                                context: context,
-                                position: RelativeRect.fromRect(
-                                    _tapPosition & const Size(40, 40),
-                                    Offset.zero & overlay.size),
-                              );
-                              //
-                            },
+                                        ),
+                                      )
+                                    ],
+                                    context: context,
+                                    position: RelativeRect.fromRect(
+                                        _tapPosition & const Size(40, 40),
+                                        Offset.zero & overlay.size),
+                                  );
+                                  //
+                                },
 
-                            //Rooms//////////////////////////////////////////////////////////////////////////////////
-                            onTap: () {
-                              setState(() {
-                                fulldataofrooms.index = index;
-                                fulldataofrooms.boardid = fulldataofrooms
-                                    .id[fulldataofrooms.roomidarray[index]];
-                                fulldataofrooms.boardidarray = fulldataofrooms
-                                    .array[fulldataofrooms.roomidarray[index]];
-                              });
-                              if (fulldataofrooms.boardidarray == null ||
-                                  fulldataofrooms.boardid == null) {
-                                fulldataofrooms.boardidarray = [];
-                                fulldataofrooms.boardid = new Map();
-                              } else {
-                                fulldataofrooms.boardidarray.sort();
-                              }
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Circuit()));
-                            },
-                            child: Container(
-                              child: Column(
-                                children: [
-                                  Center(
-                                    child: Container(
-                                      height: 100,
-                                      width: 100,
-                                      margin: EdgeInsets.all(10),
-                                      child: Image(
-                                        image: AssetImage(image[fulldataofrooms
-                                                .roomidmap[
-                                            fulldataofrooms
-                                                .roomidarray[index]]["type"]]),
+                                //Rooms//////////////////////////////////////////////////////////////////////////////////
+                                onTap: () {
+                                  setState(() {
+                                    fulldataofrooms.index = index;
+                                    fulldataofrooms.boardid = fulldataofrooms
+                                        .id[fulldataofrooms.roomidarray[index]];
+                                    fulldataofrooms.boardidarray =
+                                        fulldataofrooms.array[
+                                            fulldataofrooms.roomidarray[index]];
+                                  });
+                                  if (fulldataofrooms.boardidarray == null ||
+                                      fulldataofrooms.boardid == null) {
+                                    fulldataofrooms.boardidarray = [];
+                                    fulldataofrooms.boardid = new Map();
+                                  } else {
+                                    fulldataofrooms.boardidarray.sort();
+                                  }
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Circuit()));
+                                },
+                                child: Container(
+                                  child: Column(
+                                    children: [
+                                      Center(
+                                        child: Container(
+                                          height: 100,
+                                          width: 100,
+                                          margin: EdgeInsets.all(10),
+                                          child: Image(
+                                            image: AssetImage(image[
+                                                fulldataofrooms.roomidmap[
+                                                        fulldataofrooms
+                                                            .roomidarray[index]]
+                                                    ["type"]]),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      Text(
+                                          fulldataofrooms.roomidmap[
+                                              fulldataofrooms
+                                                  .roomidarray[index]]["name"],
+                                          style: TextStyle(
+                                            fontFamily: "Amelia-Basic-Light",
+                                            fontSize: 16,
+                                            color: Color(0xff79848b),
+                                          )),
+                                    ],
                                   ),
-                                  Text(
-                                      fulldataofrooms.roomidmap[fulldataofrooms
-                                          .roomidarray[index]]["name"],
-                                      style: TextStyle(
-                                        fontFamily: "Amelia-Basic-Light",
-                                        fontSize: 16,
-                                        color: Color(0xff79848b),
-                                      )),
-                                ],
-                              ),
-                              height: 147.00,
-                              width: 194.00,
-                              decoration: BoxDecoration(
-                                color: Color(0xffffffff),
-                                boxShadow: [
-                                  BoxShadow(
-                                    offset: Offset(0.00, 5.00),
-                                    color: Color(0xff0792ef).withOpacity(0.60),
-                                    blurRadius: 18,
+                                  height: 147.00,
+                                  width: 194.00,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffffffff),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        offset: Offset(0.00, 5.00),
+                                        color:
+                                            Color(0xff0792ef).withOpacity(0.60),
+                                        blurRadius: 18,
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
-                                ],
-                                borderRadius: BorderRadius.circular(8.0),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                            );
+                          },
+                        ),
+                      ),
+                      Text(_text)
+                    ],
                   ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.blue,

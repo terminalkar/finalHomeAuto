@@ -151,4 +151,40 @@ class fulldataofrooms {
       print("EXception in favourite content");
     }
   }
+
+  List<String> solvequery(String s) {
+    //String s = "Switch on tubelight 1";
+    List<String> stopwords = ["the", "a", "an", "turn", "switch", "on", "off"];
+    List<String> l = s.split(" ");
+    String key = "";
+    int flag = -1;
+    List<String> ans = new List<String>();
+    for (int i = 0; i < (l.length); i++) {
+      // if (isNumeric(l[i])) {
+      //   ans.add( NumberToWord().convert('en-in', int.parse(l[i])).toLowerCase());
+      // }
+
+      l[i] = l[i].toLowerCase();
+
+      if (flag == -1) {
+        if (l[i] == "switch" || l[i] == "turn") {
+          if (l[i + 1].toLowerCase() == "on") {
+            flag = 1;
+          } else if (l[i + 1].toLowerCase() == "off") {
+            flag = 0;
+          }
+        }
+      } else {
+        //remove stop words
+        if (stopwords.contains(l[i])) {
+        } else {
+          key += l[i];
+        }
+      }
+    }
+    // return [flag.toString(), key];
+    try {} catch (E) {
+      print("caught in sppech func");
+    }
+  }
 }
