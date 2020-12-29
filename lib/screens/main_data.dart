@@ -184,9 +184,9 @@ class fulldataofrooms {
 
       if (flag == -1) {
         if (l[i] == "switch" || l[i] == "turn") {
-          if (l[i + 1].toLowerCase() == "on") {
+          if (l[i + 1].toLowerCase() == "on" || l[l.length-1]=="on") {
             flag = 1;
-          } else if (l[i + 1].toLowerCase() == "off") {
+          } else if (l[i + 1].toLowerCase() == "off" || l[l.length-1]=="off" || l[l.length-1]=="of") {
             flag = 0;
           }
         }

@@ -68,28 +68,20 @@ class _HomepageState extends State<Homepage>
   }
 
   void _listen() async {
-    // _speech.listen(
-    //     onResult: (val) => setState(() {
-    //           _text = val.recognizedWords;
-    //           if (val.hasConfidenceRating && val.confidence > 0) {
-    //             _confidence = val.confidence;
-    //           }
-    //         }),
-    //     listenFor: Duration(seconds: 15),
-    //     pauseFor: Duration(seconds: 15),
-    //     partialResults: false,
-    //     // onSoundLevelChange: soundLevelListener,
-    //     cancelOnError: true,
-    //     listenMode: stt.ListenMode.confirmation);
-    // setState(() {});
     if (!_speech.isListening) {
       bool available = await _speech.initialize(
-        onStatus: (val) => print('onStatus: $val'),
+        onStatus: (val) {
+          print('onStatus: $val');
+
+          if (val == "listening") {
+            setState(() => _isListening = true);
+          }else{
+             setState(() => _isListening = false);
+          }
+        },
         onError: (val) => print('onError: $val'),
       );
-
       if (available) {
-        setState(() => _isListening = true);
         _speech.listen(
             onResult: (val) => setState(() {
                   _text = val.recognizedWords;
@@ -100,18 +92,19 @@ class _HomepageState extends State<Homepage>
                   print(f.solvequery(_text));
                 }),
             listenFor: Duration(seconds: 10),
-            pauseFor: Duration(seconds: 10),
             partialResults: false,
             cancelOnError: true,
             listenMode: stt.ListenMode.confirmation);
       } else {
         setState(() => _isListening = false);
         _speech.stop();
+        print(_isListening);
       }
     } else {
       setState(() => _isListening = false);
       _speech.stop();
-     
+      print("iiiin");
+      print(_isListening);
     }
   }
 
@@ -127,7 +120,7 @@ class _HomepageState extends State<Homepage>
             ),
             actions: [
               AvatarGlow(
-                  animate: _speech.isListening,
+                  animate: _isListening,
                   glowColor: Theme.of(context).primaryColor,
                   endRadius: 75.0,
                   duration: const Duration(milliseconds: 2000),
