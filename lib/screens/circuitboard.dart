@@ -258,6 +258,28 @@ class _CircuittState extends State<Circuit> {
                                       noofboards = "0" + max.toString();
                                     else
                                       noofboards = max.toString();
+                                    //
+                                    String room = fulldataofrooms
+                                        .roomidarray[fulldataofrooms.index];
+                                    String board =
+                                        "board" + noofboards.toString();
+
+                                    for (int i = 1; i <= 5; i++) {
+                                      dbref
+                                          .child(FirebaseAuth
+                                              .instance.currentUser.uid)
+                                          .child("index")
+                                          .child(
+                                              room + board + "a" + i.toString())
+                                          .set(room +
+                                              " " +
+                                              board +
+                                              " " +
+                                              "a" +
+                                              i.toString());
+                                    }
+
+                                    //
 
                                     dbref
                                         .child(FirebaseAuth
@@ -268,13 +290,30 @@ class _CircuittState extends State<Circuit> {
                                         .child("circuit")
                                         .child("board" + noofboards.toString())
                                         .set({
-                                      "bid": id.text,
-                                      "a1": {"val": 0, "name": "switch1"},
-                                      "a2": {"val": 0, "name": "switch2"},
-                                      "a3": {"val": 0, "name": "switch3"},
-                                      "a4": {"val": 0, "name": "switch4"},
-                                      "a5": {"val": 0, "name": "switch5"},
+                                      "a1": {
+                                        "name": room + board + "a1",
+                                        "val": 0
+                                      },
+                                      "a2": {
+                                        "name": room + board + "a2",
+                                        "val": 0
+                                      },
+                                      "a3": {
+                                        "name": room + board + "a3",
+                                        "val": 0
+                                      },
+                                      "a4": {
+                                        "name": room + board + "a4",
+                                        "val": 0
+                                      },
+                                      "a5": {
+                                        "name": room + board + "a5",
+                                        "val": 0
+                                      },
                                     });
+
+                                    fulldataofrooms f1 = new fulldataofrooms();
+                                    f1.fetchindex();
 
                                     setState(() async {
                                       Navigator.pop(context);
