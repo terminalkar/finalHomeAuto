@@ -165,4 +165,62 @@ class fulldataofrooms {
       }
     });
   }
+
+  Future<List<String>> solvequery(String s) async {
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
+    //String s = "Switch on tubelight 1";
+    List<String> stopwords = ["the", "a", "an", "turn", "switch", "on", "off"];
+    List<String> l = s.split(" ");
+    String key = "";
+    int flag = -1;
+    List<String> ans = new List<String>();
+    for (int i = 0; i < (l.length); i++) {
+      // if (isNumeric(l[i])) {
+      //   ans.add( NumberToWord().convert('en-in', int.parse(l[i])).toLowerCase());
+      // }
+
+      l[i] = l[i].toLowerCase();
+
+      if (flag == -1) {
+        if (l[i] == "switch" || l[i] == "turn") {
+          if (l[i + 1].toLowerCase() == "on" || l[l.length-1]=="on") {
+            flag = 1;
+          } else if (l[i + 1].toLowerCase() == "off" || l[l.length-1]=="off" || l[l.length-1]=="of") {
+            flag = 0;
+          }
+        }
+      } else {
+        //remove stop words
+        if (stopwords.contains(l[i])) {
+        } else {
+          key += l[i];
+        }
+      }
+    }
+    // return [flag.toString(), key];
+    try {
+      String indexpath;
+      if (indexlist.contains(key) == true) {
+        await dbref
+            .child(user.uid)
+            .child("index")
+            .child(key)
+            .once()
+            .then((snap) => indexpath = snap.value);
+        var list = indexpath.split(" ");
+        await dbref
+            .child(user.uid)
+            .child("rooms")
+            .child(list[0])
+            .child("circuit")
+            .child(list[1])
+            .child(list[2])
+            .child("val")
+            .set(flag);
+      }
+    } catch (E) {
+      print("caught in sppech func");
+    }
+  }
 }
