@@ -31,7 +31,7 @@ class profileState extends State<profile> {
   Widget build(BuildContext context) {
     return new Scaffold(
         body: new Container(
-      color: Colors.white,
+      color: Colors.white70,
       child: Column(
         children: <Widget>[
           new Container(
@@ -52,18 +52,18 @@ class profileState extends State<profile> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      new CircleAvatar(
-                          radius: 5.5 * SizeConfig.heightMultiplier,
-                          backgroundColor: Colors.black87,
-                          child: CircleAvatar(
-                            backgroundColor: Colors.black87,
-                            radius: 5 * SizeConfig.heightMultiplier,
-                            child: new Icon(
-                              Icons.person,
-                              color: Colors.white,
-                              size: 10 * SizeConfig.heightMultiplier,
-                            ),
-                          ))
+                      // new CircleAvatar(
+                      //     radius: 5.5 * SizeConfig.heightMultiplier,
+                      //     backgroundColor: Colors.black87,
+                      //     child: CircleAvatar(
+                      //       backgroundColor: Colors.black87,
+                      //       radius: 5 * SizeConfig.heightMultiplier,
+                      //       child: new Icon(
+                      //         Icons.person,
+                      //         color: Colors.white,
+                      //         size: 10 * SizeConfig.heightMultiplier,
+                      //       ),
+                      //     ))
                     ],
                   ),
                 )
@@ -73,16 +73,13 @@ class profileState extends State<profile> {
           Expanded(
             child: new Container(
               decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(
-                      color: Colors.black,
-                      width: 5.0,
-                    ),
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.black,
+                    width: 5.0,
                   ),
-                  gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Color(0xffffffff), Colors.blue[300]])),
+                ),
+              ),
               child: Padding(
                 padding:
                     EdgeInsets.only(bottom: 3.5 * SizeConfig.heightMultiplier),

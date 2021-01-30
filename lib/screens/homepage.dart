@@ -42,6 +42,8 @@ class _HomepageState extends State<Homepage>
       'Bedroom': "assets/bedroom.png",
       'Bathroom': "assets/bathroom.png",
       "Children's Room": "assets/Children's_Room.png",
+      "Temple": "assets/temple.png",
+      "Balcony": "assets/balcony.png",
       'Other': "assets/logo.png"
     });
     super.initState();
@@ -483,6 +485,8 @@ _addroom(BuildContext context) async {
     'Bedroom',
     'Bathroom',
     "Children's Room",
+    'Temple',
+    'Balcony',
     'Other',
   ];
   FocusNode focusNode = new FocusNode();
