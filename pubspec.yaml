@@ -23,6 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  number_to_words: ^0.0.3
+  speech_to_text: ^3.1.0
   firebase_core: "^0.5.3"
   firebase_auth: "^0.18.4+1"
   rflutter_alert: ^1.1.0

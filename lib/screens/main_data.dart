@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/fav.dart';
+import 'package:number_to_words/number_to_words.dart';
 
 class fulldataofrooms {
   static var roomidmap = Map();
@@ -164,5 +165,56 @@ class fulldataofrooms {
         indexlist.add(k);
       }
     });
+  }
+
+  bool isNumeric(String s) {
+    if (s == null) {
+      return false;
+    }
+    return double.tryParse(s) != null;
+  }
+
+  Future<void> solvequery(String s) {
+    main() {
+      String s = "Switch on tubelight 1";
+      List<String> stopwords = [
+        "the",
+        "a",
+        "an",
+        "turn",
+        "switch",
+        "on",
+        "off"
+      ];
+      List<String> l = s.split(" ");
+      String key = "";
+      int flag = -1;
+
+      for (int i = 0; i < (l.length); i++) {
+        // if (isNumeric(l[i])) {
+        //   l.insert(l.length-1, NumberToWord().convert('en-in', int.parse(l[i])).toLowerCase());
+        // }
+
+        l[i] = l[i].toLowerCase();
+
+        if (flag == -1) {
+          if (l[i] == "switch" || l[i] == "turn") {
+            if (l[i + 1].toLowerCase() == "on") {
+              flag = 1;
+            } else if (l[i + 1].toLowerCase() == "off") {
+              flag = 0;
+            }
+          }
+        } else {
+          //remove stop words
+          if (stopwords.contains(l[i])) {
+          } else {
+            key += l[i];
+          }
+        }
+      }
+
+      print(key);
+    }
   }
 }
