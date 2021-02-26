@@ -18,6 +18,39 @@ class _switchesState extends State<switches> {
   final dbref = FirebaseDatabase.instance.reference().child("Users");
   User user = FirebaseAuth.instance.currentUser;
   var edit = List.filled(5, false);
+  var iconStr = false;
+  var icnstr = "assets/kitchen.png";
+  var image = new Map();
+  var iconlist = new Map();
+  Color dropcolor = Color(0xff79848b);
+  String room = 'Select';
+  List<String> Rooms = [
+    'Select',
+    'Hall',
+    'Kitchen',
+    'Bedroom',
+    'Bathroom',
+    "Children's Room",
+    'Other',
+  ];
+
+  @override
+  void initState() {
+    iconlist.addAll({
+      "Kitchen": {1: "assets/kitchen.png", 0: "assets/bathroom.png"},
+      "Hall": {1: "assets/hall.png", 0: "assets/bathroom.png"}
+    });
+    // image.addAll({
+    //   'Hall': "assets/hall.png",
+    //   'Kitchen': "assets/kitchen.png",
+    //   'Bedroom': "assets/bedroom.png",
+    //   'Bathroom': "assets/bathroom.png",
+    //   "Children's Room": "assets/Children's_Room.png",
+    //   'Other': "assets/logo.png"
+    // });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -111,7 +144,45 @@ class _switchesState extends State<switches> {
                                     ],
                                   ),
                                 ),
-                              )
+                              ),
+                              PopupMenuItem(
+                                value: index,
+                                child: DropdownButton<String>(
+                                  iconEnabledColor: dropcolor,
+                                  items: Rooms.map((String listvalue) {
+                                    return DropdownMenuItem<String>(
+                                      value: listvalue,
+                                      child: Text(
+                                        listvalue,
+                                        style: TextStyle(
+                                          fontFamily: "Amelia-Basic-Light",
+                                          fontSize: 16,
+                                          color: Color(0xff79848b),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (val) {
+                                    room = val;
+                                    setState(() {
+                                      fulldataofrooms.switches[
+                                              "a" + (index + 1).toString()]
+                                          ["icon"] = room;
+                                    });
+                                    dbref
+                                        .child(user.uid)
+                                        .child("rooms")
+                                        .child(fulldataofrooms
+                                            .roomidarray[fulldataofrooms.index])
+                                        .child("circuit")
+                                        .child(fulldataofrooms.boardidarray[
+                                            fulldataofrooms.boardindex])
+                                        .set(fulldataofrooms.switches);
+                                    Navigator.pop(context);
+                                  },
+                                  value: room,
+                                ),
+                              ),
                             ],
                             context: context,
                             position: RelativeRect.fromRect(
@@ -121,7 +192,43 @@ class _switchesState extends State<switches> {
                           //
                         },
                         //switches//////////////////////////////////////////////////////////////////////////////////
-                        onTap: () {},
+                        onTap: () {
+                          setState(() {
+                            int flag = 0;
+                            print(fulldataofrooms
+                                .switches["a" + (index + 1).toString()]);
+                            if (fulldataofrooms
+                                        .switches["a" + (index + 1).toString()]
+                                    ["val"] ==
+                                0) {
+                              flag = 1;
+                            }
+                            if (fulldataofrooms
+                                        .switches["a" + (index + 1).toString()]
+                                    ["icon"] ==
+                                "null") {
+                              icnstr = "assets/logo.png";
+                            } else {
+                              icnstr = iconlist[fulldataofrooms
+                                      .switches["a" + (index + 1).toString()]
+                                  ["icon"]][flag];
+                            }
+                            fulldataofrooms
+                                    .switches["a" + (index + 1).toString()]
+                                ["val"] = flag;
+                            dbref
+                                .child(user.uid)
+                                .child("rooms")
+                                .child(fulldataofrooms
+                                    .roomidarray[fulldataofrooms.index])
+                                .child("circuit")
+                                .child(fulldataofrooms
+                                    .boardidarray[fulldataofrooms.boardindex])
+                                .child("a" + (index + 1).toString())
+                                .child("val")
+                                .set(flag);
+                          });
+                        },
                         child: Container(
                           child: Column(
                             children: [
@@ -130,48 +237,20 @@ class _switchesState extends State<switches> {
                               ),
                               Center(
                                 child: Container(
-                                    height: 5 * SizeConfig.heightMultiplier,
-                                    width: 30 * SizeConfig.widthMultiplier,
-                                    child: IconButton(
-                                      icon: new Icon(
-                                        Icons.lightbulb_outline,
-                                        size: 15 * SizeConfig.widthMultiplier,
-                                        color: fulldataofrooms.switches["a" +
-                                                        (index + 1).toString()]
-                                                    ["val"] ==
-                                                1
-                                            ? Colors.green
-                                            : Color(0xff79848b),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          int flag = 0;
-                                          if (fulldataofrooms.switches["a" +
-                                                      (index + 1).toString()]
-                                                  ["val"] ==
-                                              0) {
-                                            flag = 1;
-                                          }
-                                          fulldataofrooms.switches[
-                                                  "a" + (index + 1).toString()]
-                                              ["val"] = flag;
-                                          dbref
-                                              .child(user.uid)
-                                              .child("rooms")
-                                              .child(
-                                                  fulldataofrooms.roomidarray[
-                                                      fulldataofrooms.index])
-                                              .child("circuit")
-                                              .child(fulldataofrooms
-                                                      .boardidarray[
-                                                  fulldataofrooms.boardindex])
-                                              .child(
-                                                  "a" + (index + 1).toString())
-                                              .child("val")
-                                              .set(flag);
-                                        });
-                                      },
-                                    )),
+                                  height: 5 * SizeConfig.heightMultiplier,
+                                  width: 30 * SizeConfig.widthMultiplier,
+                                  child: Image(
+                                    image: fulldataofrooms.switches["a" + (index + 1).toString()]
+                                                ["icon"] ==
+                                            "null"
+                                        ? AssetImage("assets/logo.png")
+                                        : AssetImage(iconlist[fulldataofrooms
+                                                .switches["a" + (index + 1).toString()]
+                                            ["icon"]][fulldataofrooms.switches[
+                                                "a" + (index + 1).toString()]
+                                            ["val"]]),
+                                  ),
+                                ),
                               ),
 
                               // Center(

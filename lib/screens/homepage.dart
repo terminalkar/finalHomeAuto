@@ -1,11 +1,13 @@
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:home_automation_app/screens/profile_screen.dart';
 import 'circuitboard.dart';
 import 'fav.dart';
 import 'main_data.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-////import 'package:home_automation/Login_page.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 //import 'package:home_automation/responsive/Screesize.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
@@ -27,7 +29,10 @@ class _HomepageState extends State<Homepage>
   var image1;
   var _isRoomfetched = true;
   var image = new Map();
-
+  stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _text = '';
+  double _confidence = 1.0;
   final dbref = FirebaseDatabase.instance.reference().child('Users');
   User user = FirebaseAuth.instance.currentUser;
   @override
@@ -38,10 +43,13 @@ class _HomepageState extends State<Homepage>
       'Bedroom': "assets/bedroom.png",
       'Bathroom': "assets/bathroom.png",
       "Children's Room": "assets/Children's_Room.png",
+      "Temple": "assets/temple.png",
+      "Balcony": "assets/balcony.png",
       'Other': "assets/logo.png"
     });
     super.initState();
     _roomData();
+    _speech = stt.SpeechToText();
   }
 
   _roomData() async {
@@ -62,17 +70,72 @@ class _HomepageState extends State<Homepage>
     });
   }
 
+// voice recognition speak
+  void _listen() async {
+    if (!_speech.isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) {
+          print('onStatus: $val');
+
+          if (val == "listening") {
+            setState(() => _isListening = true);
+          } else {
+            setState(() => _isListening = false);
+          }
+        },
+        onError: (val) => print('onError: $val'),
+      );
+      if (available) {
+        _speech.listen(
+            onResult: (val) => setState(() {
+                  _text = val.recognizedWords;
+                  if (val.hasConfidenceRating && val.confidence > 0) {
+                    _confidence = val.confidence;
+                  }
+                  fulldataofrooms f = new fulldataofrooms();
+                  // print(f.solvequery(_text));
+                }),
+            listenFor: Duration(seconds: 10),
+            partialResults: false,
+            cancelOnError: true,
+            listenMode: stt.ListenMode.confirmation);
+      } else {
+        setState(() => _isListening = false);
+        _speech.stop();
+        print(_isListening);
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
+      print("iiiin");
+      print(_isListening);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text(
-            'Home',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
+            title: Text(
+              'Home',
+              style: TextStyle(color: Colors.white),
+            ),
+            actions: [
+              AvatarGlow(
+                  animate: _isListening,
+                  glowColor: Theme.of(context).primaryColor,
+                  endRadius: SizeConfig.widthMultiplier * 8,
+                  duration: const Duration(milliseconds: 2000),
+                  repeatPauseDuration: const Duration(milliseconds: 100),
+                  repeat: true,
+                  child: IconButton(
+                    icon:
+                        Icon(_speech.isListening ? Icons.mic : Icons.mic_none),
+                    onPressed: _listen,
+                  ))
+            ]),
 
         ////Drawer
         drawer: Theme(
@@ -167,7 +230,7 @@ class _HomepageState extends State<Homepage>
                               ),
                             ),
                             new Text(
-                              "Like Us",
+                              "Favourites",
                               style: TextStyle(
                                   fontFamily: "Amelia-Basic-Light",
                                   fontSize: 16,
@@ -243,159 +306,167 @@ class _HomepageState extends State<Homepage>
                         fontSize: 16,
                         color: Color(0xff79848b)),
                   ))
-                : GridView.count(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10.0,
-                    mainAxisSpacing: 10.0,
-                    shrinkWrap: true,
-                    children: List.generate(
-                      fulldataofrooms.roomidarray.length,
-                      (index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: InkWell(
-                            onTapDown: (TapDownDetails details) {
-                              _tapPosition = details.globalPosition;
-                            },
-                            //delete
-                            onLongPress: () {
-                              final RenderBox overlay = Overlay.of(context)
-                                  .context
-                                  .findRenderObject();
-                              showMenu(
-                                shape: new RoundedRectangleBorder(
-                                    borderRadius:
-                                        new BorderRadius.circular(10.0)),
-                                items: <PopupMenuEntry>[
-                                  PopupMenuItem(
-                                    value: index,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        try {
-                                          dbref
-                                              .child(user.uid)
-                                              .child("rooms")
-                                              .child(fulldataofrooms
-                                                  .roomidarray[index])
-                                              .remove();
-                                          setState(() {
-                                            fulldataofrooms.roomidmap.remove(
-                                                fulldataofrooms
-                                                    .roomidarray[index]);
-                                            fulldataofrooms.roomidarray.remove(
-                                                fulldataofrooms
-                                                    .roomidarray[index]);
-                                          });
-                                        } catch (ex) {
-                                          print("pop");
-                                        }
-                                        Navigator.pop(context);
-                                      },
-                                      child: Row(
-                                        children: <Widget>[
-                                          Icon(Icons.delete),
-                                          SizedBox(
-                                            width: 25,
+                : Column(
+                    children: [
+                      GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0,
+                        shrinkWrap: true,
+                        children: List.generate(
+                          fulldataofrooms.roomidarray.length,
+                          (index) {
+                            return Padding(
+                              padding: EdgeInsets.all(10),
+                              child: InkWell(
+                                onTapDown: (TapDownDetails details) {
+                                  _tapPosition = details.globalPosition;
+                                },
+                                //delete
+                                onLongPress: () {
+                                  final RenderBox overlay = Overlay.of(context)
+                                      .context
+                                      .findRenderObject();
+                                  showMenu(
+                                    shape: new RoundedRectangleBorder(
+                                        borderRadius:
+                                            new BorderRadius.circular(10.0)),
+                                    items: <PopupMenuEntry>[
+                                      PopupMenuItem(
+                                        value: index,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            try {
+                                              dbref
+                                                  .child(user.uid)
+                                                  .child("rooms")
+                                                  .child(fulldataofrooms
+                                                      .roomidarray[index])
+                                                  .remove();
+                                              setState(() {
+                                                fulldataofrooms.roomidmap
+                                                    .remove(fulldataofrooms
+                                                        .roomidarray[index]);
+                                                fulldataofrooms.roomidarray
+                                                    .remove(fulldataofrooms
+                                                        .roomidarray[index]);
+                                              });
+                                            } catch (ex) {
+                                              print("pop");
+                                            }
+                                            Navigator.pop(context);
+                                          },
+                                          child: Row(
+                                            children: <Widget>[
+                                              Icon(Icons.delete),
+                                              SizedBox(
+                                                width: 25,
+                                              ),
+                                              Text(
+                                                "Delete slot",
+                                                style: TextStyle(
+                                                    fontFamily:
+                                                        "Amelia-Basic-Light",
+                                                    fontSize: 16,
+                                                    color: Color(0xff79848b)),
+                                              ),
+                                            ],
                                           ),
-                                          Text(
-                                            "Delete slot",
-                                            style: TextStyle(
-                                                fontFamily:
-                                                    "Amelia-Basic-Light",
-                                                fontSize: 16,
-                                                color: Color(0xff79848b)),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                ],
-                                context: context,
-                                position: RelativeRect.fromRect(
-                                    _tapPosition & const Size(40, 40),
-                                    Offset.zero & overlay.size),
-                              );
-                              //
-                            },
+                                        ),
+                                      )
+                                    ],
+                                    context: context,
+                                    position: RelativeRect.fromRect(
+                                        _tapPosition & const Size(40, 40),
+                                        Offset.zero & overlay.size),
+                                  );
+                                  //
+                                },
 
-                            //Rooms//////////////////////////////////////////////////////////////////////////////////
-                            onTap: () {
-                              setState(() {
-                                fulldataofrooms.index = index;
-                                fulldataofrooms.boardid = fulldataofrooms
-                                    .id[fulldataofrooms.roomidarray[index]];
-                                fulldataofrooms.boardidarray = fulldataofrooms
-                                    .array[fulldataofrooms.roomidarray[index]];
-                              });
-                              if (fulldataofrooms.boardidarray == null ||
-                                  fulldataofrooms.boardid == null) {
-                                fulldataofrooms.boardidarray = [];
-                                fulldataofrooms.boardid = new Map();
-                              } else {
-                                fulldataofrooms.boardidarray.sort();
-                              }
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Circuit()));
-                            },
-                            child: Container(
-                              child: Column(
-                                children: [
-                                  Center(
-                                    child: Container(
-                                      height: 100,
-                                      width: 100,
-                                      margin: EdgeInsets.all(10),
-                                      child: Image(
-                                        image: AssetImage(image[fulldataofrooms
-                                                .roomidmap[
-                                            fulldataofrooms
-                                                .roomidarray[index]]["type"]]),
+                                //Rooms//////////////////////////////////////////////////////////////////////////////////
+                                onTap: () {
+                                  setState(() {
+                                    fulldataofrooms.index = index;
+                                    fulldataofrooms.boardid = fulldataofrooms
+                                        .id[fulldataofrooms.roomidarray[index]];
+                                    fulldataofrooms.boardidarray =
+                                        fulldataofrooms.array[
+                                            fulldataofrooms.roomidarray[index]];
+                                  });
+                                  if (fulldataofrooms.boardidarray == null ||
+                                      fulldataofrooms.boardid == null) {
+                                    fulldataofrooms.boardidarray = [];
+                                    fulldataofrooms.boardid = new Map();
+                                  } else {
+                                    fulldataofrooms.boardidarray.sort();
+                                  }
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Circuit()));
+                                },
+                                child: Container(
+                                  child: Column(
+                                    children: [
+                                      Center(
+                                        child: Container(
+                                          height: 100,
+                                          width: 100,
+                                          margin: EdgeInsets.all(10),
+                                          child: Image(
+                                            image: AssetImage(image[
+                                                fulldataofrooms.roomidmap[
+                                                        fulldataofrooms
+                                                            .roomidarray[index]]
+                                                    ["type"]]),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      Text(
+                                          fulldataofrooms.roomidmap[
+                                              fulldataofrooms
+                                                  .roomidarray[index]]["name"],
+                                          style: TextStyle(
+                                            fontFamily: "Amelia-Basic-Light",
+                                            fontSize: 16,
+                                            color: Color(0xff79848b),
+                                          )),
+                                    ],
                                   ),
-                                  Text(
-                                      fulldataofrooms.roomidmap[fulldataofrooms
-                                          .roomidarray[index]]["name"],
-                                      style: TextStyle(
-                                        fontFamily: "Amelia-Basic-Light",
-                                        fontSize: 16,
-                                        color: Color(0xff79848b),
-                                      )),
-                                ],
-                              ),
-                              height: 147.00,
-                              width: 194.00,
-                              decoration: BoxDecoration(
-                                color: Color(0xffffffff),
-                                boxShadow: [
-                                  BoxShadow(
-                                    offset: Offset(0.00, 5.00),
-                                    color: Color(0xff0792ef).withOpacity(0.60),
-                                    blurRadius: 18,
+                                  height: 147.00,
+                                  width: 194.00,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffffffff),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        offset: Offset(0.00, 5.00),
+                                        color:
+                                            Color(0xff0792ef).withOpacity(0.60),
+                                        blurRadius: 18,
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
-                                ],
-                                borderRadius: BorderRadius.circular(8.0),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.blue,
-          onPressed: () {
-            try {
-              _addroom(context);
-            } catch (Exc) {
-              print(Exc);
-            }
-          },
-          tooltip: 'Increment',
-          child: Icon(Icons.add),
-        ),
+        floatingActionButton: FloatingActionButton.extended(
+            backgroundColor: Colors.blue,
+            onPressed: () {
+              try {
+                _addroom(context);
+              } catch (Exc) {
+                print(Exc);
+              }
+            },
+            tooltip: 'Increment',
+            label: Text("Add Rooms"),
+            icon: Icon(Icons.add)),
       ),
     );
   }
@@ -414,82 +485,92 @@ _addroom(BuildContext context) async {
     'Bedroom',
     'Bathroom',
     "Children's Room",
+    'Temple',
+    'Balcony',
     'Other',
   ];
   FocusNode focusNode = new FocusNode();
   TextEditingController name = TextEditingController();
-  return showGeneralDialog(
-      // barrierColor: Colors.black.withOpacity(0.5),
-      transitionBuilder: (context, a1, a2, widget) {
+
+  // return showGeneralDialog(
+  //     // barrierColor: Colors.black.withOpacity(0.5),
+  //     transitionBuilder: (context, a1, a2, widget) {
+  return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return Opacity(
-              opacity: a1.value,
-              child: AlertDialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0)),
-                title: Text(
-                  'Details',
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              title: Center(
+                child: Text(
+                  'Details of Room',
                   style: TextStyle(
                     fontFamily: "Amelia-Basic-Light",
                     fontSize: 20,
+                    fontWeight: FontWeight.bold,
                     color: Color(0xff79848b),
                   ),
                 ),
-                content: Container(
-                  height: 200,
-                  width: 400,
-                  child: Column(
-                    children: <Widget>[
-                      Form(
-                        key: form,
-                        child: new TextFormField(
-                          controller: name,
-                          onChanged: (val) {},
-                          cursorColor: Colors.black87,
-                          focusNode: focusNode,
-                          style: TextStyle(
+              ),
+              content: Container(
+                height: SizeConfig.heightMultiplier * 100 / (5.33),
+                width: SizeConfig.widthMultiplier * 111,
+                child: Column(
+                  children: <Widget>[
+                    Form(
+                      key: form,
+                      child: new TextFormField(
+                        textAlign: TextAlign.center,
+                        controller: name,
+                        onChanged: (val) {},
+                        cursorColor: Colors.black87,
+                        focusNode: focusNode,
+                        style: TextStyle(
+                          fontFamily: "Amelia-Basic-Light",
+                          fontSize: 16,
+                          color: Color(0xff79848b),
+                        ),
+                        decoration: new InputDecoration(
+                          // contentPadding: EdgeInsets.fromLTRB(left, top, right, bottom),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                width: 1,
+                                color: Color(0xff444422),
+                              ),
+                              borderRadius: BorderRadius.circular(10.00)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0)),
+
+                          labelText: "Room name",
+                          labelStyle: TextStyle(
                             fontFamily: "Amelia-Basic-Light",
                             fontSize: 16,
                             color: Color(0xff79848b),
                           ),
-                          decoration: new InputDecoration(
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 55),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  width: 1,
-                                  color: Color(0xff444422),
-                                ),
-                                borderRadius: BorderRadius.circular(10.00)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0)),
-                            labelText: "Room name",
-                            labelStyle: TextStyle(
-                              fontFamily: "Amelia-Basic-Light",
-                              fontSize: 16,
-                              color: Color(0xff79848b),
-                            ),
-                          ),
                         ),
                       ),
-                      SizedBox(height: 10),
-                      Container(
-                        margin: EdgeInsets.all(5),
-                        height: 40.00,
-                        width: 150.00,
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Color(0xffffffff),
-                          boxShadow: [
-                            BoxShadow(
-                              offset: Offset(0.00, 3.00),
-                              color: Color(0xff0792ef).withOpacity(0.32),
-                              blurRadius: 6,
-                            ),
-                          ],
-                          borderRadius: BorderRadius.circular(4.00),
-                        ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      height: 40.00,
+                      width: 150.00,
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Color(0xffffffff),
+                        boxShadow: [
+                          BoxShadow(
+                            offset: Offset(0.00, 3.00),
+                            color: Color(0xff0792ef).withOpacity(0.32),
+                            blurRadius: 6,
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(4.00),
+                      ),
+                      child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           iconEnabledColor: dropcolor,
                           items: Rooms.map((String listvalue) {
@@ -506,128 +587,130 @@ _addroom(BuildContext context) async {
                             );
                           }).toList(),
                           onChanged: (val) {
-                            room = val;
+                            setState(() {
+                              room = val;
+                            });
                           },
                           value: room,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                actions: <Widget>[
-                  Container(
-                    height: 40.00,
-                    width: 100.00,
-                    decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      boxShadow: [
-                        BoxShadow(
-                          offset: Offset(0.00, 3.00),
-                          color: Color(0xff0792ef).withOpacity(0.32),
-                          blurRadius: 6,
-                        ),
-                      ],
-                      borderRadius: BorderRadius.circular(13.00),
-                    ),
-                    child: new FlatButton(
-                        child: new Text(
-                          'Submit',
-                          style: TextStyle(
-                            fontFamily: "Amelia-Basic-Light",
-                            fontSize: 16,
-                            color: Color(0xff79848b),
-                          ),
-                        ),
-                        onPressed: pressed
-                            ? () => print("df")
-                            : () async {
-                                setState(() {
-                                  pressed = true;
-                                });
-                                if (room != "Select" && name.text != "") {
-                                  String noofrooms;
-                                  int max = 0;
-                                  for (int i = 0;
-                                      i < fulldataofrooms.roomidarray.length;
-                                      i++) {
-                                    String s = fulldataofrooms.roomidarray[i];
-
-                                    int n = int.parse(s.substring(4));
-                                    if (n > max) max = n;
-                                  }
-                                  max++;
-                                  if (max < 10)
-                                    noofrooms = "0" + max.toString();
-                                  else
-                                    noofrooms = max.toString();
-
-                                  await dbref
-                                      .child(
-                                          FirebaseAuth.instance.currentUser.uid)
-                                      .child("rooms")
-                                      .child("room" + noofrooms)
-                                      .set({
-                                    "name": name.text,
-                                    "type": room,
-                                    "circuit": -1
-                                  });
-
-                                  setState(() async {
-                                    Navigator.pop(context);
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Homepage()));
-                                  });
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg: "Please select the type of room");
-                                }
-                                setState(() {
-                                  pressed = false;
-                                });
-                              }),
+              ),
+              actions: <Widget>[
+                Container(
+                  height: 40.00,
+                  width: 100.00,
+                  decoration: BoxDecoration(
+                    color: Color(0xffffffff),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0.00, 3.00),
+                        color: Color(0xff0792ef).withOpacity(0.32),
+                        blurRadius: 6,
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(13.00),
                   ),
-                  Container(
-                    height: 40.00,
-                    width: 100.00,
-                    margin: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      boxShadow: [
-                        BoxShadow(
-                          offset: Offset(0.00, 3.00),
-                          color: Color(0xff0792ef).withOpacity(0.32),
-                          blurRadius: 6,
-                        ),
-                      ],
-                      borderRadius: BorderRadius.circular(13.00),
-                    ),
-                    child: new FlatButton(
+                  child: new FlatButton(
                       child: new Text(
-                        'Cancel',
+                        'Submit',
                         style: TextStyle(
                           fontFamily: "Amelia-Basic-Light",
                           fontSize: 16,
                           color: Color(0xff79848b),
                         ),
                       ),
-                      onPressed: pressed == false
-                          ? () async {
-                              Navigator.of(context).pop();
-                            }
-                          : null,
+                      onPressed: pressed
+                          ? () => print("df")
+                          : () async {
+                              setState(() {
+                                pressed = true;
+                              });
+                              if (room != "Select" && name.text != "") {
+                                String noofrooms;
+                                int max = 0;
+                                for (int i = 0;
+                                    i < fulldataofrooms.roomidarray.length;
+                                    i++) {
+                                  String s = fulldataofrooms.roomidarray[i];
+
+                                  int n = int.parse(s.substring(4));
+                                  if (n > max) max = n;
+                                }
+                                max++;
+                                if (max < 10)
+                                  noofrooms = "0" + max.toString();
+                                else
+                                  noofrooms = max.toString();
+
+                                await dbref
+                                    .child(
+                                        FirebaseAuth.instance.currentUser.uid)
+                                    .child("rooms")
+                                    .child("room" + noofrooms)
+                                    .set({
+                                  "name": name.text,
+                                  "type": room,
+                                  "circuit": -1
+                                });
+
+                                setState(() async {
+                                  Navigator.pop(context);
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Homepage()));
+                                });
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: "Please select the type of room");
+                              }
+                              setState(() {
+                                pressed = false;
+                              });
+                            }),
+                ),
+                Container(
+                  height: 40.00,
+                  width: 100.00,
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Color(0xffffffff),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0.00, 3.00),
+                        color: Color(0xff0792ef).withOpacity(0.32),
+                        blurRadius: 6,
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(13.00),
+                  ),
+                  child: new FlatButton(
+                    child: new Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontFamily: "Amelia-Basic-Light",
+                        fontSize: 16,
+                        color: Color(0xff79848b),
+                      ),
                     ),
-                  )
-                ],
-              ),
+                    onPressed: pressed == false
+                        ? () async {
+                            Navigator.of(context).pop();
+                          }
+                        : null,
+                  ),
+                )
+              ],
             );
           },
         );
-      },
-      transitionDuration: Duration(milliseconds: 500),
-      barrierDismissible: false,
-      barrierLabel: '',
-      context: context,
-      pageBuilder: (context, animation1, animation2) {});
+      });
 }
+//       transitionDuration: Duration(milliseconds: 250),
+//       barrierDismissible: false,
+//       barrierLabel: '',
+//       context: context,
+//       pageBuilder: (context, animation1, animation2) {});
