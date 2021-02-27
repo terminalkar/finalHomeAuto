@@ -1,6 +1,7 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:home_automation_app/screens/profile_screen.dart';
 import 'circuitboard.dart';
@@ -8,9 +9,6 @@ import 'fav.dart';
 import 'main_data.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-//import 'package:home_automation/responsive/Screesize.dart';
-//import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:home_automation/maindata.dart';
@@ -145,7 +143,7 @@ class _HomepageState extends State<Homepage>
               //other styles
               selectedRowColor: Colors.blue.shade300),
           child: Container(
-            width: 300,
+            width: SizeConfig.widthMultiplier * 61,
             child: Drawer(
               child: new ListView(
                 children: <Widget>[
@@ -154,22 +152,22 @@ class _HomepageState extends State<Homepage>
                       "Name",
                       style: TextStyle(
                         fontFamily: "Amelia-Basic-Light",
-                        fontSize: 16,
+                        fontSize: SizeConfig.textMultiplier * 2.5,
                         color: Color(0xff79848b),
                       ),
                     ),
                     accountEmail: new Text(user.email,
                         style: TextStyle(
                           fontFamily: "Amelia-Basic-Light",
-                          fontSize: 16,
+                          fontSize: SizeConfig.textMultiplier * 2.5,
                           color: Color(0xff79848b),
                         )),
                     currentAccountPicture: new CircleAvatar(
-                      radius: 30,
+                      radius: SizeConfig.heightMultiplier * 4.5,
                       backgroundColor: Colors.white,
                       child: Icon(
                         Icons.person,
-                        size: 60,
+                        size: SizeConfig.imageSizeMultiplier * 15,
                         color: Color(0xff79848b),
                       ),
                     ),
@@ -190,14 +188,14 @@ class _HomepageState extends State<Homepage>
                               child: new Icon(
                                 Icons.person,
                                 color: Color(0xff79848b),
-                                size: 10,
+                                size: SizeConfig.imageSizeMultiplier * 5,
                               ),
                             ),
                             new Text(
                               "Profile",
                               style: TextStyle(
                                 fontFamily: "Amelia-Basic-Light",
-                                fontSize: 16,
+                                fontSize: SizeConfig.textMultiplier * 2.5,
                                 color: Color(0xff79848b),
                               ),
                             )
@@ -226,14 +224,14 @@ class _HomepageState extends State<Homepage>
                               child: new Icon(
                                 Icons.thumb_up,
                                 color: Color(0xff79848b),
-                                size: 10,
+                                size: SizeConfig.imageSizeMultiplier * 5,
                               ),
                             ),
                             new Text(
                               "Favourites",
                               style: TextStyle(
                                   fontFamily: "Amelia-Basic-Light",
-                                  fontSize: 16,
+                                  fontSize: SizeConfig.textMultiplier * 2.5,
                                   color: Color(0xff79848b)),
                             ),
                           ],
@@ -268,14 +266,14 @@ class _HomepageState extends State<Homepage>
                                 child: new Icon(
                                   Icons.phonelink_erase,
                                   color: Color(0xff79848b),
-                                  size: 10,
+                                  size: SizeConfig.imageSizeMultiplier * 5,
                                 ),
                               ),
                               new Text(
                                 "Log out",
                                 style: TextStyle(
                                     fontFamily: "Amelia-Basic-Light",
-                                    fontSize: 16,
+                                    fontSize: SizeConfig.textMultiplier * 2.5,
                                     color: Color(0xff79848b)),
                               ),
                             ],
@@ -303,157 +301,169 @@ class _HomepageState extends State<Homepage>
                     "No rooms added",
                     style: TextStyle(
                         fontFamily: "Amelia-Basic-Light",
-                        fontSize: 16,
+                        fontSize: SizeConfig.textMultiplier * 2.5,
                         color: Color(0xff79848b)),
                   ))
-                : Column(
-                    children: [
-                      GridView.count(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10.0,
-                        mainAxisSpacing: 10.0,
-                        shrinkWrap: true,
-                        children: List.generate(
-                          fulldataofrooms.roomidarray.length,
-                          (index) {
-                            return Padding(
-                              padding: EdgeInsets.all(10),
-                              child: InkWell(
-                                onTapDown: (TapDownDetails details) {
-                                  _tapPosition = details.globalPosition;
-                                },
-                                //delete
-                                onLongPress: () {
-                                  final RenderBox overlay = Overlay.of(context)
-                                      .context
-                                      .findRenderObject();
-                                  showMenu(
-                                    shape: new RoundedRectangleBorder(
-                                        borderRadius:
-                                            new BorderRadius.circular(10.0)),
-                                    items: <PopupMenuEntry>[
-                                      PopupMenuItem(
-                                        value: index,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            try {
-                                              dbref
-                                                  .child(user.uid)
-                                                  .child("rooms")
-                                                  .child(fulldataofrooms
-                                                      .roomidarray[index])
-                                                  .remove();
-                                              setState(() {
-                                                fulldataofrooms.roomidmap
-                                                    .remove(fulldataofrooms
-                                                        .roomidarray[index]);
-                                                fulldataofrooms.roomidarray
-                                                    .remove(fulldataofrooms
-                                                        .roomidarray[index]);
-                                              });
-                                            } catch (ex) {
-                                              print("pop");
-                                            }
-                                            Navigator.pop(context);
-                                          },
-                                          child: Row(
-                                            children: <Widget>[
-                                              Icon(Icons.delete),
-                                              SizedBox(
-                                                width: 25,
-                                              ),
-                                              Text(
-                                                "Delete slot",
-                                                style: TextStyle(
-                                                    fontFamily:
-                                                        "Amelia-Basic-Light",
-                                                    fontSize: 16,
-                                                    color: Color(0xff79848b)),
-                                              ),
-                                            ],
+                : AnimationLimiter(
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      children: List.generate(
+                        fulldataofrooms.roomidarray.length,
+                        (index) {
+                          return AnimationConfiguration.staggeredGrid(
+                            position: index,
+                            duration: const Duration(milliseconds: 375),
+                            columnCount: 2,
+                            child: SlideAnimation(
+                              verticalOffset: 50.0,
+                              child: FadeInAnimation(
+                                  child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: InkWell(
+                                  onTapDown: (TapDownDetails details) {
+                                    _tapPosition = details.globalPosition;
+                                  },
+                                  //delete
+                                  onLongPress: () {
+                                    final RenderBox overlay =
+                                        Overlay.of(context)
+                                            .context
+                                            .findRenderObject();
+                                    showMenu(
+                                      shape: new RoundedRectangleBorder(
+                                          borderRadius:
+                                              new BorderRadius.circular(10.0)),
+                                      items: <PopupMenuEntry>[
+                                        PopupMenuItem(
+                                          value: index,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              try {
+                                                dbref
+                                                    .child(user.uid)
+                                                    .child("rooms")
+                                                    .child(fulldataofrooms
+                                                        .roomidarray[index])
+                                                    .remove();
+                                                setState(() {
+                                                  fulldataofrooms.roomidmap
+                                                      .remove(fulldataofrooms
+                                                          .roomidarray[index]);
+                                                  fulldataofrooms.roomidarray
+                                                      .remove(fulldataofrooms
+                                                          .roomidarray[index]);
+                                                });
+                                              } catch (ex) {
+                                                print("pop");
+                                              }
+                                              Navigator.pop(context);
+                                            },
+                                            child: Row(
+                                              children: <Widget>[
+                                                Icon(Icons.delete),
+                                                SizedBox(
+                                                  width: 25,
+                                                ),
+                                                Text(
+                                                  "Delete slot",
+                                                  style: TextStyle(
+                                                      fontFamily:
+                                                          "Amelia-Basic-Light",
+                                                      fontSize: SizeConfig
+                                                              .textMultiplier *
+                                                          2.5,
+                                                      color: Color(0xff79848b)),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      )
-                                    ],
-                                    context: context,
-                                    position: RelativeRect.fromRect(
-                                        _tapPosition & const Size(40, 40),
-                                        Offset.zero & overlay.size),
-                                  );
-                                  //
-                                },
+                                        )
+                                      ],
+                                      context: context,
+                                      position: RelativeRect.fromRect(
+                                          _tapPosition & const Size(40, 40),
+                                          Offset.zero & overlay.size),
+                                    );
+                                    //
+                                  },
 
-                                //Rooms//////////////////////////////////////////////////////////////////////////////////
-                                onTap: () {
-                                  setState(() {
-                                    fulldataofrooms.index = index;
-                                    fulldataofrooms.boardid = fulldataofrooms
-                                        .id[fulldataofrooms.roomidarray[index]];
-                                    fulldataofrooms.boardidarray =
-                                        fulldataofrooms.array[
-                                            fulldataofrooms.roomidarray[index]];
-                                  });
-                                  if (fulldataofrooms.boardidarray == null ||
-                                      fulldataofrooms.boardid == null) {
-                                    fulldataofrooms.boardidarray = [];
-                                    fulldataofrooms.boardid = new Map();
-                                  } else {
-                                    fulldataofrooms.boardidarray.sort();
-                                  }
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Circuit()));
-                                },
-                                child: Container(
-                                  child: Column(
-                                    children: [
-                                      Center(
-                                        child: Container(
-                                          height: 100,
-                                          width: 100,
-                                          margin: EdgeInsets.all(10),
-                                          child: Image(
-                                            image: AssetImage(image[
-                                                fulldataofrooms.roomidmap[
-                                                        fulldataofrooms
-                                                            .roomidarray[index]]
-                                                    ["type"]]),
+                                  //Rooms//////////////////////////////////////////////////////////////////////////////////
+                                  onTap: () {
+                                    setState(() {
+                                      fulldataofrooms.index = index;
+                                      fulldataofrooms.boardid = fulldataofrooms
+                                              .id[
+                                          fulldataofrooms.roomidarray[index]];
+                                      fulldataofrooms.boardidarray =
+                                          fulldataofrooms.array[fulldataofrooms
+                                              .roomidarray[index]];
+                                    });
+                                    if (fulldataofrooms.boardidarray == null ||
+                                        fulldataofrooms.boardid == null) {
+                                      fulldataofrooms.boardidarray = [];
+                                      fulldataofrooms.boardid = new Map();
+                                    } else {
+                                      fulldataofrooms.boardidarray.sort();
+                                    }
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Circuit()));
+                                  },
+                                  child: Container(
+                                    child: Column(
+                                      children: [
+                                        Center(
+                                          child: Container(
+                                            height: 100,
+                                            width: 100,
+                                            margin: EdgeInsets.all(10),
+                                            child: Image(
+                                              image: AssetImage(image[
+                                                  fulldataofrooms.roomidmap[
+                                                      fulldataofrooms
+                                                              .roomidarray[
+                                                          index]]["type"]]),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Text(
-                                          fulldataofrooms.roomidmap[
-                                              fulldataofrooms
-                                                  .roomidarray[index]]["name"],
-                                          style: TextStyle(
-                                            fontFamily: "Amelia-Basic-Light",
-                                            fontSize: 16,
-                                            color: Color(0xff79848b),
-                                          )),
-                                    ],
-                                  ),
-                                  height: 147.00,
-                                  width: 194.00,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xffffffff),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        offset: Offset(0.00, 5.00),
-                                        color:
-                                            Color(0xff0792ef).withOpacity(0.60),
-                                        blurRadius: 18,
-                                      ),
-                                    ],
-                                    borderRadius: BorderRadius.circular(8.0),
+                                        Text(
+                                            fulldataofrooms.roomidmap[
+                                                    fulldataofrooms
+                                                        .roomidarray[index]]
+                                                ["name"],
+                                            style: TextStyle(
+                                              fontFamily: "Amelia-Basic-Light",
+                                              fontSize:
+                                                  SizeConfig.textMultiplier *
+                                                      2.5,
+                                              color: Color(0xff79848b),
+                                            )),
+                                      ],
+                                    ),
+                                    height: SizeConfig.heightMultiplier * 18,
+                                    width: SizeConfig.widthMultiplier * 45,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xffffffff),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          offset: Offset(0.00, 5.00),
+                                          color: Color(0xff0792ef)
+                                              .withOpacity(0.60),
+                                          blurRadius: 18,
+                                        ),
+                                      ],
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
+                              )),
+                            ),
+                          );
+                        },
                       ),
-                    ],
+                    ),
                   ),
         floatingActionButton: FloatingActionButton.extended(
             backgroundColor: Colors.blue,
@@ -492,9 +502,6 @@ _addroom(BuildContext context) async {
   FocusNode focusNode = new FocusNode();
   TextEditingController name = TextEditingController();
 
-  // return showGeneralDialog(
-  //     // barrierColor: Colors.black.withOpacity(0.5),
-  //     transitionBuilder: (context, a1, a2, widget) {
   return showDialog(
       context: context,
       barrierDismissible: false,
@@ -509,7 +516,7 @@ _addroom(BuildContext context) async {
                   'Details of Room',
                   style: TextStyle(
                     fontFamily: "Amelia-Basic-Light",
-                    fontSize: 20,
+                    fontSize: SizeConfig.heightMultiplier * 3,
                     fontWeight: FontWeight.bold,
                     color: Color(0xff79848b),
                   ),
@@ -530,11 +537,11 @@ _addroom(BuildContext context) async {
                         focusNode: focusNode,
                         style: TextStyle(
                           fontFamily: "Amelia-Basic-Light",
-                          fontSize: 16,
+                          fontSize: SizeConfig.textMultiplier * 2.5,
                           color: Color(0xff79848b),
                         ),
                         decoration: new InputDecoration(
-                          // contentPadding: EdgeInsets.fromLTRB(left, top, right, bottom),
+                          contentPadding: EdgeInsets.all(5),
                           border: OutlineInputBorder(
                               borderSide: BorderSide(
                                 width: 1,
@@ -543,21 +550,20 @@ _addroom(BuildContext context) async {
                               borderRadius: BorderRadius.circular(10.00)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0)),
-
                           labelText: "Room name",
                           labelStyle: TextStyle(
                             fontFamily: "Amelia-Basic-Light",
-                            fontSize: 16,
+                            fontSize: SizeConfig.textMultiplier * 3.2,
                             color: Color(0xff79848b),
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: SizeConfig.widthMultiplier * 2.5),
                     Container(
-                      margin: EdgeInsets.all(5),
-                      height: 40.00,
-                      width: 150.00,
+                      height: SizeConfig.heightMultiplier * 6,
+                      width: SizeConfig.widthMultiplier * 50,
+                      margin: EdgeInsets.all(10),
                       padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         color: Color(0xffffffff),
@@ -580,7 +586,7 @@ _addroom(BuildContext context) async {
                                 listvalue,
                                 style: TextStyle(
                                   fontFamily: "Amelia-Basic-Light",
-                                  fontSize: 16,
+                                  fontSize: SizeConfig.textMultiplier * 2.5,
                                   color: Color(0xff79848b),
                                 ),
                               ),
@@ -589,6 +595,7 @@ _addroom(BuildContext context) async {
                           onChanged: (val) {
                             setState(() {
                               room = val;
+                              focusNode = new FocusNode();
                             });
                           },
                           value: room,
@@ -600,81 +607,8 @@ _addroom(BuildContext context) async {
               ),
               actions: <Widget>[
                 Container(
-                  height: 40.00,
-                  width: 100.00,
-                  decoration: BoxDecoration(
-                    color: Color(0xffffffff),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: Offset(0.00, 3.00),
-                        color: Color(0xff0792ef).withOpacity(0.32),
-                        blurRadius: 6,
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(13.00),
-                  ),
-                  child: new FlatButton(
-                      child: new Text(
-                        'Submit',
-                        style: TextStyle(
-                          fontFamily: "Amelia-Basic-Light",
-                          fontSize: 16,
-                          color: Color(0xff79848b),
-                        ),
-                      ),
-                      onPressed: pressed
-                          ? () => print("df")
-                          : () async {
-                              setState(() {
-                                pressed = true;
-                              });
-                              if (room != "Select" && name.text != "") {
-                                String noofrooms;
-                                int max = 0;
-                                for (int i = 0;
-                                    i < fulldataofrooms.roomidarray.length;
-                                    i++) {
-                                  String s = fulldataofrooms.roomidarray[i];
-
-                                  int n = int.parse(s.substring(4));
-                                  if (n > max) max = n;
-                                }
-                                max++;
-                                if (max < 10)
-                                  noofrooms = "0" + max.toString();
-                                else
-                                  noofrooms = max.toString();
-
-                                await dbref
-                                    .child(
-                                        FirebaseAuth.instance.currentUser.uid)
-                                    .child("rooms")
-                                    .child("room" + noofrooms)
-                                    .set({
-                                  "name": name.text,
-                                  "type": room,
-                                  "circuit": -1
-                                });
-
-                                setState(() async {
-                                  Navigator.pop(context);
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Homepage()));
-                                });
-                              } else {
-                                Fluttertoast.showToast(
-                                    msg: "Please select the type of room");
-                              }
-                              setState(() {
-                                pressed = false;
-                              });
-                            }),
-                ),
-                Container(
-                  height: 40.00,
-                  width: 100.00,
+                  height: SizeConfig.heightMultiplier * 6,
+                  width: SizeConfig.widthMultiplier * 25,
                   margin: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: Color(0xffffffff),
@@ -687,20 +621,99 @@ _addroom(BuildContext context) async {
                     ],
                     borderRadius: BorderRadius.circular(13.00),
                   ),
-                  child: new FlatButton(
-                    child: new Text(
-                      'Cancel',
-                      style: TextStyle(
-                        fontFamily: "Amelia-Basic-Light",
-                        fontSize: 16,
-                        color: Color(0xff79848b),
+                  child: Center(
+                    child: new FlatButton(
+                        child: new Text(
+                          'Submit',
+                          style: TextStyle(
+                            fontFamily: "Amelia-Basic-Light",
+                            fontSize: SizeConfig.textMultiplier * 2.5,
+                            color: Color(0xff79848b),
+                          ),
+                        ),
+                        onPressed: pressed
+                            ? () => print("df")
+                            : () async {
+                                setState(() {
+                                  pressed = true;
+                                });
+                                if (room != "Select" && name.text != "") {
+                                  String noofrooms;
+                                  int max = 0;
+                                  for (int i = 0;
+                                      i < fulldataofrooms.roomidarray.length;
+                                      i++) {
+                                    String s = fulldataofrooms.roomidarray[i];
+
+                                    int n = int.parse(s.substring(4));
+                                    if (n > max) max = n;
+                                  }
+                                  max++;
+                                  if (max < 10)
+                                    noofrooms = "0" + max.toString();
+                                  else
+                                    noofrooms = max.toString();
+
+                                  await dbref
+                                      .child(
+                                          FirebaseAuth.instance.currentUser.uid)
+                                      .child("rooms")
+                                      .child("room" + noofrooms)
+                                      .set({
+                                    "name": name.text,
+                                    "type": room,
+                                    "circuit": -1
+                                  });
+
+                                  setState(() async {
+                                    Navigator.pop(context);
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Homepage()));
+                                  });
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Please select the type of room");
+                                }
+                                setState(() {
+                                  pressed = false;
+                                });
+                              }),
+                  ),
+                ),
+                SizedBox(width: SizeConfig.widthMultiplier * 2.5),
+                Container(
+                  height: SizeConfig.heightMultiplier * 6,
+                  width: SizeConfig.widthMultiplier * 25,
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Color(0xffffffff),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0.00, 3.00),
+                        color: Color(0xff0792ef).withOpacity(0.32),
+                        blurRadius: 6,
                       ),
+                    ],
+                    borderRadius: BorderRadius.circular(13.00),
+                  ),
+                  child: Center(
+                    child: new FlatButton(
+                      child: new Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontFamily: "Amelia-Basic-Light",
+                          fontSize: SizeConfig.textMultiplier * 2.5,
+                          color: Color(0xff79848b),
+                        ),
+                      ),
+                      onPressed: pressed == false
+                          ? () async {
+                              Navigator.of(context).pop();
+                            }
+                          : null,
                     ),
-                    onPressed: pressed == false
-                        ? () async {
-                            Navigator.of(context).pop();
-                          }
-                        : null,
                   ),
                 )
               ],
@@ -709,8 +722,3 @@ _addroom(BuildContext context) async {
         );
       });
 }
-//       transitionDuration: Duration(milliseconds: 250),
-//       barrierDismissible: false,
-//       barrierLabel: '',
-//       context: context,
-//       pageBuilder: (context, animation1, animation2) {});

@@ -6,6 +6,7 @@ import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/main_data.dart';
 import 'package:home_automation_app/screens/switches.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class Circuit extends StatefulWidget {
   @override
@@ -68,60 +69,76 @@ class _CircuittState extends State<Circuit> {
                 //height:0.75*SizeConfig.screenHeight,
                 color: Colors.white,
                 child: (fulldataofrooms.boardidarray.length != 0)
-                    ? ListView.builder(
-                        padding: kMaterialListPadding,
-                        itemCount: fulldataofrooms.boardidarray.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            height: 10 * SizeConfig.heightMultiplier,
-                            child: Container(
-                              height: 10 * SizeConfig.heightMultiplier,
-                              width: 95 * SizeConfig.widthMultiplier,
-                              margin: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Color(0xffffffff),
-                                boxShadow: [
-                                  BoxShadow(
-                                    offset: Offset(0.00, 5.00),
-                                    color: Color(0xff0792ef).withOpacity(0.60),
-                                    blurRadius: 18,
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: Card(
-                                child: ListTile(
-                                  onTap: () async {
-                                    fulldataofrooms.switches = fulldataofrooms
-                                            .boardid[
-                                        fulldataofrooms.boardidarray[index]];
-                                    fulldataofrooms.boardindex = index;
-                                    fulldataofrooms f1 = new fulldataofrooms();
-                                    f1.fetchfavourites();
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => switches(),
-                                        ));
-                                  },
-                                  isThreeLine: false,
-                                  leading: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Icon(Icons.bookmark_border_outlined),
-                                  ),
-                                  title: Text(
-                                    fulldataofrooms.boardidarray[index],
-                                    style: TextStyle(
-                                      fontSize: 2 * SizeConfig.textMultiplier,
-                                      color: Color(0xff997a00),
+                    ? AnimationLimiter(
+                        child: ListView.builder(
+                          padding: kMaterialListPadding,
+                          itemCount: fulldataofrooms.boardidarray.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return AnimationConfiguration.staggeredList(
+                              position: index,
+                              duration: const Duration(milliseconds: 375),
+                              child: SlideAnimation(
+                                verticalOffset: 50.0,
+                                child: FadeInAnimation(
+                                    child: Card(
+                                  child: Container(
+                                    height: 8 * SizeConfig.heightMultiplier,
+                                    width: 80 * SizeConfig.widthMultiplier,
+                                    margin: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xffffffff),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          offset: Offset(0.00, 5.00),
+                                          color: Color(0xff0792ef)
+                                              .withOpacity(0.60),
+                                          blurRadius: 18,
+                                        ),
+                                      ],
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    child: Center(
+                                      child: ListTile(
+                                        onTap: () async {
+                                          fulldataofrooms.switches =
+                                              fulldataofrooms.boardid[
+                                                  fulldataofrooms
+                                                      .boardidarray[index]];
+                                          fulldataofrooms.boardindex = index;
+                                          fulldataofrooms f1 =
+                                              new fulldataofrooms();
+                                          f1.fetchfavourites();
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    switches(),
+                                              ));
+                                        },
+                                        isThreeLine: false,
+                                        leading: Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: Icon(
+                                              Icons.bookmark_border_outlined),
+                                        ),
+                                        title: Text(
+                                          fulldataofrooms.boardidarray[index],
+                                          style: TextStyle(
+                                            fontSize:
+                                                2 * SizeConfig.textMultiplier,
+                                            color: Color(0xff997a00),
+                                          ),
+                                        ),
+                                        trailing:
+                                            Icon(Icons.navigate_next_outlined),
+                                      ),
                                     ),
                                   ),
-                                  trailing: Icon(Icons.navigate_next_outlined),
-                                ),
+                                )),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       )
                     : Center(
                         child: new Text("Add Boards ",
@@ -158,17 +175,19 @@ class _CircuittState extends State<Circuit> {
                 child: AlertDialog(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0)),
-                  title: Text(
-                    'Details',
-                    style: TextStyle(
-                      fontFamily: "Amelia-Basic-Light",
-                      fontSize: 3 * SizeConfig.textMultiplier,
-                      color: Color(0xff79848b),
+                  title: Center(
+                    child: Text(
+                      'Details of board',
+                      style: TextStyle(
+                        fontFamily: "Amelia-Basic-Light",
+                        fontSize: 3 * SizeConfig.textMultiplier,
+                        color: Color(0xff79848b),
+                      ),
                     ),
                   ),
                   content: Container(
-                    height: 25 * SizeConfig.heightMultiplier,
-                    width: 95 * SizeConfig.widthMultiplier,
+                    height: 10 * SizeConfig.heightMultiplier,
+                    width: 80 * SizeConfig.widthMultiplier,
                     child: Column(
                       children: <Widget>[
                         Form(
@@ -208,133 +227,7 @@ class _CircuittState extends State<Circuit> {
                   ),
                   actions: <Widget>[
                     Container(
-                      height: 5 * SizeConfig.heightMultiplier,
-                      width: 25 * SizeConfig.widthMultiplier,
-                      decoration: BoxDecoration(
-                        color: Color(0xffffffff),
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(0.00, 3.00),
-                            color: Color(0xff0792ef).withOpacity(0.32),
-                            blurRadius: 6,
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(13.00),
-                      ),
-                      child: new FlatButton(
-                          child: new Text(
-                            'Submit',
-                            style: TextStyle(
-                              fontFamily: "Amelia-Basic-Light",
-                              fontSize: 2.5 * SizeConfig.textMultiplier,
-                              color: Color(0xff79848b),
-                            ),
-                          ),
-                          onPressed: pressed
-                              ? null
-                              : () async {
-                                  setState(() {
-                                    pressed = true;
-                                  });
-
-                                  if (id.text != "") {
-                                    String noofboards;
-                                    int max = 0;
-                                    for (int i = 0;
-                                        i < fulldataofrooms.boardidarray.length;
-                                        i++) {
-                                      String s =
-                                          fulldataofrooms.boardidarray[i];
-
-                                      int n = int.parse(s.substring(5));
-                                      if (n > max) max = n;
-                                    }
-                                    max++;
-                                    print(max);
-                                    if (max < 10)
-                                      noofboards = "0" + max.toString();
-                                    else
-                                      noofboards = max.toString();
-                                    //
-                                    String room = fulldataofrooms
-                                        .roomidarray[fulldataofrooms.index];
-                                    String board =
-                                        "board" + noofboards.toString();
-
-                                    for (int i = 1; i <= 5; i++) {
-                                      dbref
-                                          .child(FirebaseAuth
-                                              .instance.currentUser.uid)
-                                          .child("index")
-                                          .child(
-                                              room + board + "a" + i.toString())
-                                          .set(room +
-                                              " " +
-                                              board +
-                                              " " +
-                                              "a" +
-                                              i.toString());
-                                    }
-
-                                    //
-
-                                    dbref
-                                        .child(FirebaseAuth
-                                            .instance.currentUser.uid)
-                                        .child("rooms")
-                                        .child(fulldataofrooms
-                                            .roomidarray[fulldataofrooms.index])
-                                        .child("circuit")
-                                        .child("board" + noofboards.toString())
-                                        .set({
-                                      "a1": {
-                                        "name": room + board + "a1",
-                                        "val": 0,
-                                        "icon": "null"
-                                      },
-                                      "a2": {
-                                        "name": room + board + "a2",
-                                        "val": 0,
-                                        "icon": "null"
-                                      },
-                                      "a3": {
-                                        "name": room + board + "a3",
-                                        "val": 0,
-                                        "icon": "null"
-                                      },
-                                      "a4": {
-                                        "name": room + board + "a4",
-                                        "val": 0,
-                                        "icon": "null"
-                                      },
-                                      "a5": {
-                                        "name": room + board + "a5",
-                                        "val": 0,
-                                        "icon": "null"
-                                      },
-                                    });
-
-                                    fulldataofrooms f1 = new fulldataofrooms();
-                                    f1.fetchindex();
-
-                                    setState(() async {
-                                      Navigator.pop(context);
-                                      Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => Circuit()));
-                                    });
-                                  } else {
-                                    Fluttertoast.showToast(
-                                        msg: "Please Enter valid Id");
-                                  }
-                                  setState(() {
-                                    pressed = false;
-                                  });
-                                }),
-                    ),
-                    Container(
-                      height: 5 * SizeConfig.heightMultiplier,
+                      height: 6 * SizeConfig.heightMultiplier,
                       width: 25 * SizeConfig.widthMultiplier,
                       margin: EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -348,18 +241,157 @@ class _CircuittState extends State<Circuit> {
                         ],
                         borderRadius: BorderRadius.circular(13.00),
                       ),
-                      child: new FlatButton(
-                          child: new Text(
-                            'Cancel',
-                            style: TextStyle(
-                              fontFamily: "Amelia-Basic-Light",
-                              fontSize: 16,
-                              color: Color(0xff79848b),
+                      child: Center(
+                        child: new FlatButton(
+                            child: new Text(
+                              'Submit',
+                              style: TextStyle(
+                                fontFamily: "Amelia-Basic-Light",
+                                fontSize: 2.5 * SizeConfig.textMultiplier,
+                                color: Color(0xff79848b),
+                              ),
                             ),
+                            onPressed: pressed
+                                ? null
+                                : () async {
+                                    setState(() {
+                                      pressed = true;
+                                    });
+
+                                    if (id.text != "") {
+                                      String noofboards;
+                                      int max = 0;
+                                      for (int i = 0;
+                                          i <
+                                              fulldataofrooms
+                                                  .boardidarray.length;
+                                          i++) {
+                                        String s =
+                                            fulldataofrooms.boardidarray[i];
+
+                                        int n = int.parse(s.substring(5));
+                                        if (n > max) max = n;
+                                      }
+                                      max++;
+                                      print(max);
+                                      if (max < 10)
+                                        noofboards = "0" + max.toString();
+                                      else
+                                        noofboards = max.toString();
+                                      //
+                                      String room = fulldataofrooms
+                                          .roomidarray[fulldataofrooms.index];
+                                      String board =
+                                          "board" + noofboards.toString();
+
+                                      for (int i = 1; i <= 5; i++) {
+                                        dbref
+                                            .child(FirebaseAuth
+                                                .instance.currentUser.uid)
+                                            .child("index")
+                                            .child(room +
+                                                board +
+                                                "a" +
+                                                i.toString())
+                                            .set(room +
+                                                " " +
+                                                board +
+                                                " " +
+                                                "a" +
+                                                i.toString());
+                                      }
+
+                                      //
+
+                                      dbref
+                                          .child(FirebaseAuth
+                                              .instance.currentUser.uid)
+                                          .child("rooms")
+                                          .child(fulldataofrooms.roomidarray[
+                                              fulldataofrooms.index])
+                                          .child("circuit")
+                                          .child(
+                                              "board" + noofboards.toString())
+                                          .set({
+                                        "a1": {
+                                          "name": room + board + "a1",
+                                          "val": 0,
+                                          "icon": "null"
+                                        },
+                                        "a2": {
+                                          "name": room + board + "a2",
+                                          "val": 0,
+                                          "icon": "null"
+                                        },
+                                        "a3": {
+                                          "name": room + board + "a3",
+                                          "val": 0,
+                                          "icon": "null"
+                                        },
+                                        "a4": {
+                                          "name": room + board + "a4",
+                                          "val": 0,
+                                          "icon": "null"
+                                        },
+                                        "a5": {
+                                          "name": room + board + "a5",
+                                          "val": 0,
+                                          "icon": "null"
+                                        },
+                                      });
+
+                                      fulldataofrooms f1 =
+                                          new fulldataofrooms();
+                                      f1.fetchindex();
+
+                                      setState(() async {
+                                        Navigator.pop(context);
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    Circuit()));
+                                      });
+                                    } else {
+                                      Fluttertoast.showToast(
+                                          msg: "Please Enter valid Id");
+                                    }
+                                    setState(() {
+                                      pressed = false;
+                                    });
+                                  }),
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.widthMultiplier * 2.5),
+                    Container(
+                      height: 6 * SizeConfig.heightMultiplier,
+                      width: 25 * SizeConfig.widthMultiplier,
+                      margin: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Color(0xffffffff),
+                        boxShadow: [
+                          BoxShadow(
+                            offset: Offset(0.00, 3.00),
+                            color: Color(0xff0792ef).withOpacity(0.32),
+                            blurRadius: 6,
                           ),
-                          onPressed: () async {
-                            Navigator.of(context).pop();
-                          }),
+                        ],
+                        borderRadius: BorderRadius.circular(13.00),
+                      ),
+                      child: Center(
+                        child: new FlatButton(
+                            child: new Text(
+                              'Cancel',
+                              style: TextStyle(
+                                fontFamily: "Amelia-Basic-Light",
+                                fontSize: 16,
+                                color: Color(0xff79848b),
+                              ),
+                            ),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                            }),
+                      ),
                     )
                   ],
                 ),
