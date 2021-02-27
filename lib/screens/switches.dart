@@ -17,35 +17,6 @@ class _switchesState extends State<switches> {
 
   var _tapPosition, focusnode = List.filled(5, false);
   final dbref = FirebaseDatabase.instance.reference().child("Users");
-  final slider = SleekCircularSlider(
-    appearance: CircularSliderAppearance(
-      size: 180,
-      startAngle: 210,
-      angleRange: 300,
-      customWidths: CustomSliderWidths(
-        progressBarWidth: 15,
-      ),
-      customColors: CustomSliderColors(
-        hideShadow: false,
-        trackColor: Color(0xff79848b),
-        progressBarColor: Colors.blue[300],
-        shadowMaxOpacity: 10,
-      ),
-      infoProperties: InfoProperties(
-        topLabelText: 'Regulator Speed',
-        topLabelStyle: TextStyle(
-          color: Color(0xff0792ef),
-          fontSize: 20,
-        ),
-      ),
-    ),
-    initialValue: 0,
-    min: 0,
-    max: 100,
-    onChange: (double value) {
-      print(value);
-    },
-  );
   User user = FirebaseAuth.instance.currentUser;
   var edit = List.filled(5, false);
   var iconStr = false;
@@ -397,7 +368,62 @@ class _switchesState extends State<switches> {
                     child: Container(
                   height: 40 * SizeConfig.heightMultiplier,
                   width: 70 * SizeConfig.widthMultiplier,
-                  child: slider,
+                  child: SleekCircularSlider(
+                    appearance: CircularSliderAppearance(
+                      size: 180,
+                      startAngle: 210,
+                      angleRange: 300,
+                      customWidths: CustomSliderWidths(
+                        progressBarWidth: 15,
+                      ),
+                      customColors: CustomSliderColors(
+                        hideShadow: false,
+                        trackColor: Color(0xff79848b),
+                        progressBarColor: Colors.blue[300],
+                        shadowMaxOpacity: 10,
+                      ),
+                      infoProperties: InfoProperties(
+                        topLabelText: 'Regulator Speed',
+                        modifier: (double value) {
+                          return "${value.toInt()}";
+                        },
+                        topLabelStyle: TextStyle(
+                          color: Color(0xff0792ef),
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    initialValue: fulldataofrooms
+                        .switches["a" + (4 + 1).toString()]["val"]
+                        .toDouble(),
+                    min: 0,
+                    max: 5,
+                    // innerWidget: (double value) {
+                    //   // use your custom widget inside the slider (gets a slider value from the callback)
+                    //   return Text("regulator speed ${value}");
+                    // },
+                    onChange: (double value) {
+                      print(value);
+
+                      setState(() {
+                        int flag = value.toInt();
+
+                        fulldataofrooms.switches["a" + (4 + 1).toString()]
+                            ["val"] = flag;
+                        dbref
+                            .child(user.uid)
+                            .child("rooms")
+                            .child(fulldataofrooms
+                                .roomidarray[fulldataofrooms.index])
+                            .child("circuit")
+                            .child(fulldataofrooms
+                                .boardidarray[fulldataofrooms.boardindex])
+                            .child("a" + (4 + 1).toString())
+                            .child("val")
+                            .set(flag);
+                      });
+                    },
+                  ),
                 )),
               )
             ],
