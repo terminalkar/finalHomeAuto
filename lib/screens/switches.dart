@@ -26,8 +26,8 @@ class _switchesState extends State<switches> {
   String room = 'Select';
   List<String> Rooms = [
     'Select',
-    'Hall',
-    'Kitchen',
+    'A.C.',
+    'Gaming Station',
     'Bedroom',
     'Bathroom',
     "Children's Room",
@@ -37,8 +37,14 @@ class _switchesState extends State<switches> {
   @override
   void initState() {
     iconlist.addAll({
-      "Kitchen": {1: "assets/kitchen.png", 0: "assets/bathroom.png"},
-      "Hall": {1: "assets/hall.png", 0: "assets/bathroom.png"}
+      "Gaming Station": {
+        0: "assets/console-normal.png",
+        1: "assets/console-green.png"
+      },
+      "A.C.": {
+        0: "assets/air-conditioner-normal.png",
+        1: "assets/air-conditioner-green.png"
+      }
     });
     // image.addAll({
     //   'Hall': "assets/hall.png",
@@ -237,7 +243,7 @@ class _switchesState extends State<switches> {
                               ),
                               Center(
                                 child: Container(
-                                  height: 5 * SizeConfig.heightMultiplier,
+                                  height: 7 * SizeConfig.heightMultiplier,
                                   width: 30 * SizeConfig.widthMultiplier,
                                   child: Image(
                                     image: fulldataofrooms.switches["a" + (index + 1).toString()]
@@ -252,51 +258,8 @@ class _switchesState extends State<switches> {
                                   ),
                                 ),
                               ),
-
-                              // Center(
-                              //   child: Container(
-                              //     height: 5 * SizeConfig.heightMultiplier,
-                              //     width: 30 * SizeConfig.widthMultiplier,
-                              //     margin: EdgeInsets.all(10),
-                              //     child: LiteRollingSwitch(
-                              //       value: fulldataofrooms.switches["a" +
-                              //                   (index + 1).toString()]["val"] ==
-                              //               1
-                              //           ? true
-                              //           : false,
-                              //       textOn: 'Active',
-                              //       textOff: 'Inactive',
-                              //       colorOn: Colors.greenAccent,
-                              //       colorOff: Color(0xff79848b),
-                              //       iconOn: Icons.lightbulb_outline,
-                              //       iconOff: Icons.power_settings_new,
-                              //       textSize: 14,
-                              //       onChanged: (bool state) {
-                              //         print('turned ${(state) ? 'on' : 'off'}');
-                              //         int flag = 0;
-                              //         if (state) {
-                              //           flag = 1;
-                              //         }
-                              //         fulldataofrooms
-                              //                 .switches["a" + (index + 1).toString()]
-                              //             ["val"] = flag;
-                              //         dbref
-                              //             .child(user.uid)
-                              //             .child("rooms")
-                              //             .child(fulldataofrooms
-                              //                 .roomidarray[fulldataofrooms.index])
-                              //             .child("circuit")
-                              //             .child(fulldataofrooms.boardidarray[
-                              //                 fulldataofrooms.boardindex])
-                              //             .child("a" + (index + 1).toString())
-                              //             .child("val")
-                              //             .set(flag);
-                              //       },
-                              //     ),
-                              //   ),
-                              // ),
                               SizedBox(
-                                height: 40,
+                                height: 20,
                               ),
                               Center(
                                 child: Container(
