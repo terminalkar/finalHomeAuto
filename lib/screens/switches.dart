@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:home_automation_app/screens/main_data.dart';
 
@@ -20,13 +22,16 @@ class _switchesState extends State<switches> {
   User user = FirebaseAuth.instance.currentUser;
   var edit = List.filled(5, false);
   var iconStr = false;
+  Icon obj;
   var icnstr = "assets/kitchen.png";
   var image = new Map();
   var iconlist = new Map();
+  var controllerlist = List.filled(4, TextEditingController());
+  final _focusNode = FocusNode();
   Color dropcolor = Color(0xff79848b);
-  String room = 'Select';
+  String room = 'Select Type';
   List<String> Rooms = [
-    'Select',
+    'Select Type',
     'A.C.',
     'Gaming Station',
     'Bedroom',
@@ -55,7 +60,17 @@ class _switchesState extends State<switches> {
     //   "Children's Room": "assets/Children's_Room.png",
     //   'Other': "assets/logo.png"
     // });
+    iterate();
     super.initState();
+  }
+
+  void iterate() {
+    for (int i = 0; i < 4; i++) {
+      setState(() {
+        controllerlist[i].text =
+            fulldataofrooms.switches["a" + (i + 1).toString()]["name"];
+      });
+    }
   }
 
   @override
@@ -65,6 +80,12 @@ class _switchesState extends State<switches> {
         resizeToAvoidBottomPadding: false,
         backgroundColor: Colors.white,
         appBar: AppBar(
+          leading: IconButton(
+              icon: Icon(FontAwesomeIcons.arrowLeft),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
+          backgroundColor: Colors.blue,
           title: Text(
             'Switches',
             style: TextStyle(color: Colors.white),
@@ -75,235 +96,108 @@ class _switchesState extends State<switches> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-                shrinkWrap: true,
-                children: List.generate(
-                  4,
-                  (index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: InkWell(
-                        onTapDown: (TapDownDetails details) {
-                          _tapPosition = details.globalPosition;
-                        },
-                        //Rename
-                        onLongPress: () {
-                          final RenderBox overlay =
-                              Overlay.of(context).context.findRenderObject();
-                          showMenu(
-                            shape: new RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(10.0)),
-                            items: <PopupMenuEntry>[
-                              PopupMenuItem(
-                                value: index,
-                                child: InkWell(
-                                  onTap: () {
-                                    print("rename");
-                                    setState(() {
-                                      edit = List.filled(5, false);
-                                      edit[index] = true;
-                                      focusnode[index] = true;
-                                    });
-                                    Navigator.pop(context);
-                                  },
-                                  child: Row(
-                                    children: <Widget>[
-                                      Icon(Icons.edit),
-                                      SizedBox(
-                                        width: 25,
-                                      ),
-                                      Text(
-                                        "Rename",
-                                        style: TextStyle(
-                                            fontFamily: "Amelia-Basic-Light",
-                                            fontSize: 16,
-                                            color: Color(0xff79848b)),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: index,
-                                child: InkWell(
-                                  onTap: () {
-                                    print("favourites");
-                                    //logic///////////////////////
-                                    Navigator.pop(context);
-                                    favouritesdialogbox(context, index);
-                                  },
-                                  child: Row(
-                                    children: <Widget>[
-                                      Icon(Icons.edit),
-                                      SizedBox(
-                                        width: 25,
-                                      ),
-                                      Text(
-                                        "Add to Favourites",
-                                        style: TextStyle(
-                                            fontFamily: "Amelia-Basic-Light",
-                                            fontSize: 16,
-                                            color: Color(0xff79848b)),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: index,
-                                child: DropdownButton<String>(
-                                  iconEnabledColor: dropcolor,
-                                  items: Rooms.map((String listvalue) {
-                                    return DropdownMenuItem<String>(
-                                      value: listvalue,
-                                      child: Text(
-                                        listvalue,
-                                        style: TextStyle(
-                                          fontFamily: "Amelia-Basic-Light",
-                                          fontSize: 16,
-                                          color: Color(0xff79848b),
+              AnimationLimiter(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  children: List.generate(
+                    4,
+                    (index) {
+                      return AnimationConfiguration.staggeredGrid(
+                        position: index,
+                        duration: const Duration(milliseconds: 375),
+                        columnCount: 2,
+                        child: ScaleAnimation(
+                          child: FadeInAnimation(
+                              child: Padding(
+                            padding: EdgeInsets.all(
+                                SizeConfig.widthMultiplier * 2.8),
+                            child: InkWell(
+                              onTapDown: (TapDownDetails details) {
+                                _tapPosition = details.globalPosition;
+                              },
+                              //Rename
+                              onLongPress: () {
+                                final RenderBox overlay = Overlay.of(context)
+                                    .context
+                                    .findRenderObject();
+                                showMenu(
+                                  shape: new RoundedRectangleBorder(
+                                      borderRadius:
+                                          new BorderRadius.circular(10.0)),
+                                  items: <PopupMenuEntry>[
+                                    PopupMenuItem(
+                                      value: index,
+                                      child: InkWell(
+                                        onTap: () {
+                                          print("rename");
+                                          setState(() {
+                                            edit = List.filled(5, false);
+                                            edit[index] = true;
+                                            focusnode[index] = true;
+                                          });
+                                          _focusNode.addListener(() {
+                                            if (focusnode[index]) {
+                                              controllerlist[index].selection =
+                                                  TextSelection(
+                                                      baseOffset: 0,
+                                                      extentOffset:
+                                                          controllerlist[index]
+                                                              .text
+                                                              .length);
+                                            }
+                                          });
+                                          Navigator.pop(context);
+                                        },
+                                        child: Row(
+                                          children: <Widget>[
+                                            Icon(Icons.edit),
+                                            SizedBox(
+                                              width:
+                                                  SizeConfig.widthMultiplier *
+                                                      6,
+                                            ),
+                                            Text(
+                                              "Rename",
+                                              style: TextStyle(
+                                                  fontFamily:
+                                                      "Amelia-Basic-Light",
+                                                  fontSize: SizeConfig
+                                                          .textMultiplier *
+                                                      2.5,
+                                                  color: Color(0xff79848b)),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (val) {
-                                    room = val;
-                                    setState(() {
-                                      fulldataofrooms.switches[
-                                              "a" + (index + 1).toString()]
-                                          ["icon"] = room;
-                                    });
-                                    dbref
-                                        .child(user.uid)
-                                        .child("rooms")
-                                        .child(fulldataofrooms
-                                            .roomidarray[fulldataofrooms.index])
-                                        .child("circuit")
-                                        .child(fulldataofrooms.boardidarray[
-                                            fulldataofrooms.boardindex])
-                                        .set(fulldataofrooms.switches);
-                                    Navigator.pop(context);
-                                  },
-                                  value: room,
-                                ),
-                              ),
-                            ],
-                            context: context,
-                            position: RelativeRect.fromRect(
-                                _tapPosition & const Size(40, 40),
-                                Offset.zero & overlay.size),
-                          );
-                          //
-                        },
-                        //switches//////////////////////////////////////////////////////////////////////////////////
-                        onTap: () {
-                          setState(() {
-                            int flag = 0;
-                            print(fulldataofrooms
-                                .switches["a" + (index + 1).toString()]);
-                            if (fulldataofrooms
-                                        .switches["a" + (index + 1).toString()]
-                                    ["val"] ==
-                                0) {
-                              flag = 1;
-                            }
-                            if (fulldataofrooms
-                                        .switches["a" + (index + 1).toString()]
-                                    ["icon"] ==
-                                "null") {
-                              icnstr = "assets/logo.png";
-                            } else {
-                              icnstr = iconlist[fulldataofrooms
-                                      .switches["a" + (index + 1).toString()]
-                                  ["icon"]][flag];
-                            }
-                            fulldataofrooms
-                                    .switches["a" + (index + 1).toString()]
-                                ["val"] = flag;
-                            dbref
-                                .child(user.uid)
-                                .child("rooms")
-                                .child(fulldataofrooms
-                                    .roomidarray[fulldataofrooms.index])
-                                .child("circuit")
-                                .child(fulldataofrooms
-                                    .boardidarray[fulldataofrooms.boardindex])
-                                .child("a" + (index + 1).toString())
-                                .child("val")
-                                .set(flag);
-                          });
-                        },
-                        child: Container(
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Center(
-                                child: Container(
-                                  height: 7 * SizeConfig.heightMultiplier,
-                                  width: 30 * SizeConfig.widthMultiplier,
-                                  child: Image(
-                                    image: fulldataofrooms.switches["a" + (index + 1).toString()]
-                                                ["icon"] ==
-                                            "null"
-                                        ? AssetImage("assets/logo.png")
-                                        : AssetImage(iconlist[fulldataofrooms
-                                                .switches["a" + (index + 1).toString()]
-                                            ["icon"]][fulldataofrooms.switches[
-                                                "a" + (index + 1).toString()]
-                                            ["val"]]),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Center(
-                                child: Container(
-                                  width: 14 * SizeConfig.heightMultiplier,
-                                  child: TextField(
-                                    autofocus: focusnode[index],
-                                    focusNode: new FocusNode(),
-                                    controller: TextEditingController()
-                                      ..text = fulldataofrooms.switches[
-                                          "a" + (index + 1).toString()]["name"],
-                                    expands: false,
-                                    enabled: edit[index],
-                                    textInputAction: TextInputAction.go,
-                                    keyboardType: TextInputType.text,
-                                    style: TextStyle(
-                                      fontFamily: "Amelia-Basic-Light",
-                                      fontSize: 16,
-                                      color: Color(0xff79848b),
                                     ),
-                                    onSubmitted: (name) async {
-                                      setState(() {
-                                        if (fulldataofrooms.indexlist
-                                                .contains(name) ==
-                                            true) {
-                                          Fluttertoast.showToast(
-                                              msg: "Please use different Name");
-                                        } else {
-                                          dbref
-                                              .child(user.uid)
-                                              .child("index")
-                                              .child(fulldataofrooms.switches[
-                                                  "a" +
-                                                      (index + 1)
-                                                          .toString()]["name"])
-                                              .remove();
-                                          fulldataofrooms.indexlist.remove(
-                                              fulldataofrooms.switches["a" +
-                                                      (index + 1).toString()]
-                                                  ["name"]);
-                                          fulldataofrooms.indexlist.add(name);
-                                          fulldataofrooms.switches[
-                                                  "a" + (index + 1).toString()]
-                                              ["name"] = name;
+                                    PopupMenuItem(
+                                      value: index,
+                                      child: DropdownButton<String>(
+                                        iconEnabledColor: dropcolor,
+                                        items: Rooms.map((String listvalue) {
+                                          return DropdownMenuItem<String>(
+                                            value: listvalue,
+                                            child: Text(
+                                              listvalue,
+                                              style: TextStyle(
+                                                fontFamily:
+                                                    "Amelia-Basic-Light",
+                                                fontSize:
+                                                    SizeConfig.textMultiplier *
+                                                        2.5,
+                                                color: Color(0xff79848b),
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (val) {
+                                          room = val;
+                                          setState(() {
+                                            fulldataofrooms.switches["a" +
+                                                    (index + 1).toString()]
+                                                ["icon"] = room;
+                                          });
                                           dbref
                                               .child(user.uid)
                                               .child("rooms")
@@ -314,51 +208,206 @@ class _switchesState extends State<switches> {
                                               .child(fulldataofrooms
                                                       .boardidarray[
                                                   fulldataofrooms.boardindex])
-                                              .child(
-                                                  "a" + (index + 1).toString())
-                                              .child("name")
-                                              .set(name);
+                                              .set(fulldataofrooms.switches);
+                                          Navigator.pop(context);
+                                        },
+                                        value: room,
+                                      ),
+                                    ),
+                                  ],
+                                  context: context,
+                                  position: RelativeRect.fromRect(
+                                      _tapPosition & const Size(40, 40),
+                                      Offset.zero & overlay.size),
+                                );
+                                //
+                              },
+                              //switches//////////////////////////////////////////////////////////////////////////////////
+                              onTap: () {
+                                setState(() {
+                                  int flag = 0;
+                                  print(fulldataofrooms
+                                      .switches["a" + (index + 1).toString()]);
+                                  if (fulldataofrooms.switches["a" +
+                                          (index + 1).toString()]["val"] ==
+                                      0) {
+                                    flag = 1;
+                                  }
+                                  if (fulldataofrooms.switches["a" +
+                                          (index + 1).toString()]["icon"] ==
+                                      "null") {
+                                    icnstr = "assets/logo.png";
+                                  } else {
+                                    icnstr = iconlist[fulldataofrooms.switches[
+                                            "a" + (index + 1).toString()]
+                                        ["icon"]][flag];
+                                  }
+                                  fulldataofrooms.switches["a" +
+                                      (index + 1).toString()]["val"] = flag;
+                                  dbref
+                                      .child(user.uid)
+                                      .child("rooms")
+                                      .child(fulldataofrooms
+                                          .roomidarray[fulldataofrooms.index])
+                                      .child("circuit")
+                                      .child(fulldataofrooms.boardidarray[
+                                          fulldataofrooms.boardindex])
+                                      .child("a" + (index + 1).toString())
+                                      .child("val")
+                                      .set(flag);
+                                });
+                              },
+                              child: Container(
+                                child: Column(
+                                  children: [
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.star_border,
+                                            size:
+                                                SizeConfig.widthMultiplier * 7,
+                                          ),
+                                          onPressed: () {
+                                            favouritesdialogbox(context, index);
+                                          },
+                                        )),
+                                    // SizedBox(
+                                    //   height: SizeConfig.widthMultiplier * 2.5,
+                                    // ),
+                                    Center(
+                                      child: Container(
+                                        height: 7 * SizeConfig.heightMultiplier,
+                                        width: 30 * SizeConfig.widthMultiplier,
+                                        child: Image(
+                                          image: fulldataofrooms.switches[
+                                                          "a" + (index + 1).toString()]
+                                                      ["icon"] ==
+                                                  "null"
+                                              ? AssetImage("assets/logo.png")
+                                              : AssetImage(iconlist[fulldataofrooms
+                                                      .switches["a" + (index + 1).toString()]
+                                                  ["icon"]][fulldataofrooms
+                                                      .switches["a" + (index + 1).toString()]
+                                                  ["val"]]),
+                                        ),
+                                      ),
+                                    ),
+                                    // SizedBox(
+                                    //   height: 20,
+                                    // ),
+                                    Center(
+                                      child: Container(
+                                        width: 14 * SizeConfig.heightMultiplier,
+                                        child: TextFormField(
+                                          enableInteractiveSelection: true,
+                                          autofocus: focusnode[index],
+                                          focusNode: new FocusNode(),
+                                          controller: controllerlist[index],
+                                          expands: false,
+                                          enabled: edit[index],
+                                          textInputAction: TextInputAction.go,
+                                          keyboardType: TextInputType.text,
+                                          style: TextStyle(
+                                            fontFamily: "Amelia-Basic-Light",
+                                            fontSize:
+                                                SizeConfig.textMultiplier * 2.5,
+                                            color: Color(0xff79848b),
+                                          ),
+                                          onSaved: (name) async {
+                                            setState(() {
+                                              if (fulldataofrooms.indexlist
+                                                      .contains(name) ==
+                                                  true) {
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                        "Please use different Name");
+                                              } else {
+                                                dbref
+                                                    .child(user.uid)
+                                                    .child("index")
+                                                    .child(fulldataofrooms
+                                                                .switches[
+                                                            "a" +
+                                                                (index + 1)
+                                                                    .toString()]
+                                                        ["name"])
+                                                    .remove();
+                                                fulldataofrooms.indexlist
+                                                    .remove(fulldataofrooms
+                                                                .switches[
+                                                            "a" +
+                                                                (index + 1)
+                                                                    .toString()]
+                                                        ["name"]);
+                                                fulldataofrooms.indexlist
+                                                    .add(name);
+                                                fulldataofrooms.switches["a" +
+                                                        (index + 1).toString()]
+                                                    ["name"] = name;
+                                                dbref
+                                                    .child(user.uid)
+                                                    .child("rooms")
+                                                    .child(fulldataofrooms
+                                                            .roomidarray[
+                                                        fulldataofrooms.index])
+                                                    .child("circuit")
+                                                    .child(fulldataofrooms
+                                                            .boardidarray[
+                                                        fulldataofrooms
+                                                            .boardindex])
+                                                    .child("a" +
+                                                        (index + 1).toString())
+                                                    .child("name")
+                                                    .set(name);
 
-                                          dbref
-                                              .child(user.uid)
-                                              .child("index")
-                                              .child(name)
-                                              .set(fulldataofrooms.roomidarray[
-                                                      fulldataofrooms.index] +
-                                                  " " +
-                                                  fulldataofrooms.boardidarray[
-                                                      fulldataofrooms
-                                                          .boardindex] +
-                                                  " " +
-                                                  "a" +
-                                                  (index + 1).toString());
-                                          edit = List.filled(5, false);
-                                          focusnode = List.filled(5, false);
-                                        }
-                                      });
-                                    },
-                                  ),
+                                                dbref
+                                                    .child(user.uid)
+                                                    .child("index")
+                                                    .child(name)
+                                                    .set(fulldataofrooms
+                                                                .roomidarray[
+                                                            fulldataofrooms
+                                                                .index] +
+                                                        " " +
+                                                        fulldataofrooms
+                                                                .boardidarray[
+                                                            fulldataofrooms
+                                                                .boardindex] +
+                                                        " " +
+                                                        "a" +
+                                                        (index + 1).toString());
+                                                iterate();
+                                                edit = List.filled(5, false);
+                                                focusnode =
+                                                    List.filled(5, false);
+                                              }
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Color(0xffffffff),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      offset: Offset(0.00, 5.00),
+                                      color:
+                                          Color(0xff0792ef).withOpacity(0.60),
+                                      blurRadius: 18,
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.circular(8.0),
                                 ),
                               ),
-                            ],
-                          ),
-                          height: 147.00,
-                          width: 194.00,
-                          decoration: BoxDecoration(
-                            color: Color(0xffffffff),
-                            boxShadow: [
-                              BoxShadow(
-                                offset: Offset(0.00, 5.00),
-                                color: Color(0xff0792ef).withOpacity(0.60),
-                                blurRadius: 18,
-                              ),
-                            ],
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
+                            ),
+                          )),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
               /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -366,15 +415,18 @@ class _switchesState extends State<switches> {
               Container(
                 child: Center(
                     child: Container(
-                  height: 40 * SizeConfig.heightMultiplier,
-                  width: 70 * SizeConfig.widthMultiplier,
+                  height: SizeConfig.grp > 3
+                      ? 35 * SizeConfig.heightMultiplier
+                      : 25 * SizeConfig.heightMultiplier,
+                  width: 55 * SizeConfig.widthMultiplier,
                   child: SleekCircularSlider(
                     appearance: CircularSliderAppearance(
+                      animDurationMultiplier: 2.0,
                       size: 180,
                       startAngle: 210,
                       angleRange: 300,
                       customWidths: CustomSliderWidths(
-                        progressBarWidth: 15,
+                        progressBarWidth: 10,
                       ),
                       customColors: CustomSliderColors(
                         hideShadow: false,
@@ -388,9 +440,8 @@ class _switchesState extends State<switches> {
                           return "${value.toInt()}";
                         },
                         topLabelStyle: TextStyle(
-                          color: Color(0xff0792ef),
-                          fontSize: 20,
-                        ),
+                            color: Color(0xff0792ef),
+                            fontSize: SizeConfig.heightMultiplier * 2.5),
                       ),
                     ),
                     initialValue: fulldataofrooms
@@ -398,6 +449,7 @@ class _switchesState extends State<switches> {
                         .toDouble(),
                     min: 0,
                     max: 5,
+                    
                     // innerWidget: (double value) {
                     //   // use your custom widget inside the slider (gets a slider value from the callback)
                     //   return Text("regulator speed ${value}");
@@ -406,7 +458,15 @@ class _switchesState extends State<switches> {
                       print(value);
 
                       setState(() {
-                        int flag = value.toInt();
+                        int flag = 0;
+                        if (fulldataofrooms.switches["a" + (4 + 1).toString()]
+                                    ["val"]
+                                .toDouble() >
+                            value) {
+                          flag = value.floor().toInt();
+                        } else {
+                          flag = value.ceil().toInt();
+                        }
 
                         fulldataofrooms.switches["a" + (4 + 1).toString()]
                             ["val"] = flag;
@@ -449,12 +509,14 @@ class _switchesState extends State<switches> {
                 child: AlertDialog(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0)),
-                  title: Text(
-                    'Details',
-                    style: TextStyle(
-                      fontFamily: "Amelia-Basic-Light",
-                      fontSize: 3 * SizeConfig.textMultiplier,
-                      color: Color(0xff79848b),
+                  title: Center(
+                    child: Text(
+                      'Details',
+                      style: TextStyle(
+                        fontFamily: "Amelia-Basic-Light",
+                        fontSize: 3 * SizeConfig.textMultiplier,
+                        color: Color(0xff79848b),
+                      ),
                     ),
                   ),
                   content: Container(
@@ -491,7 +553,7 @@ class _switchesState extends State<switches> {
                               labelText: "Create new fav list",
                               labelStyle: TextStyle(
                                 fontFamily: "Amelia-Basic-Light",
-                                fontSize: 16,
+                                fontSize: SizeConfig.textMultiplier * 2.5,
                                 color: Color(0xff79848b),
                               ),
                             ),
@@ -510,7 +572,7 @@ class _switchesState extends State<switches> {
                                 listvalue,
                                 style: TextStyle(
                                   fontFamily: "Amelia-Basic-Light",
-                                  fontSize: 16,
+                                  fontSize: SizeConfig.textMultiplier * 2.5,
                                   color: Color(0xff79848b),
                                 ),
                               ),
@@ -529,87 +591,7 @@ class _switchesState extends State<switches> {
                   ),
                   actions: <Widget>[
                     Container(
-                      height: 5 * SizeConfig.heightMultiplier,
-                      width: 25 * SizeConfig.widthMultiplier,
-                      decoration: BoxDecoration(
-                        color: Color(0xffffffff),
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(0.00, 3.00),
-                            color: Color(0xff0792ef).withOpacity(0.32),
-                            blurRadius: 6,
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(13.00),
-                      ),
-                      child: new FlatButton(
-                          child: new Text(
-                            'Submit',
-                            style: TextStyle(
-                              fontFamily: "Amelia-Basic-Light",
-                              fontSize: 2.5 * SizeConfig.textMultiplier,
-                              color: Color(0xff79848b),
-                            ),
-                          ),
-                          onPressed: pressed
-                              ? null
-                              : () async {
-                                  setState(() {
-                                    pressed = true;
-                                  });
-                                  String flag;
-
-                                  if (id.text != null && id.text != "") {
-                                    print("asdf");
-                                    flag = id.text;
-                                    dbref
-                                        .child(FirebaseAuth
-                                            .instance.currentUser.uid)
-                                        .child("favourites")
-                                        .child(flag)
-                                        .child("val")
-                                        .set(0);
-                                  } else {
-                                    flag = dropdownfavouriteroom;
-                                  }
-
-                                  if (dropdownfavouriteroom == "Select" &&
-                                      (id.text == null || id.text == "")) {
-                                    Fluttertoast.showToast(
-                                        msg:
-                                            "Please select any one of the above");
-                                  } else {
-                                    String room = fulldataofrooms
-                                        .roomidarray[fulldataofrooms.index];
-                                    String board = fulldataofrooms.boardidarray[
-                                        fulldataofrooms.boardindex];
-                                    String switchh =
-                                        ('a' + (index + 1).toString());
-                                    dbref
-                                        .child(FirebaseAuth
-                                            .instance.currentUser.uid)
-                                        .child("favourites")
-                                        .child(flag)
-                                        .child(room + board + switchh)
-                                        .set(
-                                            room + " " + board + " " + switchh);
-
-                                    //change
-                                    setState(() {
-                                      dropdownfavouriteroom = "Select";
-                                    });
-                                    fulldataofrooms f = new fulldataofrooms();
-                                    await f.fetchfavourites();
-                                  }
-                                  setState(() {
-                                    pressed = false;
-                                    print("aaya");
-                                    Navigator.pop(context);
-                                  });
-                                }),
-                    ),
-                    Container(
-                      height: 5 * SizeConfig.heightMultiplier,
+                      height: 6 * SizeConfig.heightMultiplier,
                       width: 25 * SizeConfig.widthMultiplier,
                       margin: EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -623,18 +605,107 @@ class _switchesState extends State<switches> {
                         ],
                         borderRadius: BorderRadius.circular(13.00),
                       ),
-                      child: new FlatButton(
-                          child: new Text(
-                            'Cancel',
-                            style: TextStyle(
-                              fontFamily: "Amelia-Basic-Light",
-                              fontSize: 16,
-                              color: Color(0xff79848b),
+                      child: Center(
+                        child: new FlatButton(
+                            child: new Text(
+                              'Submit',
+                              style: TextStyle(
+                                fontFamily: "Amelia-Basic-Light",
+                                fontSize: 2.5 * SizeConfig.textMultiplier,
+                                color: Color(0xff79848b),
+                              ),
                             ),
+                            onPressed: pressed
+                                ? null
+                                : () async {
+                                    setState(() {
+                                      pressed = true;
+                                    });
+                                    String flag;
+
+                                    if (id.text != null && id.text != "") {
+                                      print("asdf");
+                                      flag = id.text;
+                                      dbref
+                                          .child(FirebaseAuth
+                                              .instance.currentUser.uid)
+                                          .child("favourites")
+                                          .child(flag)
+                                          .child("val")
+                                          .set(0);
+                                    } else {
+                                      flag = dropdownfavouriteroom;
+                                    }
+
+                                    if (dropdownfavouriteroom == "Select" &&
+                                        (id.text == null || id.text == "")) {
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              "Please select any one of the above");
+                                    } else {
+                                      String room = fulldataofrooms
+                                          .roomidarray[fulldataofrooms.index];
+                                      String board =
+                                          fulldataofrooms.boardidarray[
+                                              fulldataofrooms.boardindex];
+                                      String switchh =
+                                          ('a' + (index + 1).toString());
+                                      dbref
+                                          .child(FirebaseAuth
+                                              .instance.currentUser.uid)
+                                          .child("favourites")
+                                          .child(flag)
+                                          .child(room + board + switchh)
+                                          .set(room +
+                                              " " +
+                                              board +
+                                              " " +
+                                              switchh);
+
+                                      //change
+                                      setState(() {
+                                        dropdownfavouriteroom = "Select";
+                                      });
+                                      fulldataofrooms f = new fulldataofrooms();
+                                      await f.fetchfavourites();
+                                    }
+                                    setState(() {
+                                      pressed = false;
+                                      print("aaya");
+                                      Navigator.pop(context);
+                                    });
+                                  }),
+                      ),
+                    ),
+                    Container(
+                      height: 6 * SizeConfig.heightMultiplier,
+                      width: 25 * SizeConfig.widthMultiplier,
+                      margin: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Color(0xffffffff),
+                        boxShadow: [
+                          BoxShadow(
+                            offset: Offset(0.00, 3.00),
+                            color: Color(0xff0792ef).withOpacity(0.32),
+                            blurRadius: 6,
                           ),
-                          onPressed: () async {
-                            Navigator.of(context).pop();
-                          }),
+                        ],
+                        borderRadius: BorderRadius.circular(13.00),
+                      ),
+                      child: Center(
+                        child: new FlatButton(
+                            child: new Text(
+                              'Cancel',
+                              style: TextStyle(
+                                fontFamily: "Amelia-Basic-Light",
+                                fontSize: SizeConfig.textMultiplier * 2.5,
+                                color: Color(0xff79848b),
+                              ),
+                            ),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                            }),
+                      ),
                     )
                   ],
                 ),

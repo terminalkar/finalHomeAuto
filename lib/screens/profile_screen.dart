@@ -22,7 +22,7 @@ class profile extends StatefulWidget {
 class profileState extends State<profile> {
   FocusNode focusNode = new FocusNode();
   File _image;
-
+  bool upload = false;
   final dbref = FirebaseDatabase.instance.reference();
   final FocusNode myFocusNode = FocusNode();
   final TextEditingController _idcontroller = new TextEditingController();
@@ -77,7 +77,7 @@ class profileState extends State<profile> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               SizedBox(
-                height: 20.0,
+                height: SizeConfig.heightMultiplier * 3,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -85,12 +85,12 @@ class profileState extends State<profile> {
                   Align(
                     alignment: Alignment.center,
                     child: CircleAvatar(
-                      radius: 100,
+                      radius: SizeConfig.widthMultiplier * 20,
                       backgroundColor: Color(0xff476cfb),
                       child: ClipOval(
                         child: new SizedBox(
-                          width: 180.0,
-                          height: 180.0,
+                          width: SizeConfig.widthMultiplier * 45,
+                          height: SizeConfig.heightMultiplier * 24,
                           child: (_image != null)
                               ? Image.file(
                                   _image,
@@ -109,9 +109,12 @@ class profileState extends State<profile> {
                     child: IconButton(
                       icon: Icon(
                         FontAwesomeIcons.camera,
-                        size: 30.0,
+                        size: SizeConfig.widthMultiplier * 7.5,
                       ),
                       onPressed: () {
+                        setState(() {
+                          upload = true;
+                        });
                         getImage();
                       },
                     ),
@@ -119,7 +122,7 @@ class profileState extends State<profile> {
                 ],
               ),
               SizedBox(
-                height: 20.0,
+                height: SizeConfig.heightMultiplier * 3,
               ),
               Container(
                 decoration: BoxDecoration(
@@ -256,35 +259,44 @@ class profileState extends State<profile> {
               SizedBox(
                 height: 20.0,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  RaisedButton(
-                    color: Color(0xff476cfb),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    elevation: 4.0,
-                    splashColor: Colors.blueGrey,
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(color: Colors.white, fontSize: 16.0),
-                    ),
-                  ),
-                  RaisedButton(
-                    color: Color(0xff476cfb),
-                    onPressed: () {
-                      uploadPic(context);
-                    },
-                    elevation: 4.0,
-                    splashColor: Colors.blueGrey,
-                    child: Text(
-                      'Submit',
-                      style: TextStyle(color: Colors.white, fontSize: 16.0),
-                    ),
-                  ),
-                ],
-              )
+              upload
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        RaisedButton(
+                          color: Color(0xff476cfb),
+                          onPressed: () {
+                            setState(() {
+                              upload = false;
+                            });
+                          },
+                          elevation: 4.0,
+                          splashColor: Colors.blueGrey,
+                          child: Text(
+                            'Cancel',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16.0),
+                          ),
+                        ),
+                        RaisedButton(
+                          color: Color(0xff476cfb),
+                          onPressed: () {
+                            uploadPic(context);
+                            setState(() {
+                              upload = false;
+                            });
+                          },
+                          elevation: 4.0,
+                          splashColor: Colors.blueGrey,
+                          child: Text(
+                            'Submit',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16.0),
+                          ),
+                        ),
+                      ],
+                    )
+                  : SizedBox()
             ],
           ),
         ),

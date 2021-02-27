@@ -315,8 +315,7 @@ class _HomepageState extends State<Homepage>
                             position: index,
                             duration: const Duration(milliseconds: 375),
                             columnCount: 2,
-                            child: SlideAnimation(
-                              verticalOffset: 50.0,
+                            child: ScaleAnimation(
                               child: FadeInAnimation(
                                   child: Padding(
                                 padding: EdgeInsets.all(10),

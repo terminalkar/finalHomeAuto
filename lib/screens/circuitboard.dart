@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/main_data.dart';
@@ -51,12 +52,26 @@ class _CircuittState extends State<Circuit> {
     });
   }
 
+  void handleClick(String value) {
+    switch (value) {
+      case 'Logout':
+        break;
+      case 'Settings':
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
         resizeToAvoidBottomInset: false,
         resizeToAvoidBottomPadding: true,
         appBar: AppBar(
+          leading: IconButton(
+              icon: Icon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
           backgroundColor: Colors.blue,
           title: Text(
             'Board',
@@ -80,57 +95,78 @@ class _CircuittState extends State<Circuit> {
                               child: SlideAnimation(
                                 verticalOffset: 50.0,
                                 child: FadeInAnimation(
-                                    child: Card(
-                                  child: Container(
+                                    child: Dismissible(
+                                  direction: DismissDirection.startToEnd,
+                                  resizeDuration: Duration(milliseconds: 200),
+                                  key: ObjectKey(
+                                      fulldataofrooms.boardidarray[index]),
+                                  onDismissed: (direction) {
+                                    // TODO: implement your delete function and check direction if needed
+                                    _deleteMessage(index);
+                                  },
+                                  background: Container(
                                     height: 8 * SizeConfig.heightMultiplier,
                                     width: 80 * SizeConfig.widthMultiplier,
-                                    margin: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffffffff),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          offset: Offset(0.00, 5.00),
-                                          color: Color(0xff0792ef)
-                                              .withOpacity(0.60),
-                                          blurRadius: 18,
-                                        ),
-                                      ],
-                                      borderRadius: BorderRadius.circular(8.0),
+                                    alignment: AlignmentDirectional.centerStart,
+                                    color: Colors.red,
+                                    child: Icon(
+                                      Icons.delete_forever,
+                                      color: Colors.white,
                                     ),
-                                    child: Center(
-                                      child: ListTile(
-                                        onTap: () async {
-                                          fulldataofrooms.switches =
-                                              fulldataofrooms.boardid[
-                                                  fulldataofrooms
-                                                      .boardidarray[index]];
-                                          fulldataofrooms.boardindex = index;
-                                          fulldataofrooms f1 =
-                                              new fulldataofrooms();
-                                          f1.fetchfavourites();
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    switches(),
-                                              ));
-                                        },
-                                        isThreeLine: false,
-                                        leading: Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Icon(
-                                              Icons.bookmark_border_outlined),
-                                        ),
-                                        title: Text(
-                                          fulldataofrooms.boardidarray[index],
-                                          style: TextStyle(
-                                            fontSize:
-                                                2 * SizeConfig.textMultiplier,
-                                            color: Color(0xff997a00),
+                                  ),
+                                  child: Card(
+                                    child: Container(
+                                      height: 8 * SizeConfig.heightMultiplier,
+                                      width: 100 * SizeConfig.widthMultiplier,
+                                      margin: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xffffffff),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            offset: Offset(0.00, 5.00),
+                                            color: Color(0xff0792ef)
+                                                .withOpacity(0.60),
+                                            blurRadius: 18,
                                           ),
+                                        ],
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      child: Center(
+                                        child: ListTile(
+                                          onTap: () async {
+                                            fulldataofrooms.switches =
+                                                fulldataofrooms.boardid[
+                                                    fulldataofrooms
+                                                        .boardidarray[index]];
+                                            fulldataofrooms.boardindex = index;
+                                            fulldataofrooms f1 =
+                                                new fulldataofrooms();
+                                            f1.fetchfavourites();
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      switches(),
+                                                ));
+                                          },
+                                          isThreeLine: false,
+                                          leading: Padding(
+                                            padding: const EdgeInsets.all(10.0),
+                                            child: Icon(
+                                                Icons.bookmark_border_outlined),
+                                          ),
+                                          title: Text(
+                                            fulldataofrooms.boardidarray[index],
+                                            style: TextStyle(
+                                              fontSize:
+                                                  2 * SizeConfig.textMultiplier,
+                                              color: Color(0xff997a00),
+                                            ),
+                                          ),
+                                          trailing: Icon(
+                                              Icons.navigate_next_outlined),
                                         ),
-                                        trailing:
-                                            Icon(Icons.navigate_next_outlined),
                                       ),
                                     ),
                                   ),
@@ -158,6 +194,11 @@ class _CircuittState extends State<Circuit> {
             tooltip: 'Increment',
             label: Text("Add Boards"),
             icon: Icon(Icons.add)));
+  }
+
+  _deleteMessage(index) {
+    // TODO: here remove from Firestore, then update your local snapshot list
+    // setState(() {});
   }
 
   _addboard(BuildContext context) async {
