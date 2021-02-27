@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:home_automation_app/screens/main_data.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 
 class favourite extends StatefulWidget {
   @override
@@ -63,105 +64,136 @@ class _favouriteState extends State<favourite> {
 
                 //switches//////////////////////////////////////////////////////////////////////////////////
 
-                onTap: () async {
-                  try {
-                    int flag = fulldataofrooms.favouriteroomscontents[
-                        fulldataofrooms.favroomsarray[index + 1]]["val"];
-                    Map m = fulldataofrooms.favouriteroomscontents[
-                        fulldataofrooms.favroomsarray[index + 1]];
-                    for (final i in m.values) {
-                      if (i == 1 || i == 0) continue;
-                      String s = i.toString();
-                      var list = s.split(" ");
-                      Fluttertoast.showToast(msg: list.toString());
-                      if (flag == 1) {
-                        setState(() {
-                          fulldataofrooms.favouriteroomscontents[fulldataofrooms
-                              .favroomsarray[index + 1]]["val"] = 0;
-                        });
-                        await dbref
-                            .child(user.uid)
-                            .child("favourites")
-                            .child(fulldataofrooms.favroomsarray[index + 1])
-                            .child("val")
-                            .set(0);
-                        await dbref
-                            .child(user.uid)
-                            .child("rooms")
-                            .child(list[0])
-                            .child("circuit")
-                            .child(list[1])
-                            .child(list[2])
-                            .child("val")
-                            .set(0);
-                      } else {
-                        setState(() {
-                          fulldataofrooms.favouriteroomscontents[fulldataofrooms
-                              .favroomsarray[index + 1]]["val"] = 1;
-                        });
-                        await dbref
-                            .child(user.uid)
-                            .child("favourites")
-                            .child(fulldataofrooms.favroomsarray[index + 1])
-                            .child("val")
-                            .set(1);
-                        await dbref
-                            .child(user.uid)
-                            .child("rooms")
-                            .child(list[0])
-                            .child("circuit")
-                            .child(list[1])
-                            .child(list[2])
-                            .child("val")
-                            .set(1);
-                      }
-                    }
-                  } catch (Ex) {
-                    print("eception");
-                  }
-                },
+                onTap: () {},
                 child: Container(
                   child: Column(
                     children: [
-                      SizedBox(
-                        height: 10,
-                      ),
                       Center(
                         child: Column(
                           children: [
-                            Container(
-                                height: 5 * SizeConfig.heightMultiplier,
-                                width: 30 * SizeConfig.widthMultiplier,
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.edit,
-                                    color: fulldataofrooms
-                                                    .favouriteroomscontents[
-                                                fulldataofrooms.favroomsarray[
-                                                    index + 1]]["val"] ==
-                                            1
-                                        ? Colors.green
-                                        : Colors.grey,
+                            Center(
+                              child: Row(
+                                children: [
+                                  Container(
+                                    height: 6 * SizeConfig.heightMultiplier,
+                                    width: 20 * SizeConfig.widthMultiplier,
+                                    margin: EdgeInsets.all(10.0),
+                                    child: Text(
+                                      fulldataofrooms.favroomsarray[index + 1],
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                    ),
                                   ),
-                                  //add icon here///////////
-
-                                  onPressed: () {
-                                    setState(() {});
-                                  },
-                                )),
-                            Text(fulldataofrooms.favroomsarray[index + 1]),
-                            PopupMenuButton(
-                              // initialValue: ,
-                              shape: new RoundedRectangleBorder(
-                                  borderRadius:
-                                      new BorderRadius.circular(10.0)),
-                              onSelected: (val) {
-                                confirm(index, val, context);
-                              },
-                              itemBuilder: (BuildContext context) => fun(
-                                  context,
-                                  fulldataofrooms.favroomsarray[index + 1]),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: PopupMenuButton(
+                                      // initialValue: ,
+                                      shape: new RoundedRectangleBorder(
+                                          borderRadius:
+                                              new BorderRadius.circular(10.0)),
+                                      onSelected: (val) {
+                                        confirm(index, val, context);
+                                      },
+                                      itemBuilder: (BuildContext context) =>
+                                          fun(
+                                              context,
+                                              fulldataofrooms
+                                                  .favroomsarray[index + 1]),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+                            Container(
+                                height: 6 * SizeConfig.heightMultiplier,
+                                width: 30 * SizeConfig.widthMultiplier,
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: 10),
+                                  child: LiteRollingSwitch(
+                                    //value: true,
+                                    textOn: 'Active',
+                                    textOff: 'Inactive',
+                                    colorOn: Colors.greenAccent,
+                                    colorOff: Colors.blueGrey,
+                                    iconOn: Icons.lightbulb_outline,
+                                    iconOff: Icons.power_settings_new,
+                                    onChanged: (bool state) async {
+                                      print('turned ${(state) ? 'on' : 'off'}');
+                                      if (state) {
+                                        try {
+                                          int flag = fulldataofrooms
+                                                      .favouriteroomscontents[
+                                                  fulldataofrooms
+                                                      .favroomsarray[index + 1]]
+                                              ["val"];
+                                          Map m = fulldataofrooms
+                                                  .favouriteroomscontents[
+                                              fulldataofrooms
+                                                  .favroomsarray[index + 1]];
+                                          for (final i in m.values) {
+                                            if (i == 1 || i == 0) continue;
+                                            String s = i.toString();
+                                            var list = s.split(" ");
+                                            Fluttertoast.showToast(
+                                                msg: list.toString());
+                                            if (flag == 1) {
+                                              setState(() {
+                                                fulldataofrooms
+                                                        .favouriteroomscontents[
+                                                    fulldataofrooms
+                                                            .favroomsarray[
+                                                        index + 1]]["val"] = 0;
+                                              });
+                                              await dbref
+                                                  .child(user.uid)
+                                                  .child("favourites")
+                                                  .child(fulldataofrooms
+                                                      .favroomsarray[index + 1])
+                                                  .child("val")
+                                                  .set(0);
+                                              await dbref
+                                                  .child(user.uid)
+                                                  .child("rooms")
+                                                  .child(list[0])
+                                                  .child("circuit")
+                                                  .child(list[1])
+                                                  .child(list[2])
+                                                  .child("val")
+                                                  .set(0);
+                                            } else {
+                                              setState(() {
+                                                fulldataofrooms
+                                                        .favouriteroomscontents[
+                                                    fulldataofrooms
+                                                            .favroomsarray[
+                                                        index + 1]]["val"] = 1;
+                                              });
+                                              await dbref
+                                                  .child(user.uid)
+                                                  .child("favourites")
+                                                  .child(fulldataofrooms
+                                                      .favroomsarray[index + 1])
+                                                  .child("val")
+                                                  .set(1);
+                                              await dbref
+                                                  .child(user.uid)
+                                                  .child("rooms")
+                                                  .child(list[0])
+                                                  .child("circuit")
+                                                  .child(list[1])
+                                                  .child(list[2])
+                                                  .child("val")
+                                                  .set(1);
+                                            }
+                                          }
+                                        } catch (Ex) {
+                                          print("eception");
+                                        }
+                                      }
+                                    },
+                                  ),
+                                )),
                           ],
                         ),
                       ),

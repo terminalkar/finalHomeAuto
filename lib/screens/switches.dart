@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:home_automation_app/screens/main_data.dart';
-import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 class switches extends StatefulWidget {
   @override
@@ -16,6 +17,35 @@ class _switchesState extends State<switches> {
 
   var _tapPosition, focusnode = List.filled(5, false);
   final dbref = FirebaseDatabase.instance.reference().child("Users");
+  final slider = SleekCircularSlider(
+    appearance: CircularSliderAppearance(
+      size: 180,
+      startAngle: 210,
+      angleRange: 300,
+      customWidths: CustomSliderWidths(
+        progressBarWidth: 15,
+      ),
+      customColors: CustomSliderColors(
+        hideShadow: false,
+        trackColor: Color(0xff79848b),
+        progressBarColor: Colors.blue[300],
+        shadowMaxOpacity: 10,
+      ),
+      infoProperties: InfoProperties(
+        topLabelText: 'Regulator Speed',
+        topLabelStyle: TextStyle(
+          color: Color(0xff0792ef),
+          fontSize: 20,
+        ),
+      ),
+    ),
+    initialValue: 0,
+    min: 0,
+    max: 100,
+    onChange: (double value) {
+      print(value);
+    },
+  );
   User user = FirebaseAuth.instance.currentUser;
   var edit = List.filled(5, false);
   var iconStr = false;
@@ -360,135 +390,15 @@ class _switchesState extends State<switches> {
                   },
                 ),
               ),
-              GestureDetector(
-                child: Card(
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Center(
-                          child: Container(
-                              height: 2 * SizeConfig.heightMultiplier,
-                              width: 30 * SizeConfig.widthMultiplier,
-                              child: IconButton(
-                                icon: new Icon(
-                                  Icons.label,
-                                  size: 10 * SizeConfig.widthMultiplier,
-                                  color: Color(0xff79848b),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    int flag = 0;
-                                    if (fulldataofrooms.switches[
-                                            "a" + (4 + 1).toString()]["val"] ==
-                                        0) {
-                                      flag = 1;
-                                    }
-                                    fulldataofrooms
-                                            .switches["a" + (4 + 1).toString()]
-                                        ["val"] = flag;
-                                    dbref
-                                        .child(user.uid)
-                                        .child("rooms")
-                                        .child(fulldataofrooms
-                                            .roomidarray[fulldataofrooms.index])
-                                        .child("circuit")
-                                        .child(fulldataofrooms.boardidarray[
-                                            fulldataofrooms.boardindex])
-                                        .child("a" + (4 + 1).toString())
-                                        .child("val")
-                                        .set(flag);
-                                  });
-                                },
-                              )),
-                        ),
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(40, 30, 0, 0),
-                            child: Row(
-                              children: [
-                                new IconButton(
-                                  icon: new Icon(
-                                    Icons.remove,
-                                    size: 8 * SizeConfig.widthMultiplier,
-                                    color: Color(0xff79848b),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      int flag = fulldataofrooms.switches[
-                                          "a" + (4 + 1).toString()]["val"];
-                                      flag--;
-                                      flag = (flag % 6).abs();
-                                      fulldataofrooms.switches["a" +
-                                          (4 + 1).toString()]["val"] = flag;
-                                      dbref
-                                          .child(user.uid)
-                                          .child("rooms")
-                                          .child(fulldataofrooms.roomidarray[
-                                              fulldataofrooms.index])
-                                          .child("circuit")
-                                          .child(fulldataofrooms.boardidarray[
-                                              fulldataofrooms.boardindex])
-                                          .child("a" + (4 + 1).toString())
-                                          .child("val")
-                                          .set(flag);
-                                    });
-                                  },
-                                ),
-                                Text(fulldataofrooms
-                                    .switches["a" + (4 + 1).toString()]["val"]
-                                    .toString()),
-                                new IconButton(
-                                  icon: new Icon(
-                                    Icons.add,
-                                    size: 8 * SizeConfig.widthMultiplier,
-                                    color: Color(0xff79848b),
-                                  ),
-                                  onPressed: () async {
-                                    setState(() {
-                                      int flag = fulldataofrooms.switches[
-                                          "a" + (4 + 1).toString()]["val"];
-                                      flag++;
-                                      flag = flag % 6;
-                                      fulldataofrooms.switches["a" +
-                                          (4 + 1).toString()]["val"] = flag;
-                                      dbref
-                                          .child(user.uid)
-                                          .child("rooms")
-                                          .child(fulldataofrooms.roomidarray[
-                                              fulldataofrooms.index])
-                                          .child("circuit")
-                                          .child(fulldataofrooms.boardidarray[
-                                              fulldataofrooms.boardindex])
-                                          .child("a" + (4 + 1).toString())
-                                          .child("val")
-                                          .set(flag);
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Center(
-                          child: Text("Regulator"),
-                        ),
-                      ],
-                    ),
-                    height: 19 * SizeConfig.heightMultiplier,
-                    width: 48 * SizeConfig.widthMultiplier,
-                    decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      boxShadow: [
-                        BoxShadow(
-                          offset: Offset(0.00, 5.00),
-                          color: Color(0xff0792ef).withOpacity(0.60),
-                          blurRadius: 18,
-                        ),
-                      ],
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                ),
+              /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+              Container(
+                child: Center(
+                    child: Container(
+                  height: 40 * SizeConfig.heightMultiplier,
+                  width: 70 * SizeConfig.widthMultiplier,
+                  child: slider,
+                )),
               )
             ],
           ),
