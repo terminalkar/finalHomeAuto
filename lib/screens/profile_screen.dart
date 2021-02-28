@@ -4,10 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:home_automation_app/screens/main_data.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -21,8 +24,10 @@ class profile extends StatefulWidget {
 // ignore: camel_case_types
 class profileState extends State<profile> {
   FocusNode focusNode = new FocusNode();
-  File _image;
+  PickedFile _image;
   bool upload = false;
+  String uploadedurl = fulldataofrooms.uploadedimageurl;
+  int profilepickflag = 0;
   final dbref = FirebaseDatabase.instance.reference();
   final FocusNode myFocusNode = FocusNode();
   final TextEditingController _idcontroller = new TextEditingController();
@@ -41,8 +46,9 @@ class profileState extends State<profile> {
   @override
   Widget build(BuildContext context) {
     Future getImage() async {
-      var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-
+      PickedFile image =
+          await ImagePicker().getImage(source: ImageSource.gallery);
+      profilepickflag = 1;
       setState(() {
         _image = image;
         print('Image Path $_image');
@@ -53,9 +59,21 @@ class profileState extends State<profile> {
       String fileName = basename(_image.path);
       Reference firebaseStorageRef =
           FirebaseStorage.instance.ref().child(fileName);
-      UploadTask uploadTask = firebaseStorageRef.putFile(_image);
+      UploadTask uploadTask = firebaseStorageRef.putFile(File(_image.path));
       TaskSnapshot taskSnapshot = await uploadTask;
+
+      String imagedownloadurl = await taskSnapshot.ref.getDownloadURL();
+
+      dbref
+          .child("Users")
+          .child(user.uid)
+          .child("info")
+          .child("profile")
+          .set(imagedownloadurl);
+      //Fluttertoast.showToast(msg: imagedownloadurl);
       setState(() {
+        fulldataofrooms.uploadedimageurl = uploadedurl = imagedownloadurl;
+
         print("Profile Picture uploaded");
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
@@ -91,15 +109,12 @@ class profileState extends State<profile> {
                         child: new SizedBox(
                           width: SizeConfig.widthMultiplier * 45,
                           height: SizeConfig.heightMultiplier * 24,
-                          child: (_image != null)
-                              ? Image.file(
-                                  _image,
+                          child: profilepickflag == 0
+                              ? Image.network(
+                                  uploadedurl,
                                   fit: BoxFit.fill,
                                 )
-                              : Image.network(
-                                  "https://images.unsplash.com/photo-1502164980785-f8aa41d53611?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-                                  fit: BoxFit.fill,
-                                ),
+                              : Image.file(File(_image.path)),
                         ),
                       ),
                     ),

@@ -18,6 +18,8 @@ class fulldataofrooms {
   static var favouriteroomscontents = Map();
   static var favouritecontentnamesmap = Map();
   static var path = Map();
+  static String uploadedimageurl =
+      "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmoonvillageassociation.org%2Fwp-content%2Fuploads%2F2018%2F06%2Fdefault-profile-picture1.jpg&imgrefurl=https%3A%2F%2Fmoonvillageassociation.org%2Fdefault-profile-picture1%2F&tbnid=1MCM_aOai2VxwM&vet=12ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ..i&docid=yY-OL4rE--k3jM&w=1000&h=1000&q=default%20profile%20photo&ved=2ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ";
 
   Future<void> fetchrooms() async {
     final dbref = FirebaseDatabase.instance.reference().child('Users');
@@ -25,6 +27,19 @@ class fulldataofrooms {
     User user = FirebaseAuth.instance.currentUser;
 
     String name, type;
+    //getting image url
+    try {
+      await dbref
+          .child(user.uid)
+          .child("info")
+          .child("profile")
+          .once()
+          .then((value) => uploadedimageurl);
+    } catch (ex) {
+      uploadedimageurl =
+          "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmoonvillageassociation.org%2Fwp-content%2Fuploads%2F2018%2F06%2Fdefault-profile-picture1.jpg&imgrefurl=https%3A%2F%2Fmoonvillageassociation.org%2Fdefault-profile-picture1%2F&tbnid=1MCM_aOai2VxwM&vet=12ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ..i&docid=yY-OL4rE--k3jM&w=1000&h=1000&q=default%20profile%20photo&ved=2ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ";
+    }
+
     try {
       await dbref.child(user.uid).child("rooms").once().then((snap) {
         roomidarray.clear();
