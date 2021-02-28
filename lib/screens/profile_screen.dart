@@ -283,6 +283,7 @@ class profileState extends State<profile> {
                           onPressed: () {
                             setState(() {
                               upload = false;
+                              profilepickflag = 0;
                             });
                           },
                           elevation: 4.0,

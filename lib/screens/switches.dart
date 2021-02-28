@@ -30,15 +30,6 @@ class _switchesState extends State<switches> {
   final _focusNode = FocusNode();
   Color dropcolor = Color(0xff79848b);
   String room = 'Select Type';
-  List<String> Rooms = [
-    'Select Type',
-    'A.C.',
-    'Gaming Station',
-    'Bedroom',
-    'Bathroom',
-    "Children's Room",
-    'Other',
-  ];
 
   @override
   void initState() {
@@ -116,118 +107,11 @@ class _switchesState extends State<switches> {
                               onTapDown: (TapDownDetails details) {
                                 _tapPosition = details.globalPosition;
                               },
-                              //Rename
-                              onLongPress: () {
-                                final RenderBox overlay = Overlay.of(context)
-                                    .context
-                                    .findRenderObject();
-                                showMenu(
-                                  shape: new RoundedRectangleBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(10.0)),
-                                  items: <PopupMenuEntry>[
-                                    PopupMenuItem(
-                                      value: index,
-                                      child: InkWell(
-                                        onTap: () {
-                                          print("rename");
-                                          setState(() {
-                                            edit = List.filled(5, false);
-                                            edit[index] = true;
-                                            focusnode[index] = true;
-                                          });
-                                          _focusNode.addListener(() {
-                                            if (focusnode[index]) {
-                                              controllerlist[index].selection =
-                                                  TextSelection(
-                                                      baseOffset: 0,
-                                                      extentOffset:
-                                                          controllerlist[index]
-                                                              .text
-                                                              .length);
-                                            }
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                        child: Row(
-                                          children: <Widget>[
-                                            Icon(Icons.edit),
-                                            SizedBox(
-                                              width:
-                                                  SizeConfig.widthMultiplier *
-                                                      6,
-                                            ),
-                                            Text(
-                                              "Rename",
-                                              style: TextStyle(
-                                                  fontFamily:
-                                                      "Amelia-Basic-Light",
-                                                  fontSize: SizeConfig
-                                                          .textMultiplier *
-                                                      2.5,
-                                                  color: Color(0xff79848b)),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    PopupMenuItem(
-                                      value: index,
-                                      child: DropdownButton<String>(
-                                        iconEnabledColor: dropcolor,
-                                        items: Rooms.map((String listvalue) {
-                                          return DropdownMenuItem<String>(
-                                            value: listvalue,
-                                            child: Text(
-                                              listvalue,
-                                              style: TextStyle(
-                                                fontFamily:
-                                                    "Amelia-Basic-Light",
-                                                fontSize:
-                                                    SizeConfig.textMultiplier *
-                                                        2.5,
-                                                color: Color(0xff79848b),
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
-                                        onChanged: (val) {
-                                          room = val;
-                                          setState(() {
-                                            fulldataofrooms.switches["a" +
-                                                    (index + 1).toString()]
-                                                ["icon"] = room;
-                                          });
-                                          dbref
-                                              .child(user.uid)
-                                              .child("rooms")
-                                              .child(
-                                                  fulldataofrooms.roomidarray[
-                                                      fulldataofrooms.index])
-                                              .child("circuit")
-                                              .child(fulldataofrooms
-                                                      .boardidarray[
-                                                  fulldataofrooms.boardindex])
-                                              .set(fulldataofrooms.switches);
-                                          Navigator.pop(context);
-                                        },
-                                        value: room,
-                                      ),
-                                    ),
-                                  ],
-                                  context: context,
-                                  position: RelativeRect.fromRect(
-                                      _tapPosition & const Size(40, 40),
-                                      Offset.zero & overlay.size),
-                                );
-                                //
-                              },
                               //switches//////////////////////////////////////////////////////////////////////////////////
                               onTap: () {
                                 setState(() {
                                   int flag = 0;
-                                  print(fulldataofrooms
-                                      .switches["a" + (index + 1).toString()]);
+
                                   if (fulldataofrooms.switches["a" +
                                           (index + 1).toString()]["val"] ==
                                       0) {
@@ -260,9 +144,23 @@ class _switchesState extends State<switches> {
                               child: Container(
                                 child: Column(
                                   children: [
-                                    Align(
-                                        alignment: Alignment.topRight,
-                                        child: IconButton(
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.edit,
+                                            size:
+                                                SizeConfig.widthMultiplier * 7,
+                                          ),
+                                          onPressed: () async {
+                                            await _Rename(context, index);
+                                            edit = List.filled(5, false);
+                                            focusnode = List.filled(5, false);
+                                          },
+                                        ),
+                                        IconButton(
                                           icon: Icon(
                                             Icons.star_border,
                                             size:
@@ -271,7 +169,10 @@ class _switchesState extends State<switches> {
                                           onPressed: () {
                                             favouritesdialogbox(context, index);
                                           },
-                                        )),
+                                        ),
+                                      ],
+                                    ),
+
                                     // SizedBox(
                                     //   height: SizeConfig.widthMultiplier * 2.5,
                                     // ),
@@ -299,11 +200,15 @@ class _switchesState extends State<switches> {
                                     Center(
                                       child: Container(
                                         width: 14 * SizeConfig.heightMultiplier,
-                                        child: TextFormField(
+                                        child: TextField(
                                           enableInteractiveSelection: true,
                                           autofocus: focusnode[index],
                                           focusNode: new FocusNode(),
-                                          controller: controllerlist[index],
+                                          controller: TextEditingController()
+                                            ..text = fulldataofrooms.switches[
+                                                    "a" +
+                                                        (index + 1).toString()]
+                                                ["name"],
                                           expands: false,
                                           enabled: edit[index],
                                           textInputAction: TextInputAction.go,
@@ -314,76 +219,7 @@ class _switchesState extends State<switches> {
                                                 SizeConfig.textMultiplier * 2.5,
                                             color: Color(0xff79848b),
                                           ),
-                                          onSaved: (name) async {
-                                            setState(() {
-                                              if (fulldataofrooms.indexlist
-                                                      .contains(name) ==
-                                                  true) {
-                                                Fluttertoast.showToast(
-                                                    msg:
-                                                        "Please use different Name");
-                                              } else {
-                                                dbref
-                                                    .child(user.uid)
-                                                    .child("index")
-                                                    .child(fulldataofrooms
-                                                                .switches[
-                                                            "a" +
-                                                                (index + 1)
-                                                                    .toString()]
-                                                        ["name"])
-                                                    .remove();
-                                                fulldataofrooms.indexlist
-                                                    .remove(fulldataofrooms
-                                                                .switches[
-                                                            "a" +
-                                                                (index + 1)
-                                                                    .toString()]
-                                                        ["name"]);
-                                                fulldataofrooms.indexlist
-                                                    .add(name);
-                                                fulldataofrooms.switches["a" +
-                                                        (index + 1).toString()]
-                                                    ["name"] = name;
-                                                dbref
-                                                    .child(user.uid)
-                                                    .child("rooms")
-                                                    .child(fulldataofrooms
-                                                            .roomidarray[
-                                                        fulldataofrooms.index])
-                                                    .child("circuit")
-                                                    .child(fulldataofrooms
-                                                            .boardidarray[
-                                                        fulldataofrooms
-                                                            .boardindex])
-                                                    .child("a" +
-                                                        (index + 1).toString())
-                                                    .child("name")
-                                                    .set(name);
-
-                                                dbref
-                                                    .child(user.uid)
-                                                    .child("index")
-                                                    .child(name)
-                                                    .set(fulldataofrooms
-                                                                .roomidarray[
-                                                            fulldataofrooms
-                                                                .index] +
-                                                        " " +
-                                                        fulldataofrooms
-                                                                .boardidarray[
-                                                            fulldataofrooms
-                                                                .boardindex] +
-                                                        " " +
-                                                        "a" +
-                                                        (index + 1).toString());
-                                                iterate();
-                                                edit = List.filled(5, false);
-                                                focusnode =
-                                                    List.filled(5, false);
-                                              }
-                                            });
-                                          },
+                                          onSubmitted: (name) async {},
                                         ),
                                       ),
                                     ),
@@ -449,7 +285,7 @@ class _switchesState extends State<switches> {
                         .toDouble(),
                     min: 0,
                     max: 5,
-                    
+
                     // innerWidget: (double value) {
                     //   // use your custom widget inside the slider (gets a slider value from the callback)
                     //   return Text("regulator speed ${value}");
@@ -719,4 +555,280 @@ class _switchesState extends State<switches> {
         context: context,
         pageBuilder: (context, animation1, animation2) {});
   }
+}
+
+_Rename(BuildContext context, int index) async {
+  bool pressed = false;
+  User user = FirebaseAuth.instance.currentUser;
+  final dbref = FirebaseDatabase.instance.reference().child('Users');
+  final form = new GlobalKey<FormState>();
+  Color dropcolor = Color(0xff79848b);
+  String room = 'Select Type';
+
+  FocusNode focusNode = new FocusNode();
+  TextEditingController name = TextEditingController();
+  List<String> Rooms = [
+    'Select Type',
+    'A.C.',
+    'Gaming Station',
+    'Bedroom',
+    'Bathroom',
+    "Children's Room",
+    'Other',
+  ];
+  return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              title: Center(
+                child: Text(
+                  'Details of Room',
+                  style: TextStyle(
+                    fontFamily: "Amelia-Basic-Light",
+                    fontSize: SizeConfig.heightMultiplier * 3,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff79848b),
+                  ),
+                ),
+              ),
+              content: Container(
+                height: SizeConfig.heightMultiplier * 100 / (5.33),
+                width: SizeConfig.widthMultiplier * 111,
+                child: Column(
+                  children: <Widget>[
+                    Form(
+                      key: form,
+                      child: new TextFormField(
+                        textAlign: TextAlign.center,
+                        controller: name,
+                        onChanged: (val) {},
+                        cursorColor: Colors.black87,
+                        focusNode: focusNode,
+                        style: TextStyle(
+                          fontFamily: "Amelia-Basic-Light",
+                          fontSize: SizeConfig.textMultiplier * 2.5,
+                          color: Color(0xff79848b),
+                        ),
+                        decoration: new InputDecoration(
+                          contentPadding: EdgeInsets.all(5),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                width: 1,
+                                color: Color(0xff444422),
+                              ),
+                              borderRadius: BorderRadius.circular(10.00)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0)),
+                          labelText: "Switch name",
+                          labelStyle: TextStyle(
+                            fontFamily: "Amelia-Basic-Light",
+                            fontSize: SizeConfig.textMultiplier * 3.2,
+                            color: Color(0xff79848b),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: SizeConfig.widthMultiplier * 2.5),
+                    Container(
+                      height: SizeConfig.heightMultiplier * 6,
+                      width: SizeConfig.widthMultiplier * 50,
+                      margin: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Color(0xffffffff),
+                        boxShadow: [
+                          BoxShadow(
+                            offset: Offset(0.00, 3.00),
+                            color: Color(0xff0792ef).withOpacity(0.32),
+                            blurRadius: 6,
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(4.00),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          iconEnabledColor: dropcolor,
+                          items: Rooms.map((String listvalue) {
+                            return DropdownMenuItem<String>(
+                              value: listvalue,
+                              child: Text(
+                                listvalue,
+                                style: TextStyle(
+                                  fontFamily: "Amelia-Basic-Light",
+                                  fontSize: SizeConfig.textMultiplier * 2.5,
+                                  color: Color(0xff79848b),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (val) {
+                            setState(() {
+                              room = val;
+                            });
+                          },
+                          value: room,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                Container(
+                  height: SizeConfig.heightMultiplier * 6,
+                  width: SizeConfig.widthMultiplier * 25,
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Color(0xffffffff),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0.00, 3.00),
+                        color: Color(0xff0792ef).withOpacity(0.32),
+                        blurRadius: 6,
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(13.00),
+                  ),
+                  child: Center(
+                    child: new FlatButton(
+                        child: new Text(
+                          'Submit',
+                          style: TextStyle(
+                            fontFamily: "Amelia-Basic-Light",
+                            fontSize: SizeConfig.textMultiplier * 2.5,
+                            color: Color(0xff79848b),
+                          ),
+                        ),
+                        onPressed: pressed
+                            ? () => print("df")
+                            : () async {
+                                setState(() {
+                                  pressed = true;
+                                });
+                                if (room != "Select Type" && name.text != "") {
+                                  setState(() {
+                                    setState(() {
+                                      if (fulldataofrooms.indexlist
+                                              .contains(name.text) ==
+                                          true) {
+                                        Fluttertoast.showToast(
+                                            msg: "Please use different Name");
+                                      } else {
+                                        dbref
+                                            .child(user.uid)
+                                            .child("index")
+                                            .child(fulldataofrooms.switches[
+                                                    "a" +
+                                                        (index + 1).toString()]
+                                                ["name"])
+                                            .remove();
+                                        fulldataofrooms.indexlist.remove(
+                                            fulldataofrooms.switches["a" +
+                                                    (index + 1).toString()]
+                                                ["name"]);
+                                        fulldataofrooms.indexlist
+                                            .add(name.text);
+                                        fulldataofrooms.switches[
+                                                "a" + (index + 1).toString()]
+                                            ["name"] = name.text;
+                                        dbref
+                                            .child(user.uid)
+                                            .child("rooms")
+                                            .child(fulldataofrooms.roomidarray[
+                                                fulldataofrooms.index])
+                                            .child("circuit")
+                                            .child(fulldataofrooms.boardidarray[
+                                                fulldataofrooms.boardindex])
+                                            .child("a" + (index + 1).toString())
+                                            .child("name")
+                                            .set(name.text);
+
+                                        dbref
+                                            .child(user.uid)
+                                            .child("index")
+                                            .child(name.text)
+                                            .set(fulldataofrooms.roomidarray[
+                                                    fulldataofrooms.index] +
+                                                " " +
+                                                fulldataofrooms.boardidarray[
+                                                    fulldataofrooms
+                                                        .boardindex] +
+                                                " " +
+                                                "a" +
+                                                (index + 1).toString());
+                                      }
+                                    });
+
+                                    fulldataofrooms.switches["a" +
+                                        (index + 1).toString()]["icon"] = room;
+                                  });
+                                  dbref
+                                      .child(user.uid)
+                                      .child("rooms")
+                                      .child(fulldataofrooms
+                                          .roomidarray[fulldataofrooms.index])
+                                      .child("circuit")
+                                      .child(fulldataofrooms.boardidarray[
+                                          fulldataofrooms.boardindex])
+                                      .set(fulldataofrooms.switches);
+
+                                  Navigator.pop(context);
+                                  Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => switches()));
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Please select the type of room");
+                                }
+                                setState(() {
+                                  pressed = false;
+                                });
+                              }),
+                  ),
+                ),
+                SizedBox(width: SizeConfig.widthMultiplier * 2.5),
+                Container(
+                  height: SizeConfig.heightMultiplier * 6,
+                  width: SizeConfig.widthMultiplier * 25,
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Color(0xffffffff),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0.00, 3.00),
+                        color: Color(0xff0792ef).withOpacity(0.32),
+                        blurRadius: 6,
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(13.00),
+                  ),
+                  child: Center(
+                    child: new FlatButton(
+                      child: new Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontFamily: "Amelia-Basic-Light",
+                          fontSize: SizeConfig.textMultiplier * 2.5,
+                          color: Color(0xff79848b),
+                        ),
+                      ),
+                      onPressed: pressed == false
+                          ? () async {
+                              Navigator.of(context).pop();
+                            }
+                          : null,
+                    ),
+                  ),
+                )
+              ],
+            );
+          },
+        );
+      });
 }
