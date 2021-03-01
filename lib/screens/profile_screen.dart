@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,6 +31,7 @@ class profileState extends State<profile> {
   bool upload = false;
   String uploadedurl = fulldataofrooms.uploadedimageurl;
   int profilepickflag = 0;
+  var l = [];
   final dbref = FirebaseDatabase.instance.reference();
   final FocusNode myFocusNode = FocusNode();
   final TextEditingController _idcontroller = new TextEditingController();
@@ -40,9 +42,27 @@ class profileState extends State<profile> {
   void initState() {
     // ignore: todo
     // TODO: implement initState
+    getFirebaseImageFolder();
     _mailcontroller.text = user.email;
     _idcontroller.text = user.uid;
     super.initState();
+  }
+
+  Future<Void> getFirebaseImageFolder() async {
+    Reference storageRef =
+        FirebaseStorage.instance.ref().child('advertisement');
+    storageRef.listAll().then((result) async {
+      result.items.forEach((Reference ref) async {
+        // print(ref.fullPath);
+
+        String downloadURL =
+            await FirebaseStorage.instance.ref(ref.fullPath).getDownloadURL();
+        setState(() {
+          l.add(downloadURL);
+        });
+      });
+    });
+    print(l);
   }
 
   @override
@@ -344,7 +364,7 @@ class profileState extends State<profile> {
                   autoPlayAnimationDuration: Duration(milliseconds: 800),
                   viewportFraction: 0.8,
                 ),
-                items: [].map((i) {
+                items: l.map((i) {
                   return Builder(
                     builder: (BuildContext context) {
                       return Container(
@@ -352,7 +372,7 @@ class profileState extends State<profile> {
                           margin: EdgeInsets.symmetric(horizontal: 5.0),
                           //decoration: BoxDecoration(color: Colors.amber),
                           child: Image.network(
-                            uploadedurl,
+                            i,
                             fit: BoxFit.cover,
                           ));
                     },

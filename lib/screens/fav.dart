@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:home_automation_app/screens/main_data.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -46,186 +47,217 @@ class _favouriteState extends State<favourite> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GridView.count(
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        children: List.generate(
-          fulldataofrooms.favroomsarray.length - 1,
-          (index) {
-            return Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: InkWell(
-                onTapDown: (TapDownDetails details) {
-                  _tapPosition = details.globalPosition;
-                },
-                //Rename
-                onLongPress: () async {
-                  final RenderBox overlay =
-                      Overlay.of(context).context.findRenderObject();
-                },
+      appBar: AppBar(
+        leading: IconButton(
+            icon: Icon(
+              FontAwesomeIcons.arrowLeft,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+        backgroundColor: Colors.blue,
+        title: Text(
+          'Favourite',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+      body: fulldataofrooms.favroomsarray.length - 1 <= 0
+          ? Container(
+              child: Center(child: Text("No favourites added")),
+            )
+          : GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              children: List.generate(
+                fulldataofrooms.favroomsarray.length - 1,
+                (index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: InkWell(
+                      onTapDown: (TapDownDetails details) {
+                        _tapPosition = details.globalPosition;
+                      },
+                      //Rename
+                      onLongPress: () async {
+                        final RenderBox overlay =
+                            Overlay.of(context).context.findRenderObject();
+                      },
 
-                //switches//////////////////////////////////////////////////////////////////////////////////
+                      //switches//////////////////////////////////////////////////////////////////////////////////
 
-                onTap: () {
-                  final RenderBox overlay =
-                      Overlay.of(context).context.findRenderObject();
+                      onTap: () {
+                        final RenderBox overlay =
+                            Overlay.of(context).context.findRenderObject();
 
-                  showMenu(
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(10.0)),
-                      items: fun(context,
-                          fulldataofrooms.favroomsarray[index + 1], index),
-                      context: context,
-                      position: RelativeRect.fromRect(
-                          _tapPosition & const Size(40, 40),
-                          Offset.zero & overlay.size));
-                },
-                child: Container(
-                  child: Column(
-                    children: [
-                      Center(
+                        showMenu(
+                            shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(10.0)),
+                            items: fun(
+                                context,
+                                fulldataofrooms.favroomsarray[index + 1],
+                                index),
+                            context: context,
+                            position: RelativeRect.fromRect(
+                                _tapPosition & const Size(40, 40),
+                                Offset.zero & overlay.size));
+                      },
+                      child: Container(
                         child: Column(
                           children: [
                             Center(
-                              child: Row(
+                              child: Column(
                                 children: [
-                                  Container(
-                                    height: 6 * SizeConfig.heightMultiplier,
-                                    width: 20 * SizeConfig.widthMultiplier,
-                                    margin: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                                    child: Center(
-                                      child: Text(
-                                        fulldataofrooms
-                                            .favroomsarray[index + 1],
-                                        style: TextStyle(
-                                          fontSize: 25,
+                                  Center(
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          height:
+                                              6 * SizeConfig.heightMultiplier,
+                                          width:
+                                              20 * SizeConfig.widthMultiplier,
+                                          margin:
+                                              EdgeInsets.fromLTRB(10, 20, 0, 0),
+                                          child: Center(
+                                            child: Text(
+                                              fulldataofrooms
+                                                  .favroomsarray[index + 1],
+                                              style: TextStyle(
+                                                fontSize: 25,
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                  ),
+                                  Container(
+                                      height: 6 * SizeConfig.heightMultiplier,
+                                      width: 30 * SizeConfig.widthMultiplier,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(top: 10),
+                                        child: LiteRollingSwitch(
+                                          //value: true,
+                                          textOn: 'Active',
+                                          textOff: 'Inactive',
+                                          colorOn: Colors.greenAccent,
+                                          colorOff: Colors.blueGrey,
+                                          iconOn: Icons.lightbulb_outline,
+                                          iconOff: Icons.power_settings_new,
+                                          onChanged: (bool state) async {
+                                            print(
+                                                'turned ${(state) ? 'on' : 'off'}');
+                                            if (state) {
+                                              try {
+                                                int flag = fulldataofrooms
+                                                        .favouriteroomscontents[
+                                                    fulldataofrooms
+                                                            .favroomsarray[
+                                                        index + 1]]["val"];
+                                                Map m = fulldataofrooms
+                                                        .favouriteroomscontents[
+                                                    fulldataofrooms
+                                                            .favroomsarray[
+                                                        index + 1]];
+                                                for (final i in m.values) {
+                                                  if (i == 1 || i == 0)
+                                                    continue;
+                                                  String s = i.toString();
+                                                  var list = s.split(" ");
+                                                  Fluttertoast.showToast(
+                                                      msg: list.toString());
+                                                  if (flag == 1) {
+                                                    setState(() {
+                                                      fulldataofrooms
+                                                              .favouriteroomscontents[
+                                                          fulldataofrooms
+                                                                  .favroomsarray[
+                                                              index +
+                                                                  1]]["val"] = 0;
+                                                    });
+                                                    await dbref
+                                                        .child(user.uid)
+                                                        .child("favourites")
+                                                        .child(fulldataofrooms
+                                                                .favroomsarray[
+                                                            index + 1])
+                                                        .child("val")
+                                                        .set(0);
+                                                    await dbref
+                                                        .child(user.uid)
+                                                        .child("rooms")
+                                                        .child(list[0])
+                                                        .child("circuit")
+                                                        .child(list[1])
+                                                        .child(list[2])
+                                                        .child("val")
+                                                        .set(0);
+                                                  } else {
+                                                    setState(() {
+                                                      fulldataofrooms
+                                                              .favouriteroomscontents[
+                                                          fulldataofrooms
+                                                                  .favroomsarray[
+                                                              index +
+                                                                  1]]["val"] = 1;
+                                                    });
+                                                    await dbref
+                                                        .child(user.uid)
+                                                        .child("favourites")
+                                                        .child(fulldataofrooms
+                                                                .favroomsarray[
+                                                            index + 1])
+                                                        .child("val")
+                                                        .set(1);
+                                                    await dbref
+                                                        .child(user.uid)
+                                                        .child("rooms")
+                                                        .child(list[0])
+                                                        .child("circuit")
+                                                        .child(list[1])
+                                                        .child(list[2])
+                                                        .child("val")
+                                                        .set(1);
+                                                  }
+                                                }
+                                              } catch (Ex) {
+                                                print("eception");
+                                              }
+                                            }
+                                          },
+                                        ),
+                                      )),
                                 ],
                               ),
                             ),
-                            Container(
-                                height: 6 * SizeConfig.heightMultiplier,
-                                width: 30 * SizeConfig.widthMultiplier,
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 10),
-                                  child: LiteRollingSwitch(
-                                    //value: true,
-                                    textOn: 'Active',
-                                    textOff: 'Inactive',
-                                    colorOn: Colors.greenAccent,
-                                    colorOff: Colors.blueGrey,
-                                    iconOn: Icons.lightbulb_outline,
-                                    iconOff: Icons.power_settings_new,
-                                    onChanged: (bool state) async {
-                                      print('turned ${(state) ? 'on' : 'off'}');
-                                      if (state) {
-                                        try {
-                                          int flag = fulldataofrooms
-                                                      .favouriteroomscontents[
-                                                  fulldataofrooms
-                                                      .favroomsarray[index + 1]]
-                                              ["val"];
-                                          Map m = fulldataofrooms
-                                                  .favouriteroomscontents[
-                                              fulldataofrooms
-                                                  .favroomsarray[index + 1]];
-                                          for (final i in m.values) {
-                                            if (i == 1 || i == 0) continue;
-                                            String s = i.toString();
-                                            var list = s.split(" ");
-                                            Fluttertoast.showToast(
-                                                msg: list.toString());
-                                            if (flag == 1) {
-                                              setState(() {
-                                                fulldataofrooms
-                                                        .favouriteroomscontents[
-                                                    fulldataofrooms
-                                                            .favroomsarray[
-                                                        index + 1]]["val"] = 0;
-                                              });
-                                              await dbref
-                                                  .child(user.uid)
-                                                  .child("favourites")
-                                                  .child(fulldataofrooms
-                                                      .favroomsarray[index + 1])
-                                                  .child("val")
-                                                  .set(0);
-                                              await dbref
-                                                  .child(user.uid)
-                                                  .child("rooms")
-                                                  .child(list[0])
-                                                  .child("circuit")
-                                                  .child(list[1])
-                                                  .child(list[2])
-                                                  .child("val")
-                                                  .set(0);
-                                            } else {
-                                              setState(() {
-                                                fulldataofrooms
-                                                        .favouriteroomscontents[
-                                                    fulldataofrooms
-                                                            .favroomsarray[
-                                                        index + 1]]["val"] = 1;
-                                              });
-                                              await dbref
-                                                  .child(user.uid)
-                                                  .child("favourites")
-                                                  .child(fulldataofrooms
-                                                      .favroomsarray[index + 1])
-                                                  .child("val")
-                                                  .set(1);
-                                              await dbref
-                                                  .child(user.uid)
-                                                  .child("rooms")
-                                                  .child(list[0])
-                                                  .child("circuit")
-                                                  .child(list[1])
-                                                  .child(list[2])
-                                                  .child("val")
-                                                  .set(1);
-                                            }
-                                          }
-                                        } catch (Ex) {
-                                          print("eception");
-                                        }
-                                      }
-                                    },
-                                  ),
-                                )),
+                            SizedBox(
+                              height: 40,
+                            ),
+                            // Text("wsedf"),
                           ],
                         ),
+                        height: 147.00,
+                        width: 194.00,
+                        decoration: BoxDecoration(
+                          color: Color(0xffffffff),
+                          boxShadow: [
+                            BoxShadow(
+                              offset: Offset(0.00, 5.00),
+                              color: Color(0xff0792ef).withOpacity(0.60),
+                              blurRadius: 18,
+                            ),
+                          ],
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                       ),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      // Text("wsedf"),
-                    ],
-                  ),
-                  height: 147.00,
-                  width: 194.00,
-                  decoration: BoxDecoration(
-                    color: Color(0xffffffff),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: Offset(0.00, 5.00),
-                        color: Color(0xff0792ef).withOpacity(0.60),
-                        blurRadius: 18,
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
-      ),
+            ),
     );
   }
 
