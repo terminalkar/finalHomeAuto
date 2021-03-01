@@ -18,18 +18,22 @@ class _favouriteState extends State<favourite> {
   String globalvalue;
   final dbref = FirebaseDatabase.instance.reference().child('Users');
   User user = FirebaseAuth.instance.currentUser;
-  List<PopupMenuItem> fun(BuildContext context, String name) {
+  List<PopupMenuItem> fun(BuildContext context, String name, int index) {
     try {
-      Fluttertoast.showToast(msg: name);
+      //Fluttertoast.showToast(msg: name);
       var elements = fulldataofrooms.favouritecontentnamesmap[name];
       var sList = List<String>.from(elements);
       // var l = elements.Cast<String>().ToList();
-      Fluttertoast.showToast(msg: sList.runtimeType.toString());
+      //Fluttertoast.showToast(msg: sList.runtimeType.toString());
 
       List<PopupMenuItem> t = sList
           .map((String e) => PopupMenuItem<String>(
                 value: e,
-                child: Text(e),
+                child: InkWell(
+                    child: Text(e),
+                    onTap: () {
+                      confirm(index, e, context);
+                    }),
               ))
           .toList();
       // print(fulldataofrooms.favroomsarray.length);
@@ -44,8 +48,6 @@ class _favouriteState extends State<favourite> {
     return Scaffold(
       body: GridView.count(
         crossAxisCount: 2,
-        crossAxisSpacing: 10.0,
-        mainAxisSpacing: 10.0,
         shrinkWrap: true,
         children: List.generate(
           fulldataofrooms.favroomsarray.length - 1,
@@ -64,7 +66,20 @@ class _favouriteState extends State<favourite> {
 
                 //switches//////////////////////////////////////////////////////////////////////////////////
 
-                onTap: () {},
+                onTap: () {
+                  final RenderBox overlay =
+                      Overlay.of(context).context.findRenderObject();
+
+                  showMenu(
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(10.0)),
+                      items: fun(context,
+                          fulldataofrooms.favroomsarray[index + 1], index),
+                      context: context,
+                      position: RelativeRect.fromRect(
+                          _tapPosition & const Size(40, 40),
+                          Offset.zero & overlay.size));
+                },
                 child: Container(
                   child: Column(
                     children: [
@@ -77,30 +92,19 @@ class _favouriteState extends State<favourite> {
                                   Container(
                                     height: 6 * SizeConfig.heightMultiplier,
                                     width: 20 * SizeConfig.widthMultiplier,
-                                    margin: EdgeInsets.all(10.0),
-                                    child: Text(
-                                      fulldataofrooms.favroomsarray[index + 1],
-                                      style: TextStyle(
-                                        fontSize: 20,
+                                    margin: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                                    child: Center(
+                                      child: Text(
+                                        fulldataofrooms
+                                            .favroomsarray[index + 1],
+                                        style: TextStyle(
+                                          fontSize: 25,
+                                        ),
                                       ),
                                     ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: PopupMenuButton(
-                                      // initialValue: ,
-                                      shape: new RoundedRectangleBorder(
-                                          borderRadius:
-                                              new BorderRadius.circular(10.0)),
-                                      onSelected: (val) {
-                                        confirm(index, val, context);
-                                      },
-                                      itemBuilder: (BuildContext context) =>
-                                          fun(
-                                              context,
-                                              fulldataofrooms
-                                                  .favroomsarray[index + 1]),
-                                    ),
                                   ),
                                 ],
                               ),

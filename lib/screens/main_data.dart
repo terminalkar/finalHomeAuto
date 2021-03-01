@@ -19,8 +19,7 @@ class fulldataofrooms {
   static var favouritecontentnamesmap = Map();
   static var path = Map();
   static String uploadedimageurl =
-      "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmoonvillageassociation.org%2Fwp-content%2Fuploads%2F2018%2F06%2Fdefault-profile-picture1.jpg&imgrefurl=https%3A%2F%2Fmoonvillageassociation.org%2Fdefault-profile-picture1%2F&tbnid=1MCM_aOai2VxwM&vet=12ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ..i&docid=yY-OL4rE--k3jM&w=1000&h=1000&q=default%20profile%20photo&ved=2ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ";
-
+      "https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg";
   Future<void> fetchrooms() async {
     final dbref = FirebaseDatabase.instance.reference().child('Users');
 
@@ -34,10 +33,13 @@ class fulldataofrooms {
           .child("info")
           .child("profile")
           .once()
-          .then((value) => uploadedimageurl);
+          .then((value) {
+        if (value.value != null) {
+          uploadedimageurl = value.value;
+        }
+      });
     } catch (ex) {
-      uploadedimageurl =
-          "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmoonvillageassociation.org%2Fwp-content%2Fuploads%2F2018%2F06%2Fdefault-profile-picture1.jpg&imgrefurl=https%3A%2F%2Fmoonvillageassociation.org%2Fdefault-profile-picture1%2F&tbnid=1MCM_aOai2VxwM&vet=12ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ..i&docid=yY-OL4rE--k3jM&w=1000&h=1000&q=default%20profile%20photo&ved=2ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ";
+      print("exception in profile url");
     }
 
     try {
@@ -192,7 +194,7 @@ class fulldataofrooms {
     int flag = -1;
     List<String> ans = new List<String>();
     for (int i = 0; i < (l.length); i++) {
-      // if (isNumeric(l[i])) {
+      //if (isNumeric(l[i])) {
       //   ans.add( NumberToWord().convert('en-in', int.parse(l[i])).toLowerCase());
       // }
 
@@ -216,6 +218,8 @@ class fulldataofrooms {
         }
       }
     }
+    print("flag " + flag.toString());
+    print(key);
     // return [flag.toString(), key];
     try {
       String indexpath;

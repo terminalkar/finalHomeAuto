@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/main_data.dart';
 import 'package:home_automation_app/screens/switches.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class Circuit extends StatefulWidget {
   @override
@@ -100,9 +101,82 @@ class _CircuittState extends State<Circuit> {
                                   resizeDuration: Duration(milliseconds: 200),
                                   key: ObjectKey(
                                       fulldataofrooms.boardidarray[index]),
-                                  onDismissed: (direction) {
-                                    // TODO: implement your delete function and check direction if needed
-                                    _deleteMessage(index);
+                                  confirmDismiss: (direction) async {
+                                    return await Alert(
+                                      context: context,
+                                      type: AlertType.warning,
+                                      style: AlertStyle(
+                                          animationType: AnimationType.fromTop,
+                                          isCloseButton: false,
+                                          isOverlayTapDismiss: false,
+                                          descStyle: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                          animationDuration:
+                                              Duration(milliseconds: 400),
+                                          titleStyle: TextStyle(
+                                              color: Color(0xff00004d)),
+                                          alertBorder: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            side: BorderSide(
+                                              color: Colors.grey,
+                                            ),
+                                          )),
+                                      title: "Confirm Delete",
+                                      buttons: [
+                                        DialogButton(
+                                          child: Text(
+                                            "Confirm",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 2.5 *
+                                                    SizeConfig.textMultiplier),
+                                          ),
+                                          // ignore: missing_return
+                                          onPressed: () async {
+                                            final dbref = FirebaseDatabase
+                                                .instance
+                                                .reference()
+                                                .child('Users');
+                                            User user = FirebaseAuth
+                                                .instance.currentUser;
+
+                                            dbref
+                                                .child(user.uid)
+                                                .child("rooms")
+                                                .child(
+                                                    fulldataofrooms.roomidarray[
+                                                        fulldataofrooms.index])
+                                                .child("circuit")
+                                                .child(fulldataofrooms
+                                                    .boardidarray[index])
+                                                .remove();
+
+                                            //fulldataofrooms.boardidarray
+                                            //   .remove(fulldataofrooms.boardidarray[index]);
+                                            Navigator.of(context).pop(true);
+                                          },
+                                          color:
+                                              Color.fromRGBO(0, 179, 134, 1.0),
+                                        ),
+                                        DialogButton(
+                                          child: Text(
+                                            "Cancel",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 2.5 *
+                                                    SizeConfig.textMultiplier),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop(false);
+                                          },
+                                          gradient: LinearGradient(colors: [
+                                            Color(0xffe63900),
+                                            Color(0xffe63900)
+                                          ]),
+                                        )
+                                      ],
+                                    ).show();
                                   },
                                   background: Container(
                                     height: 8 * SizeConfig.heightMultiplier,
@@ -153,8 +227,17 @@ class _CircuittState extends State<Circuit> {
                                           isThreeLine: false,
                                           leading: Padding(
                                             padding: const EdgeInsets.all(10.0),
-                                            child: Icon(
-                                                Icons.bookmark_border_outlined),
+                                            child: IconButton(
+                                              icon: Icon(Icons
+                                                  .bookmark_border_outlined),
+                                              onPressed: () =>
+                                                  Fluttertoast.showToast(
+                                                      msg: fulldataofrooms
+                                                          .boardid[fulldataofrooms
+                                                                  .boardidarray[
+                                                              index]]["bid"]
+                                                          .toString()),
+                                            ),
                                           ),
                                           title: Text(
                                             fulldataofrooms.boardidarray[index],
@@ -194,11 +277,6 @@ class _CircuittState extends State<Circuit> {
             tooltip: 'Increment',
             label: Text("Add Boards"),
             icon: Icon(Icons.add)));
-  }
-
-  _deleteMessage(index) {
-    // TODO: here remove from Firestore, then update your local snapshot list
-    // setState(() {});
   }
 
   _addboard(BuildContext context) async {
@@ -379,6 +457,7 @@ class _CircuittState extends State<Circuit> {
                                           "val": 0,
                                           "icon": "null"
                                         },
+                                        "bid": id.text
                                       });
 
                                       fulldataofrooms f1 =

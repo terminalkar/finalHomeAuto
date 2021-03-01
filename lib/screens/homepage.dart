@@ -87,11 +87,14 @@ class _HomepageState extends State<Homepage>
         _speech.listen(
             onResult: (val) => setState(() {
                   _text = val.recognizedWords;
+                  print(_text);
+                  print("Profile Picture uploaded");
+                  Fluttertoast.showToast(msg: "Running command " + _text);
                   if (val.hasConfidenceRating && val.confidence > 0) {
                     _confidence = val.confidence;
                   }
                   fulldataofrooms f = new fulldataofrooms();
-                  // print(f.solvequery(_text));
+                  print(f.solvequery(_text));
                 }),
             listenFor: Duration(seconds: 10),
             partialResults: false,
