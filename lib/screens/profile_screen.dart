@@ -340,7 +340,7 @@ class profileState extends State<profile> {
                 autoPlayAnimationDuration: Duration(milliseconds: 800),
                 viewportFraction: 0.8,
               ),
-              items: [uploadedurl, uploadedurl, uploadedurl].map((i) {
+              items: [].map((i) {
                 return Builder(
                   builder: (BuildContext context) {
                     return Container(
@@ -348,7 +348,7 @@ class profileState extends State<profile> {
                         margin: EdgeInsets.symmetric(horizontal: 5.0),
                         //decoration: BoxDecoration(color: Colors.amber),
                         child: Image.network(
-                          i,
+                          uploadedurl,
                           fit: BoxFit.cover,
                         ));
                   },

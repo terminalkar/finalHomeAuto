@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:home_automation_app/screens/main_data.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -43,21 +42,6 @@ class _favouriteState extends State<favourite> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            icon: Icon(
-              FontAwesomeIcons.arrowLeft,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-        backgroundColor: Colors.blue,
-        title: Text(
-          'Profile',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
       body: GridView.count(
         crossAxisCount: 2,
         crossAxisSpacing: 10.0,
