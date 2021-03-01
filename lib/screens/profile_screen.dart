@@ -340,26 +340,16 @@ class profileState extends State<profile> {
                 autoPlayAnimationDuration: Duration(milliseconds: 800),
                 viewportFraction: 0.8,
               ),
-              items: [
-                "assets/nature1.png",
-                "assets/nature2.png",
-                "assets/nature3.png"
-              ].map((i) {
+              items: [uploadedurl, uploadedurl, uploadedurl].map((i) {
                 return Builder(
                   builder: (BuildContext context) {
                     return Container(
                         width: MediaQuery.of(context).size.width,
                         margin: EdgeInsets.symmetric(horizontal: 5.0),
                         //decoration: BoxDecoration(color: Colors.amber),
-                        child: Container(
-                          margin: EdgeInsets.all(5.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            image: DecorationImage(
-                              image: AssetImage(i),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                        child: Image.network(
+                          i,
+                          fit: BoxFit.cover,
                         ));
                   },
                 );
