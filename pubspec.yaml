@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.1
   lite_rolling_switch: ^0.1.1
   avatar_glow: ^1.2.0
-
+  number_to_words: ^0.0.3
   fluttertoast: ^7.1.6
   firebase_storage: ^7.0.0
   image_picker: ^0.6.7+22

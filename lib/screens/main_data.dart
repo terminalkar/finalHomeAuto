@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/fav.dart';
-//import 'package:number_to_words/number_to_words.dart';
+import 'package:number_to_words/number_to_words.dart';
 
 class fulldataofrooms {
   static var roomidmap = Map();
@@ -185,6 +185,7 @@ class fulldataofrooms {
   }
 
   Future<List<String>> solvequery(String s) async {
+    await fetchindex();
     final dbref = FirebaseDatabase.instance.reference().child('Users');
     User user = FirebaseAuth.instance.currentUser;
     //String s = "Switch on tubelight 1";
@@ -194,10 +195,6 @@ class fulldataofrooms {
     int flag = -1;
     List<String> ans = new List<String>();
     for (int i = 0; i < (l.length); i++) {
-      //if (isNumeric(l[i])) {
-      //   ans.add( NumberToWord().convert('en-in', int.parse(l[i])).toLowerCase());
-      // }
-
       l[i] = l[i].toLowerCase();
 
       if (flag == -1) {
@@ -218,7 +215,7 @@ class fulldataofrooms {
         }
       }
     }
-    print("flag " + flag.toString());
+    print(indexlist);
     print(key);
     // return [flag.toString(), key];
     try {
@@ -240,6 +237,7 @@ class fulldataofrooms {
             .child(list[2])
             .child("val")
             .set(flag);
+        Fluttertoast.showToast(msg: "done");
       }
     } catch (E) {
       print("caught in sppech func");

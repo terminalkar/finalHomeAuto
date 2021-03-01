@@ -217,6 +217,7 @@ class _CircuittState extends State<Circuit> {
                                             fulldataofrooms f1 =
                                                 new fulldataofrooms();
                                             f1.fetchfavourites();
+                                            await f1.fetchindex();
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(

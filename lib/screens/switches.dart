@@ -604,6 +604,7 @@ _Rename(BuildContext context, int index) async {
                     Form(
                       key: form,
                       child: new TextFormField(
+                        validator: validationofthename,
                         textAlign: TextAlign.center,
                         controller: name,
                         onChanged: (val) {},
@@ -707,88 +708,90 @@ _Rename(BuildContext context, int index) async {
                         onPressed: pressed
                             ? () => print("df")
                             : () async {
-                                setState(() {
-                                  pressed = true;
-                                });
-                                if (room != "Select Type" && name.text != "") {
+                                if (form.currentState.validate()) {
                                   setState(() {
-                                    setState(() {
-                                      if (fulldataofrooms.indexlist
-                                              .contains(name.text) ==
-                                          true) {
-                                        Fluttertoast.showToast(
-                                            msg: "Please use different Name");
-                                      } else {
-                                        dbref
-                                            .child(user.uid)
-                                            .child("index")
-                                            .child(fulldataofrooms.switches[
-                                                    "a" +
-                                                        (index + 1).toString()]
-                                                ["name"])
-                                            .remove();
-                                        fulldataofrooms.indexlist.remove(
-                                            fulldataofrooms.switches["a" +
-                                                    (index + 1).toString()]
-                                                ["name"]);
-                                        fulldataofrooms.indexlist
-                                            .add(name.text);
-                                        fulldataofrooms.switches[
-                                                "a" + (index + 1).toString()]
-                                            ["name"] = name.text;
-                                        dbref
-                                            .child(user.uid)
-                                            .child("rooms")
-                                            .child(fulldataofrooms.roomidarray[
-                                                fulldataofrooms.index])
-                                            .child("circuit")
-                                            .child(fulldataofrooms.boardidarray[
-                                                fulldataofrooms.boardindex])
-                                            .child("a" + (index + 1).toString())
-                                            .child("name")
-                                            .set(name.text);
-
-                                        dbref
-                                            .child(user.uid)
-                                            .child("index")
-                                            .child(name.text)
-                                            .set(fulldataofrooms.roomidarray[
-                                                    fulldataofrooms.index] +
-                                                " " +
-                                                fulldataofrooms.boardidarray[
-                                                    fulldataofrooms
-                                                        .boardindex] +
-                                                " " +
-                                                "a" +
-                                                (index + 1).toString());
-                                      }
-                                    });
-
-                                    fulldataofrooms.switches["a" +
-                                        (index + 1).toString()]["icon"] = room;
+                                    pressed = true;
                                   });
-                                  dbref
-                                      .child(user.uid)
-                                      .child("rooms")
-                                      .child(fulldataofrooms
-                                          .roomidarray[fulldataofrooms.index])
-                                      .child("circuit")
-                                      .child(fulldataofrooms.boardidarray[
-                                          fulldataofrooms.boardindex])
-                                      .set(fulldataofrooms.switches);
+                                  if (room != "Select Type" &&
+                                      name.text != "") {
+                                    setState(() {
+                                      setState(() {
+                                        if (true) {
+                                          dbref
+                                              .child(user.uid)
+                                              .child("index")
+                                              .child(fulldataofrooms.switches[
+                                                  "a" +
+                                                      (index + 1)
+                                                          .toString()]["name"])
+                                              .remove();
+                                          fulldataofrooms.indexlist.remove(
+                                              fulldataofrooms.switches["a" +
+                                                      (index + 1).toString()]
+                                                  ["name"]);
+                                          fulldataofrooms.indexlist
+                                              .add(name.text);
+                                          fulldataofrooms.switches[
+                                                  "a" + (index + 1).toString()]
+                                              ["name"] = name.text;
+                                          dbref
+                                              .child(user.uid)
+                                              .child("rooms")
+                                              .child(
+                                                  fulldataofrooms.roomidarray[
+                                                      fulldataofrooms.index])
+                                              .child("circuit")
+                                              .child(fulldataofrooms
+                                                      .boardidarray[
+                                                  fulldataofrooms.boardindex])
+                                              .child(
+                                                  "a" + (index + 1).toString())
+                                              .child("name")
+                                              .set(name.text);
 
-                                  Navigator.pop(context);
-                                  Navigator.pushReplacement(
+                                          dbref
+                                              .child(user.uid)
+                                              .child("index")
+                                              .child(name.text)
+                                              .set(fulldataofrooms.roomidarray[
+                                                      fulldataofrooms.index] +
+                                                  " " +
+                                                  fulldataofrooms.boardidarray[
+                                                      fulldataofrooms
+                                                          .boardindex] +
+                                                  " " +
+                                                  "a" +
+                                                  (index + 1).toString());
+                                        }
+                                      });
+
+                                      fulldataofrooms.switches[
+                                              "a" + (index + 1).toString()]
+                                          ["icon"] = room;
+                                    });
+                                    dbref
+                                        .child(user.uid)
+                                        .child("rooms")
+                                        .child(fulldataofrooms
+                                            .roomidarray[fulldataofrooms.index])
+                                        .child("circuit")
+                                        .child(fulldataofrooms.boardidarray[
+                                            fulldataofrooms.boardindex])
+                                        .set(fulldataofrooms.switches);
+
+                                    Navigator.pop(context);
+                                    Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => switches()));
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg: "Please select the type of room");
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: "Please select the type of room");
+                                  }
+                                  setState(() {
+                                    pressed = false;
+                                  });
                                 }
-                                setState(() {
-                                  pressed = false;
-                                });
                               }),
                   ),
                 ),
@@ -831,4 +834,17 @@ _Rename(BuildContext context, int index) async {
           },
         );
       });
+}
+
+String validationofthename(String value) {
+  Pattern pattern = r'^[a-zA-Z_ ]*$';
+  RegExp regex = new RegExp(pattern);
+
+  if (value.isEmpty ||
+      !regex.hasMatch(value) ||
+      fulldataofrooms.indexlist.contains(value) == true) {
+    return "Only Alphabets and unique name allowed";
+  } else {
+    return null;
+  }
 }
