@@ -41,16 +41,57 @@ class _switchesState extends State<switches> {
       "A.C.": {
         0: "assets/air-conditioner-normal.png",
         1: "assets/air-conditioner-green.png"
-      }
+      },
+      "Chimney": {
+        0: "assets/chimney-normal.png",
+        1: "assets/chimney-green.png"
+      },
+      "Dressing Table": {
+        0: "assets/dressing-table-normal.png",
+        1: "assets/dressing-table-green.png"
+      },
+      "Fan": {0: "assets/fan-normal.png", 1: "assets/fan-green.png"},
+      "Refrigerator": {
+        0: "assets/fridge-normal.png",
+        1: "assets/fridge-green.png"
+      },
+      "Geyser": {0: "assets/heater-normal.png", 1: "assets/heater-green.png"},
+      "Home Theater": {
+        0: "assets/home-theater-normal.png",
+        1: "assets/home-theater-green.png"
+      },
+      "Tubelight": {
+        0: "assets/tubelight-normal.png",
+        1: "assets/tubelight-green.png"
+      },
+      "Charging Plug": {
+        0: "assets/plug-normal.png",
+        1: "assets/plug-green.png"
+      },
+      "Microwave": {
+        0: "assets/microwave-normal.png",
+        1: "assets/microwave-green.png"
+      },
+      "Pump": {0: "assets/pump-normal.png", 1: "assets/pump-green.png"},
+      "Induction Stove": {
+        0: "assets/induction-stove-normal.png",
+        1: "assets/induction-stove-green.png"
+      },
+      "LED Bulb": {0: "assets/led-normal.png", 1: "assets/led-green.png"},
+      "Table Lamp": {
+        0: "assets/table-lamp-normal.png",
+        1: "assets/table-lamp-green.png"
+      },
+      "Television": {0: "assets/tv-normal.png", 1: "assets/tv-green.png"},
+      "Washing Machine": {
+        0: "assets/washing-machine-normal.png",
+        1: "assets/washing-machine-green.png"
+      },
+      "Water Filter": {
+        0: "assets/water-filter-normal.png",
+        1: "assets/water-filter-green.png"
+      },
     });
-    // image.addAll({
-    //   'Hall': "assets/hall.png",
-    //   'Kitchen': "assets/kitchen.png",
-    //   'Bedroom': "assets/bedroom.png",
-    //   'Bathroom': "assets/bathroom.png",
-    //   "Children's Room": "assets/Children's_Room.png",
-    //   'Other': "assets/logo.png"
-    // });
     iterate();
     super.initState();
   }
@@ -153,6 +194,7 @@ class _switchesState extends State<switches> {
                                             Icons.edit,
                                             size:
                                                 SizeConfig.widthMultiplier * 7,
+                                            color: Colors.grey[400],
                                           ),
                                           onPressed: () async {
                                             await _Rename(context, index);
@@ -165,6 +207,7 @@ class _switchesState extends State<switches> {
                                             Icons.star_border,
                                             size:
                                                 SizeConfig.widthMultiplier * 7,
+                                            color: Colors.yellow[400],
                                           ),
                                           onPressed: () {
                                             favouritesdialogbox(context, index);
@@ -285,11 +328,6 @@ class _switchesState extends State<switches> {
                         .toDouble(),
                     min: 0,
                     max: 5,
-
-                    // innerWidget: (double value) {
-                    //   // use your custom widget inside the slider (gets a slider value from the callback)
-                    //   return Text("regulator speed ${value}");
-                    // },
                     onChange: (double value) {
                       print(value);
 
@@ -571,10 +609,22 @@ _Rename(BuildContext context, int index) async {
     'Select Type',
     'A.C.',
     'Gaming Station',
-    'Bedroom',
-    'Bathroom',
-    "Children's Room",
-    'Other',
+    'Chimney',
+    'Dressing Table',
+    "Fan",
+    "Refrigerator",
+    "Geyser",
+    "Home Theater",
+    "Tubelight",
+    'Charging Plug',
+    "Microwave",
+    "Pump",
+    "Induction Stove",
+    "LED Bulb",
+    "Table Lamp",
+    "Television",
+    "Washing Machine",
+    "Water Filter",
   ];
   return showDialog(
       context: context,
