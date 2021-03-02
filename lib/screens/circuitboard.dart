@@ -1,14 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/main_data.dart';
+import 'package:home_automation_app/screens/main_data.dart';
 import 'package:home_automation_app/screens/switches.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+
+import 'main_data.dart';
 
 class Circuit extends StatefulWidget {
   @override
@@ -141,7 +145,46 @@ class _CircuittState extends State<Circuit> {
                                             User user = FirebaseAuth
                                                 .instance.currentUser;
 
-                                            dbref
+                                            var indexdeletelist = [];
+                                            Map map = fulldataofrooms.boardid[
+                                                fulldataofrooms
+                                                    .boardidarray[index]];
+                                            for (final i in map.keys) {
+                                              try {
+                                                indexdeletelist
+                                                    .add(map[i]['name']);
+                                              } catch (e) {}
+                                            }
+                                            print(indexdeletelist);
+
+                                            for (int i = 0;
+                                                i < indexdeletelist.length;
+                                                i++) {
+                                              await dbref
+                                                  .child(user.uid)
+                                                  .child('index')
+                                                  .child(indexdeletelist[i])
+                                                  .remove();
+
+                                              for (int j = 1;
+                                                  j <
+                                                      fulldataofrooms
+                                                          .favroomsarray.length;
+                                                  j++) {
+                                                try {
+                                                  await dbref
+                                                      .child(user.uid)
+                                                      .child('favourites')
+                                                      .child((fulldataofrooms
+                                                          .favroomsarray[j]))
+                                                      .child(indexdeletelist[i])
+                                                      .remove();
+                                                  break;
+                                                } catch (e) {}
+                                              }
+                                            }
+
+                                            await dbref
                                                 .child(user.uid)
                                                 .child("rooms")
                                                 .child(
