@@ -60,6 +60,41 @@ class _favouriteState extends State<favourite> {
                 onLongPress: () async {
                   final RenderBox overlay =
                       Overlay.of(context).context.findRenderObject();
+                  showMenu(
+                    shape: new RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(10.0)),
+                    items: <PopupMenuEntry>[
+                      PopupMenuItem(
+                        value: index,
+                        child: InkWell(
+                          onTap: () {
+                            print("rename");
+                            setState(() {});
+                            Navigator.pop(context);
+                          },
+                          child: Row(
+                            children: <Widget>[
+                              Icon(Icons.edit),
+                              SizedBox(
+                                width: 25,
+                              ),
+                              Text(
+                                "Rename",
+                                style: TextStyle(
+                                    fontFamily: "Amelia-Basic-Light",
+                                    fontSize: 16,
+                                    color: Color(0xff79848b)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                    context: context,
+                    position: RelativeRect.fromRect(
+                        _tapPosition & const Size(40, 40),
+                        Offset.zero & overlay.size),
+                  );
                 },
 
                 //switches//////////////////////////////////////////////////////////////////////////////////
