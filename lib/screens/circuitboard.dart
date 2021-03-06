@@ -1,13 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/main_data.dart';
+import 'package:home_automation_app/screens/main_data.dart';
 import 'package:home_automation_app/screens/switches.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+import 'main_data.dart';
 
 class Circuit extends StatefulWidget {
   @override
@@ -29,6 +34,7 @@ class _CircuittState extends State<Circuit> {
     }
   }
 
+  bool pressed = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -100,9 +106,137 @@ class _CircuittState extends State<Circuit> {
                                   resizeDuration: Duration(milliseconds: 200),
                                   key: ObjectKey(
                                       fulldataofrooms.boardidarray[index]),
-                                  onDismissed: (direction) {
-                                    // TODO: implement your delete function and check direction if needed
-                                    _deleteMessage(index);
+                                  confirmDismiss: (direction) async {
+                                    return await Alert(
+                                      context: context,
+                                      type: AlertType.warning,
+                                      style: AlertStyle(
+                                          animationType: AnimationType.fromTop,
+                                          isCloseButton: false,
+                                          isOverlayTapDismiss: false,
+                                          descStyle: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                          animationDuration:
+                                              Duration(milliseconds: 400),
+                                          titleStyle: TextStyle(
+                                              color: Color(0xff00004d)),
+                                          alertBorder: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            side: BorderSide(
+                                              color: Colors.grey,
+                                            ),
+                                          )),
+                                      title: "Confirm Delete",
+                                      buttons: [
+                                        DialogButton(
+                                          child: Text(
+                                            "Confirm",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 2.5 *
+                                                    SizeConfig.textMultiplier),
+                                          ),
+                                          // ignore: missing_return
+                                          onPressed: pressed
+                                              ? null
+                                              : () async {
+                                                  setState(() {
+                                                    pressed = true;
+                                                  });
+                                                  final dbref = FirebaseDatabase
+                                                      .instance
+                                                      .reference()
+                                                      .child('Users');
+                                                  User user = FirebaseAuth
+                                                      .instance.currentUser;
+
+                                                  var indexdeletelist = [];
+                                                  Map map = fulldataofrooms
+                                                          .boardid[
+                                                      fulldataofrooms
+                                                          .boardidarray[index]];
+                                                  for (final i in map.keys) {
+                                                    try {
+                                                      indexdeletelist
+                                                          .add(map[i]['name']);
+                                                    } catch (e) {}
+                                                  }
+                                                  print(indexdeletelist);
+
+                                                  for (int i = 0;
+                                                      i <
+                                                          indexdeletelist
+                                                              .length;
+                                                      i++) {
+                                                    await dbref
+                                                        .child(user.uid)
+                                                        .child('index')
+                                                        .child(
+                                                            indexdeletelist[i])
+                                                        .remove();
+
+                                                    for (int j = 1;
+                                                        j <
+                                                            fulldataofrooms
+                                                                .favroomsarray
+                                                                .length;
+                                                        j++) {
+                                                      try {
+                                                        await dbref
+                                                            .child(user.uid)
+                                                            .child('favourites')
+                                                            .child((fulldataofrooms
+                                                                    .favroomsarray[
+                                                                j]))
+                                                            .child(
+                                                                indexdeletelist[
+                                                                    i])
+                                                            .remove();
+                                                        break;
+                                                      } catch (e) {}
+                                                    }
+                                                  }
+
+                                                  await dbref
+                                                      .child(user.uid)
+                                                      .child("rooms")
+                                                      .child(fulldataofrooms
+                                                              .roomidarray[
+                                                          fulldataofrooms
+                                                              .index])
+                                                      .child("circuit")
+                                                      .child(fulldataofrooms
+                                                          .boardidarray[index])
+                                                      .remove();
+
+                                                  setState(() {
+                                                    pressed = false;
+                                                  });
+                                                  Navigator.of(context)
+                                                      .pop(true);
+                                                },
+                                          color:
+                                              Color.fromRGBO(0, 179, 134, 1.0),
+                                        ),
+                                        DialogButton(
+                                          child: Text(
+                                            "Cancel",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 2.5 *
+                                                    SizeConfig.textMultiplier),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop(false);
+                                          },
+                                          gradient: LinearGradient(colors: [
+                                            Color(0xffe63900),
+                                            Color(0xffe63900)
+                                          ]),
+                                        )
+                                      ],
+                                    ).show();
                                   },
                                   background: Container(
                                     height: 8 * SizeConfig.heightMultiplier,
@@ -143,6 +277,7 @@ class _CircuittState extends State<Circuit> {
                                             fulldataofrooms f1 =
                                                 new fulldataofrooms();
                                             f1.fetchfavourites();
+                                            await f1.fetchindex();
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -153,8 +288,23 @@ class _CircuittState extends State<Circuit> {
                                           isThreeLine: false,
                                           leading: Padding(
                                             padding: const EdgeInsets.all(10.0),
-                                            child: Icon(
-                                                Icons.bookmark_border_outlined),
+                                            child: IconButton(
+                                                icon: Icon(Icons
+                                                    .bookmark_border_outlined),
+                                                onPressed: () {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                    content: Text("ID = "+fulldataofrooms
+                                                        .boardid[fulldataofrooms
+                                                            .boardidarray[
+                                                        index]]["bid"]),
+                                                    action: SnackBarAction(
+                                                        label: 'hide',
+                                                        onPressed: ScaffoldMessenger
+                                                                .of(context)
+                                                            .hideCurrentSnackBar),
+                                                  ));
+                                                }),
                                           ),
                                           title: Text(
                                             fulldataofrooms.boardidarray[index],
@@ -184,21 +334,24 @@ class _CircuittState extends State<Circuit> {
               ),
         floatingActionButton: FloatingActionButton.extended(
             backgroundColor: Colors.blue,
-            onPressed: () async {
-              try {
-                _addboard(context);
-              } catch (Exc) {
-                print(Exc);
-              }
-            },
+            onPressed: pressed
+                ? null
+                : () async {
+                    try {
+                      setState(() {
+                        pressed = true;
+                      });
+                      await _addboard(context);
+                      setState(() {
+                        pressed = false;
+                      });
+                    } catch (Exc) {
+                      print(Exc);
+                    }
+                  },
             tooltip: 'Increment',
             label: Text("Add Boards"),
             icon: Icon(Icons.add)));
-  }
-
-  _deleteMessage(index) {
-    // TODO: here remove from Firestore, then update your local snapshot list
-    // setState(() {});
   }
 
   _addboard(BuildContext context) async {
@@ -379,6 +532,7 @@ class _CircuittState extends State<Circuit> {
                                           "val": 0,
                                           "icon": "null"
                                         },
+                                        "bid": id.text
                                       });
 
                                       fulldataofrooms f1 =

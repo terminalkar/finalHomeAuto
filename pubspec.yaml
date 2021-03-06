@@ -36,12 +36,13 @@ dependencies:
   cupertino_icons: ^1.0.1
   lite_rolling_switch: ^0.1.1
   avatar_glow: ^1.2.0
-
+  number_to_words: ^0.0.3
   fluttertoast: ^7.1.6
   firebase_storage: ^7.0.0
   image_picker: ^0.6.7+22
   font_awesome_flutter: ^8.11.0
   sleek_circular_slider: ^1.2.0+web
+  carousel_slider: ^3.0.0
 
 dev_dependencies:
   flutter_test:

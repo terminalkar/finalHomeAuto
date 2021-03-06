@@ -30,7 +30,10 @@ class _HomepageState extends State<Homepage>
   stt.SpeechToText _speech;
   bool _isListening = false;
   String _text = '';
+  bool pressed = false;
   double _confidence = 1.0;
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   final dbref = FirebaseDatabase.instance.reference().child('Users');
   User user = FirebaseAuth.instance.currentUser;
   @override
@@ -87,11 +90,13 @@ class _HomepageState extends State<Homepage>
         _speech.listen(
             onResult: (val) => setState(() {
                   _text = val.recognizedWords;
+                  print(_text);
+                  Fluttertoast.showToast(msg: "Running command " + _text);
                   if (val.hasConfidenceRating && val.confidence > 0) {
                     _confidence = val.confidence;
                   }
                   fulldataofrooms f = new fulldataofrooms();
-                  // print(f.solvequery(_text));
+                  f.solvequery(_text);
                 }),
             listenFor: Duration(seconds: 10),
             partialResults: false,
@@ -105,7 +110,6 @@ class _HomepageState extends State<Homepage>
     } else {
       setState(() => _isListening = false);
       _speech.stop();
-      print("iiiin");
       print(_isListening);
     }
   }
@@ -114,6 +118,7 @@ class _HomepageState extends State<Homepage>
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        key: _scaffoldKey,
         backgroundColor: Colors.white,
         appBar: AppBar(
             title: Text(
@@ -206,6 +211,10 @@ class _HomepageState extends State<Homepage>
                           color: Color(0xff79848b),
                         ),
                         onTap: () {
+                          if (_scaffoldKey.currentState.isDrawerOpen) {
+                            _scaffoldKey.currentState.openEndDrawer();
+                          } else
+                            _scaffoldKey.currentState.openDrawer();
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -244,11 +253,15 @@ class _HomepageState extends State<Homepage>
                           fulldataofrooms f1 = new fulldataofrooms();
                           await f1.fetchfavourites();
                           await f1.fetchfavouritescontentdata();
+
+                          if (_scaffoldKey.currentState.isDrawerOpen) {
+                            _scaffoldKey.currentState.openEndDrawer();
+                          } else
+                            _scaffoldKey.currentState.openDrawer();
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => favourite()));
-                          //Navigator.pop(context);
                         }),
                   ),
                   // new Divider(),
@@ -283,6 +296,10 @@ class _HomepageState extends State<Homepage>
                             color: Color(0xff79848b),
                           ),
                           onTap: () async {
+                            if (_scaffoldKey.currentState.isDrawerOpen) {
+                              _scaffoldKey.currentState.openEndDrawer();
+                            } else
+                              _scaffoldKey.currentState.openDrawer();
                             FirebaseAuth.instance.signOut();
                           }),
                     ),
@@ -358,23 +375,33 @@ class _HomepageState extends State<Homepage>
                                               }
                                               Navigator.pop(context);
                                             },
-                                            child: Row(
-                                              children: <Widget>[
-                                                Icon(Icons.delete),
-                                                SizedBox(
-                                                  width: 25,
+                                            child: Container(
+                                              height:
+                                                  SizeConfig.heightMultiplier *
+                                                      6,
+                                              child: Center(
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Icon(Icons.delete),
+                                                    SizedBox(
+                                                      width: SizeConfig
+                                                              .widthMultiplier *
+                                                          6,
+                                                    ),
+                                                    Text(
+                                                      "Delete slot",
+                                                      style: TextStyle(
+                                                          fontFamily:
+                                                              "Amelia-Basic-Light",
+                                                          fontSize: SizeConfig
+                                                                  .textMultiplier *
+                                                              2.5,
+                                                          color: Color(
+                                                              0xff79848b)),
+                                                    ),
+                                                  ],
                                                 ),
-                                                Text(
-                                                  "Delete slot",
-                                                  style: TextStyle(
-                                                      fontFamily:
-                                                          "Amelia-Basic-Light",
-                                                      fontSize: SizeConfig
-                                                              .textMultiplier *
-                                                          2.5,
-                                                      color: Color(0xff79848b)),
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ),
                                         )
@@ -388,28 +415,38 @@ class _HomepageState extends State<Homepage>
                                   },
 
                                   //Rooms//////////////////////////////////////////////////////////////////////////////////
-                                  onTap: () {
-                                    setState(() {
-                                      fulldataofrooms.index = index;
-                                      fulldataofrooms.boardid = fulldataofrooms
-                                              .id[
-                                          fulldataofrooms.roomidarray[index]];
-                                      fulldataofrooms.boardidarray =
-                                          fulldataofrooms.array[fulldataofrooms
-                                              .roomidarray[index]];
-                                    });
-                                    if (fulldataofrooms.boardidarray == null ||
-                                        fulldataofrooms.boardid == null) {
-                                      fulldataofrooms.boardidarray = [];
-                                      fulldataofrooms.boardid = new Map();
-                                    } else {
-                                      fulldataofrooms.boardidarray.sort();
-                                    }
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Circuit()));
-                                  },
+                                  onTap: pressed
+                                      ? null
+                                      : () {
+                                          setState(() {
+                                            pressed = true;
+                                            fulldataofrooms.index = index;
+                                            fulldataofrooms.boardid =
+                                                fulldataofrooms.id[
+                                                    fulldataofrooms
+                                                        .roomidarray[index]];
+                                            fulldataofrooms.boardidarray =
+                                                fulldataofrooms.array[
+                                                    fulldataofrooms
+                                                        .roomidarray[index]];
+                                          });
+                                          if (fulldataofrooms.boardidarray ==
+                                                  null ||
+                                              fulldataofrooms.boardid == null) {
+                                            fulldataofrooms.boardidarray = [];
+                                            fulldataofrooms.boardid = new Map();
+                                          } else {
+                                            fulldataofrooms.boardidarray.sort();
+                                          }
+                                          setState(() {
+                                            pressed = false;
+                                          });
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Circuit()));
+                                        },
                                   child: Container(
                                     child: Column(
                                       children: [

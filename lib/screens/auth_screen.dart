@@ -78,7 +78,7 @@ class _AuthScreenState extends State<AuthScreen> {
           Theme.of(context).primaryColor, // Theame set kraychi bakiye
 
       body: SingleChildScrollView(
-              child: AuthForm(
+        child: AuthForm(
           _submitAuthForm,
           _isLoading,
         ),

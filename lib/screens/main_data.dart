@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/fav.dart';
-//import 'package:number_to_words/number_to_words.dart';
+import 'package:number_to_words/number_to_words.dart';
 
 class fulldataofrooms {
   static var roomidmap = Map();
@@ -19,8 +19,7 @@ class fulldataofrooms {
   static var favouritecontentnamesmap = Map();
   static var path = Map();
   static String uploadedimageurl =
-      "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmoonvillageassociation.org%2Fwp-content%2Fuploads%2F2018%2F06%2Fdefault-profile-picture1.jpg&imgrefurl=https%3A%2F%2Fmoonvillageassociation.org%2Fdefault-profile-picture1%2F&tbnid=1MCM_aOai2VxwM&vet=12ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ..i&docid=yY-OL4rE--k3jM&w=1000&h=1000&q=default%20profile%20photo&ved=2ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ";
-
+      "https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg";
   Future<void> fetchrooms() async {
     final dbref = FirebaseDatabase.instance.reference().child('Users');
 
@@ -34,10 +33,13 @@ class fulldataofrooms {
           .child("info")
           .child("profile")
           .once()
-          .then((value) => uploadedimageurl);
+          .then((value) {
+        if (value.value != null) {
+          uploadedimageurl = value.value;
+        }
+      });
     } catch (ex) {
-      uploadedimageurl =
-          "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmoonvillageassociation.org%2Fwp-content%2Fuploads%2F2018%2F06%2Fdefault-profile-picture1.jpg&imgrefurl=https%3A%2F%2Fmoonvillageassociation.org%2Fdefault-profile-picture1%2F&tbnid=1MCM_aOai2VxwM&vet=12ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ..i&docid=yY-OL4rE--k3jM&w=1000&h=1000&q=default%20profile%20photo&ved=2ahUKEwj_7Mjtn4rvAhVU4XMBHW8MCQkQMygDegUIARDDAQ";
+      print("exception in profile url");
     }
 
     try {
@@ -119,12 +121,9 @@ class fulldataofrooms {
       Map id = snap.value;
       try {
         for (final i in id.keys) {
-          print("fetchfavourites");
-          print(i);
           favroomsarray.add(i);
 
           favouriteroomscontents.addAll({i: id[i]});
-          print(id[i]);
         }
         Fluttertoast.showToast(msg: favouriteroomscontents.length.toString());
       } catch (ex) {
@@ -147,7 +146,7 @@ class fulldataofrooms {
           if (j.toString() == "val") continue;
           String s = m[j].toString();
           var list = s.split(" ");
-          //Fluttertoast.showToast(msg: list.toString());
+
           //logic
           await dbref
               .child(user.uid)
@@ -182,7 +181,47 @@ class fulldataofrooms {
     });
   }
 
+  Future<void> ChangeStatus(int state, int index) async {
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
+    if (true) {
+      try {
+        Map m = fulldataofrooms
+            .favouriteroomscontents[fulldataofrooms.favroomsarray[index + 1]];
+        await dbref
+            .child(user.uid)
+            .child("favourites")
+            .child(fulldataofrooms.favroomsarray[index + 1])
+            .child("val")
+            .set(state);
+        fulldataofrooms.favouriteroomscontents[
+            fulldataofrooms.favroomsarray[index + 1]]["val"] = state;
+        for (final i in m.values) {
+          if (i == 1 || i == 0) continue;
+          String s = i.toString();
+          var list = s.split(" ");
+          Fluttertoast.showToast(msg: list.toString());
+
+          await dbref
+              .child(user.uid)
+              .child("rooms")
+              .child(list[0])
+              .child("circuit")
+              .child(list[1])
+              .child(list[2])
+              .child("val")
+              .set(state);
+        }
+      } catch (Ex) {
+        print("eception");
+      }
+    }
+  }
+
   Future<List<String>> solvequery(String s) async {
+    await fetchindex();
+    await fetchfavourites();
+    await fetchfavouritescontentdata();
     final dbref = FirebaseDatabase.instance.reference().child('Users');
     User user = FirebaseAuth.instance.currentUser;
     //String s = "Switch on tubelight 1";
@@ -190,55 +229,75 @@ class fulldataofrooms {
     List<String> l = s.split(" ");
     String key = "";
     int flag = -1;
-    List<String> ans = new List<String>();
-    for (int i = 0; i < (l.length); i++) {
-      // if (isNumeric(l[i])) {
-      //   ans.add( NumberToWord().convert('en-in', int.parse(l[i])).toLowerCase());
-      // }
-
-      l[i] = l[i].toLowerCase();
-
-      if (flag == -1) {
-        if (l[i] == "switch" || l[i] == "turn") {
-          if (l[i + 1].toLowerCase() == "on" || l[l.length - 1] == "on") {
-            flag = 1;
-          } else if (l[i + 1].toLowerCase() == "off" ||
-              l[l.length - 1] == "off" ||
-              l[l.length - 1] == "of") {
-            flag = 0;
-          }
-        }
-      } else {
-        //remove stop words
-        if (stopwords.contains(l[i])) {
-        } else {
-          key += l[i];
-        }
+    var favlist = [];
+    await dbref.child(user.uid).child("favourites").once().then((snap) {
+      Map m1 = snap.value;
+      for (final k in m1.keys) {
+        favlist.add(k);
+      }
+    });
+    String fav = '';
+    for (int i = 0; i < favlist.length; i++) {
+      if (s.toLowerCase().contains(favlist[i].toString().toLowerCase())) {
+        fav = favlist[i];
+        break;
       }
     }
-    // return [flag.toString(), key];
-    try {
-      String indexpath;
-      if (indexlist.contains(key) == true) {
-        await dbref
-            .child(user.uid)
-            .child("index")
-            .child(key)
-            .once()
-            .then((snap) => indexpath = snap.value);
-        var list = indexpath.split(" ");
-        await dbref
-            .child(user.uid)
-            .child("rooms")
-            .child(list[0])
-            .child("circuit")
-            .child(list[1])
-            .child(list[2])
-            .child("val")
-            .set(flag);
+    if (fav.length > 0) {
+      if (s.toLowerCase().contains('on')) {
+        await ChangeStatus(1, fulldataofrooms.favroomsarray.indexOf(fav) - 1);
+      } else if (s.toLowerCase().contains('off') ||
+          s.toLowerCase().contains('of')) {
+        await ChangeStatus(0, fulldataofrooms.favroomsarray.indexOf(fav) - 1);
       }
-    } catch (E) {
-      print("caught in sppech func");
+    } else {
+      print("out");
+      for (int i = 0; i < (l.length); i++) {
+        l[i] = l[i].toLowerCase();
+
+        if (flag == -1) {
+          if (l[i] == "switch" || l[i] == "turn") {
+            if (l[i + 1].toLowerCase() == "on" || l[l.length - 1] == "on") {
+              flag = 1;
+            } else if (l[i + 1].toLowerCase() == "off" ||
+                l[l.length - 1] == "off" ||
+                l[l.length - 1] == "of") {
+              flag = 0;
+            }
+          }
+        } else {
+          //remove stop words
+          if (stopwords.contains(l[i])) {
+          } else {
+            key += l[i];
+          }
+        }
+      }
+      // return [flag.toString(), key];
+      try {
+        String indexpath;
+        if (indexlist.contains(key) == true) {
+          await dbref
+              .child(user.uid)
+              .child("index")
+              .child(key)
+              .once()
+              .then((snap) => indexpath = snap.value);
+          var list = indexpath.split(" ");
+          await dbref
+              .child(user.uid)
+              .child("rooms")
+              .child(list[0])
+              .child("circuit")
+              .child(list[1])
+              .child(list[2])
+              .child("val")
+              .set(flag);
+          Fluttertoast.showToast(msg: "done");
+        }
+      } catch (E) {
+        print("caught in sppech func");
+      }
     }
   }
 }
