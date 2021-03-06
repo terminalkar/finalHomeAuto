@@ -117,7 +117,7 @@ class _favouriteState extends State<favourite> {
                                       width: 25,
                                     ),
                                     Text(
-                                      "Delete slot",
+                                      "Delete Favourite",
                                       style: TextStyle(
                                           fontFamily: "Amelia-Basic-Light",
                                           fontSize:
@@ -162,7 +162,9 @@ class _favouriteState extends State<favourite> {
                               child: Column(
                                 children: [
                                   Container(
-                                    height: 9 * SizeConfig.heightMultiplier,
+                                    height: SizeConfig.grp < 4
+                                        ? 9 * SizeConfig.heightMultiplier
+                                        : 6 * SizeConfig.heightMultiplier,
                                     width: 30 * SizeConfig.widthMultiplier,
                                     margin: EdgeInsets.fromLTRB(10, 20, 0, 0),
                                     child: Center(
@@ -170,88 +172,78 @@ class _favouriteState extends State<favourite> {
                                         fulldataofrooms
                                             .favroomsarray[index + 1],
                                         style: TextStyle(
-                                          fontSize:
-                                              SizeConfig.textMultiplier * 2.8,
+                                          fontSize: SizeConfig.grp < 4
+                                              ? SizeConfig.textMultiplier * 2.8
+                                              : SizeConfig.textMultiplier * 2,
                                         ),
                                       ),
                                     ),
                                   ),
-                                  Center(
-                                    child: Container(
-                                        height: 6 * SizeConfig.heightMultiplier,
-                                        width: 30 * SizeConfig.widthMultiplier,
-                                        child: Padding(
-                                          padding: EdgeInsets.only(top: 10),
-                                          child: LiteRollingSwitch(
-                                            value: fulldataofrooms
-                                                            .favouriteroomscontents[
-                                                        fulldataofrooms
-                                                                .favroomsarray[
-                                                            index +
-                                                                1]]["val"] ==
-                                                    1
-                                                ? true
-                                                : false,
-                                            textOn: 'Active',
-                                            textOff: 'Inactive',
-                                            colorOn: Colors.greenAccent,
-                                            colorOff: Colors.blueGrey,
-                                            iconOn: Icons.lightbulb_outline,
-                                            iconOff: Icons.power_settings_new,
-                                            onChanged: (bool status) async {
-                                              print(
-                                                  'turned ${(status) ? 'on' : 'off'}');
-                                              int state = status ? 1 : 0;
+                                  Container(
+                                      height: 6 * SizeConfig.heightMultiplier,
+                                      width: 30 * SizeConfig.widthMultiplier,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(top: 10),
+                                        child: LiteRollingSwitch(
+                                          value: fulldataofrooms
+                                                          .favouriteroomscontents[
+                                                      fulldataofrooms
+                                                              .favroomsarray[
+                                                          index + 1]]["val"] ==
+                                                  1
+                                              ? true
+                                              : false,
+                                          textOn: 'Active',
+                                          textOff: 'Inactive',
+                                          colorOn: Colors.greenAccent,
+                                          colorOff: Colors.blueGrey,
+                                          iconOn: Icons.lightbulb_outline,
+                                          iconOff: Icons.power_settings_new,
+                                          onChanged: (bool status) async {
+                                            print(
+                                                'turned ${(status) ? 'on' : 'off'}');
+                                            int state = status ? 1 : 0;
 
-                                              try {
-                                                Map m = fulldataofrooms
-                                                        .favouriteroomscontents[
-                                                    fulldataofrooms
-                                                            .favroomsarray[
-                                                        index + 1]];
+                                            try {
+                                              Map m = fulldataofrooms
+                                                      .favouriteroomscontents[
+                                                  fulldataofrooms.favroomsarray[
+                                                      index + 1]];
+                                              await dbref
+                                                  .child(user.uid)
+                                                  .child("favourites")
+                                                  .child(fulldataofrooms
+                                                      .favroomsarray[index + 1])
+                                                  .child("val")
+                                                  .set(state);
+                                              fulldataofrooms
+                                                      .favouriteroomscontents[
+                                                  fulldataofrooms.favroomsarray[
+                                                      index +
+                                                          1]]["val"] = state;
+                                              for (final i in m.values) {
+                                                if (i == 1 || i == 0) continue;
+                                                String s = i.toString();
+                                                var list = s.split(" ");
+
                                                 await dbref
                                                     .child(user.uid)
-                                                    .child("favourites")
-                                                    .child(fulldataofrooms
-                                                            .favroomsarray[
-                                                        index + 1])
+                                                    .child("rooms")
+                                                    .child(list[0])
+                                                    .child("circuit")
+                                                    .child(list[1])
+                                                    .child(list[2])
                                                     .child("val")
                                                     .set(state);
-                                                fulldataofrooms
-                                                        .favouriteroomscontents[
-                                                    fulldataofrooms
-                                                            .favroomsarray[
-                                                        index +
-                                                            1]]["val"] = state;
-                                                for (final i in m.values) {
-                                                  if (i == 1 || i == 0)
-                                                    continue;
-                                                  String s = i.toString();
-                                                  var list = s.split(" ");
-                                                  Fluttertoast.showToast(
-                                                      msg: list.toString());
-                                                  await dbref
-                                                      .child(user.uid)
-                                                      .child("rooms")
-                                                      .child(list[0])
-                                                      .child("circuit")
-                                                      .child(list[1])
-                                                      .child(list[2])
-                                                      .child("val")
-                                                      .set(state);
-                                                }
-                                              } catch (Ex) {
-                                                print("eception");
                                               }
-                                            },
-                                          ),
-                                        )),
-                                  ),
+                                            } catch (Ex) {
+                                              print("eception");
+                                            }
+                                          },
+                                        ),
+                                      )),
                                 ],
                               ),
-                            ),
-                            SizedBox(
-                              height: SizeConfig.heightMultiplier * 6,
                             ),
                           ],
                         ),

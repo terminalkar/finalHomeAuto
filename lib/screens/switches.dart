@@ -21,7 +21,7 @@ class _switchesState extends State<switches> {
   final dbref = FirebaseDatabase.instance.reference().child("Users");
   User user = FirebaseAuth.instance.currentUser;
   var edit = List.filled(5, false);
-  var iconStr = false,pressed=false;
+  var iconStr = false, pressed = false;
   Icon obj;
   var icnstr = "assets/kitchen.png";
   var image = new Map();
@@ -196,11 +196,14 @@ class _switchesState extends State<switches> {
                                                 SizeConfig.widthMultiplier * 7,
                                             color: Colors.grey[400],
                                           ),
-                                          onPressed:pressed?null: () async {
-                                            await _Rename(context, index);
-                                            edit = List.filled(5, false);
-                                            focusnode = List.filled(5, false);
-                                          },
+                                          onPressed: pressed
+                                              ? null
+                                              : () async {
+                                                  await _Rename(context, index);
+                                                  edit = List.filled(5, false);
+                                                  focusnode =
+                                                      List.filled(5, false);
+                                                },
                                         ),
                                         IconButton(
                                           icon: Icon(
@@ -687,7 +690,9 @@ _Rename(BuildContext context, int index) async {
                     SizedBox(height: SizeConfig.widthMultiplier * 2.5),
                     Container(
                       height: SizeConfig.heightMultiplier * 6,
-                      width: SizeConfig.widthMultiplier * 50,
+                      width: SizeConfig.grp < 4
+                          ? SizeConfig.widthMultiplier * 50
+                          : SizeConfig.widthMultiplier * 55,
                       margin: EdgeInsets.all(10),
                       padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(

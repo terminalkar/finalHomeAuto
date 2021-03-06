@@ -125,7 +125,7 @@ class fulldataofrooms {
 
           favouriteroomscontents.addAll({i: id[i]});
         }
-        Fluttertoast.showToast(msg: favouriteroomscontents.length.toString());
+        // Fluttertoast.showToast(msg: favouriteroomscontents.length.toString());
       } catch (ex) {
         print("Exception in fav maindata");
       }
@@ -200,7 +200,7 @@ class fulldataofrooms {
           if (i == 1 || i == 0) continue;
           String s = i.toString();
           var list = s.split(" ");
-          Fluttertoast.showToast(msg: list.toString());
+          // Fluttertoast.showToast(msg: list.toString());
 
           await dbref
               .child(user.uid)
@@ -213,7 +213,7 @@ class fulldataofrooms {
               .set(state);
         }
       } catch (Ex) {
-        print("eception");
+        print("exception");
       }
     }
   }
@@ -293,7 +293,7 @@ class fulldataofrooms {
               .child(list[2])
               .child("val")
               .set(flag);
-          Fluttertoast.showToast(msg: "done");
+          // Fluttertoast.showToast(msg: "done");
         }
       } catch (E) {
         print("caught in sppech func");

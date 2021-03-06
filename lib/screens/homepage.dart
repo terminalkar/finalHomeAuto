@@ -389,7 +389,7 @@ class _HomepageState extends State<Homepage>
                                                           6,
                                                     ),
                                                     Text(
-                                                      "Delete slot",
+                                                      "Delete Room",
                                                       style: TextStyle(
                                                           fontFamily:
                                                               "Amelia-Basic-Light",
