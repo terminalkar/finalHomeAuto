@@ -32,6 +32,7 @@ class profileState extends State<profile> {
   String uploadedurl = fulldataofrooms.uploadedimageurl;
   int profilepickflag = 0;
   var l = [];
+  bool pressed = false;
   final dbref = FirebaseDatabase.instance.reference();
   final FocusNode myFocusNode = FocusNode();
   final TextEditingController _idcontroller = new TextEditingController();
@@ -352,7 +353,54 @@ class profileState extends State<profile> {
                   ],
                 ),
               ),
-              Text("Our Products"),
+              //Text("Our Products"),
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  height: SizeConfig.heightMultiplier * 4,
+                  width: SizeConfig.grp < 4
+                      ? SizeConfig.widthMultiplier * 40
+                      : SizeConfig.widthMultiplier * 50,
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Color(0xffffffff),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0.00, 3.00),
+                        color: Color(0xff0792ef).withOpacity(0.32),
+                        blurRadius: 6,
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(13.00),
+                  ),
+                  child: FlatButton(
+                    child: Row(
+                      children: [
+                        Center(
+                            child: Icon(
+                          Icons.public,
+                          color: Color(0xff79848b),
+                        )),
+                        Center(
+                          child: Text(
+                            '  Visit Website',
+                            style: TextStyle(
+                              fontFamily: "Amelia-Basic-Light",
+                              fontSize: SizeConfig.textMultiplier * 2,
+                              color: Color(0xff79848b),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    onPressed: pressed == false
+                        ? () async {
+                            //Navigator.of(context).pop();
+                          }
+                        : null,
+                  ),
+                ),
+              ),
               CarouselSlider(
                 options: CarouselOptions(
                   height: 180.0,
