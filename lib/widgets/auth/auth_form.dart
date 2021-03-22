@@ -12,6 +12,7 @@ class AuthForm extends StatefulWidget {
     String email,
     String password,
     String mobile,
+    String name,
     bool isLogin,
     BuildContext ctx,
   ) submitFn;
@@ -27,6 +28,7 @@ class _AuthFormState extends State<AuthForm> {
   var _isLogin = true;
   var _userEmail = '';
   var _userMobile = '';
+  var _name = '';
   var _userPassword = '';
   GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
   void _trySubmit() {
@@ -39,6 +41,7 @@ class _AuthFormState extends State<AuthForm> {
         _userEmail.trim(),
         _userPassword.trim(),
         _userMobile.trim(),
+        _name.trim(),
         _isLogin,
         context,
       );
@@ -48,6 +51,7 @@ class _AuthFormState extends State<AuthForm> {
         _userEmail.trim(),
         _userPassword.trim(),
         _userMobile.trim(),
+        _name.trim(),
         _isLogin,
         context,
       );
@@ -454,7 +458,56 @@ class _AuthFormState extends State<AuthForm> {
                                 ),
                               ],
                             ),
+                            // SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
+                            Column(
+                              children: [
+                                //For Space
+                                SizedBox(
+                                    height: 3.5 * SizeConfig.heightMultiplier),
 
+                                Container(
+                                  //external decortion
+                                  height: 8 * SizeConfig.heightMultiplier,
+                                  width: 100 * SizeConfig.widthMultiplier,
+
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffffffff).withOpacity(0.59),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        offset: Offset(0.00, 5.00),
+                                        color:
+                                            Color(0xff0792ef).withOpacity(0.19),
+                                        blurRadius: 14,
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(21.50),
+                                  ),
+
+                                  //internal textfield
+                                  child: TextFormField(
+                                    //key: ValueKey('mobile'),
+                                    //validotor  improved
+                                    //validator: validatenumber,
+
+                                    //Saving Username
+                                    onChanged: (value) {
+                                      _name = value;
+                                    },
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                      //andar ka decoration ko none kiya hai
+                                      hintText: 'Full Name',
+                                      contentPadding: EdgeInsets.all(20),
+                                      border: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      errorBorder: InputBorder.none,
+                                      disabledBorder: InputBorder.none,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                             //For Space
                             SizedBox(height: 3.5 * SizeConfig.heightMultiplier),
 

@@ -18,6 +18,7 @@ class _AuthScreenState extends State<AuthScreen> {
     String email,
     String password,
     String mobile,
+    String name,
     bool isLogin,
     BuildContext ctx,
   ) async {
@@ -41,6 +42,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .set({
           'mobile': mobile,
           'email': email,
+          'Name': name,
         });
       }
     } on PlatformException catch (err) {
@@ -74,9 +76,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
-      backgroundColor:
-          Theme.of(context).primaryColor, // Theame set kraychi bakiye
-
+      backgroundColor: Theme.of(context).primaryColor,
       body: SingleChildScrollView(
         child: AuthForm(
           _submitAuthForm,
