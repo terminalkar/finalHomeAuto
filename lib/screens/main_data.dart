@@ -31,18 +31,6 @@ class fulldataofrooms {
     String name, type;
 
     //getting name
-    try {
-      await dbref
-          .child(user.uid)
-          .child("info")
-          .child("Name")
-          .once()
-          .then((value) {
-        profilename = value.value;
-      });
-    } catch (ex) {
-      print("exception in name fetching");
-    }
 
     //getting image url
     try {
@@ -188,6 +176,7 @@ class fulldataofrooms {
   }
 
   Future<void> fetchindex() async {
+    indexlist.clear();
     Map m1 = new Map();
     indexlist.clear();
     print(indexlist);
