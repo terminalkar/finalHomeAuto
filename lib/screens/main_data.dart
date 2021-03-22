@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/fav.dart';
 import 'package:number_to_words/number_to_words.dart';
+//import 'package:numbers_to_words/numbers_to_words.dart';
 
 class fulldataofrooms {
   static var roomidmap = Map();
@@ -218,6 +219,13 @@ class fulldataofrooms {
     }
   }
 
+  bool isNumeric(String s) {
+    if (s == null) {
+      return false;
+    }
+    return double.tryParse(s) != null;
+  }
+
   Future<List<String>> solvequery(String s) async {
     await fetchindex();
     await fetchfavourites();
@@ -230,9 +238,23 @@ class fulldataofrooms {
     String key = "";
     int flag = -1;
     var favlist = [];
+
+    //
+    /*var word_to_number = <String, num>{
+      'one': 1,
+      'two': 2,
+      'three': 3,
+      'four': 4,
+      'five': 5,
+      'six': 6,
+      'seven': 7,
+      'eight': 8,
+      'nine': 9,
+      'ten': 10,
+    };*/
+
     await dbref.child(user.uid).child("favourites").once().then((snap) {
-      Map m1 = snap.value;
-      for (final k in m1.keys) {
+      for (final k in snap.value.keys) {
         favlist.add(k);
       }
     });
@@ -269,9 +291,16 @@ class fulldataofrooms {
           //remove stop words
           if (stopwords.contains(l[i])) {
           } else {
-            key += l[i];
+            if (isNumeric(l[i])) {
+              String s = NumberToWord().convert("en-in", int.parse(l[i]));
+              key += s;
+              print("Converted" + s);
+            } else {
+              key += l[i];
+            }
           }
         }
+        print("final " + key);
       }
       // return [flag.toString(), key];
       try {
