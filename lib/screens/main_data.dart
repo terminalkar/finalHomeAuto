@@ -175,11 +175,35 @@ class fulldataofrooms {
     }
   }
 
+  static Future<void> linktofav(String name) async {
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
+    try {
+      for (final i in favouriteroomscontents.keys) {
+        Map m = favouriteroomscontents[i];
+        if (m['val'] == 1 && m.keys.contains(name)) {
+          m['val'] = 0;
+          favouriteroomscontents[i] = m;
+          try {
+            await dbref
+                .child(user.uid)
+                .child("favourites")
+                .child(i.toString())
+                .child("val")
+                .set(0);
+          } catch (e) {
+            print("not link");
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
   Future<void> fetchindex() async {
     indexlist.clear();
     Map m1 = new Map();
     indexlist.clear();
-    print(indexlist);
+
     final dbref = FirebaseDatabase.instance.reference().child('Users');
     User user = FirebaseAuth.instance.currentUser;
     await dbref.child(user.uid).child("index").once().then((snap) {
@@ -188,7 +212,6 @@ class fulldataofrooms {
         indexlist.add(k);
       }
     });
-    print(indexlist);
   }
 
   Future<void> ChangeStatus(int state, int index) async {

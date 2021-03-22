@@ -154,6 +154,16 @@ class _switchesState extends State<switches> {
                                             0) {
                                           flag = 1;
                                         }
+                                        if (flag == 0) {
+                                          fulldataofrooms.linktofav(
+                                              fulldataofrooms.roomidarray[
+                                                      fulldataofrooms.index] +
+                                                  fulldataofrooms.boardidarray[
+                                                      fulldataofrooms
+                                                          .boardindex] +
+                                                  "a" +
+                                                  (index + 1).toString());
+                                        }
                                         if (fulldataofrooms.switches["a" +
                                                     (index + 1).toString()]
                                                 ["icon"] ==
@@ -778,58 +788,51 @@ _Rename(BuildContext context, int index) async {
                                   });
                                   if (room != "Select Type" &&
                                       name.text != "") {
-                                        try{
-                                        await dbref
-                                              .child(user.uid)
-                                              .child("index")
-                                              .child(fulldataofrooms.switches[
-                                                  "a" +
-                                                      (index + 1)
-                                                          .toString()]["name"])
-                                              .remove();
-                                  
-                                      setState(() async{
-                                        if (true) {
-                                         
-                                          fulldataofrooms.indexlist.remove(
-                                              fulldataofrooms.switches["a" +
-                                                      (index + 1).toString()]
-                                                  ["name"]);
-                                          fulldataofrooms.indexlist
-                                              .add(name.text);
-                                          fulldataofrooms.switches[
-                                                  "a" + (index + 1).toString()]
-                                              ["name"] = name.text;
-                                               fulldataofrooms.switches[
-                                              "a" + (index + 1).toString()]
-                                          ["icon"] = room;
-                                         
-                                        }
+                                    try {
+                                      await dbref
+                                          .child(user.uid)
+                                          .child("index")
+                                          .child(fulldataofrooms.switches["a" +
+                                              (index + 1).toString()]["name"])
+                                          .remove();
+
+                                      setState(() {
+                                        fulldataofrooms.indexlist.remove(
+                                            fulldataofrooms.switches["a" +
+                                                    (index + 1).toString()]
+                                                ["name"]);
+                                        fulldataofrooms.indexlist
+                                            .add(name.text);
+                                        fulldataofrooms.switches[
+                                                "a" + (index + 1).toString()]
+                                            ["name"] = name.text;
+                                        fulldataofrooms.switches[
+                                                "a" + (index + 1).toString()]
+                                            ["icon"] = room;
                                       });
 
-                                          dbref
-                                              .child(user.uid)
-                                              .child("index")
-                                              .child(name.text)
-                                              .set(fulldataofrooms.roomidarray[
-                                                      fulldataofrooms.index] +
-                                                  " " +
-                                                  fulldataofrooms.boardidarray[
-                                                      fulldataofrooms
-                                                          .boardindex] +
-                                                  " " +
-                                                  "a" +
-                                                  (index + 1).toString());
-                                    await dbref
-                                        .child(user.uid)
-                                        .child("rooms")
-                                        .child(fulldataofrooms
-                                            .roomidarray[fulldataofrooms.index])
-                                        .child("circuit")
-                                        .child(fulldataofrooms.boardidarray[
-                                            fulldataofrooms.boardindex])
-                                        .set(fulldataofrooms.switches);
-                                        }catch(e){}
+                                      dbref
+                                          .child(user.uid)
+                                          .child("index")
+                                          .child(name.text)
+                                          .set(fulldataofrooms.roomidarray[
+                                                  fulldataofrooms.index] +
+                                              " " +
+                                              fulldataofrooms.boardidarray[
+                                                  fulldataofrooms.boardindex] +
+                                              " " +
+                                              "a" +
+                                              (index + 1).toString());
+                                      await dbref
+                                          .child(user.uid)
+                                          .child("rooms")
+                                          .child(fulldataofrooms.roomidarray[
+                                              fulldataofrooms.index])
+                                          .child("circuit")
+                                          .child(fulldataofrooms.boardidarray[
+                                              fulldataofrooms.boardindex])
+                                          .set(fulldataofrooms.switches);
+                                    } catch (e) {}
                                     Navigator.pop(context);
                                     Navigator.pushReplacement(
                                         context,

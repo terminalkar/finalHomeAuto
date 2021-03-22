@@ -172,7 +172,9 @@ class _CircuittState extends State<Circuit> {
                                                                   i])
                                                           .remove();
                                                     } catch (e) {}
-                                                    for (int j = 1;
+                                                   
+                                                  }
+ for (int j = 1;
                                                         j <
                                                             fulldataofrooms
                                                                 .favroomsarray
@@ -185,15 +187,20 @@ class _CircuittState extends State<Circuit> {
                                                             .child((fulldataofrooms
                                                                     .favroomsarray[
                                                                 j]))
-                                                            .child(
-                                                                indexdeletelist[
-                                                                    i])
+                                                            .child(fulldataofrooms
+                                                                        .roomidarray[
+                                                                    fulldataofrooms
+                                                                        .index] +
+                                                                fulldataofrooms
+                                                                        .boardidarray[
+                                                                    index] +
+                                                                "a" +
+                                                                (j + 1)
+                                                                    .toString())
                                                             .remove();
-                                                        break;
+                                                        
                                                       } catch (e) {}
                                                     }
-                                                  }
-
                                                   await dbref
                                                       .child(user.uid)
                                                       .child("rooms")
@@ -281,7 +288,6 @@ class _CircuittState extends State<Circuit> {
                                               : () async {
                                                   setState(() {
                                                     pressed = true;
-                                                    
                                                   });
                                                   fulldataofrooms.switches =
                                                       fulldataofrooms.boardid[
@@ -309,7 +315,6 @@ class _CircuittState extends State<Circuit> {
                                                   }
                                                   setState(() {
                                                     pressed = false;
-                                                    
                                                   });
                                                   Navigator.push(
                                                       context,

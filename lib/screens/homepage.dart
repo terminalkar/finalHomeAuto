@@ -157,7 +157,7 @@ class _HomepageState extends State<Homepage>
                 children: <Widget>[
                   new UserAccountsDrawerHeader(
                     accountName: new Text(
-                      profilename,
+                      "profilename",
                       style: TextStyle(
                         fontFamily: "Amelia-Basic-Light",
                         fontSize: SizeConfig.textMultiplier * 2.5,
