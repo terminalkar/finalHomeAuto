@@ -20,6 +20,7 @@ class fulldataofrooms {
   static var favouriteroomscontents = Map();
   static var favouritecontentnamesmap = Map();
   static var path = Map();
+  static String profilename = "default";
   static String uploadedimageurl =
       "https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg";
   Future<void> fetchrooms() async {
@@ -28,6 +29,21 @@ class fulldataofrooms {
     User user = FirebaseAuth.instance.currentUser;
 
     String name, type;
+
+    //getting name
+    try {
+      await dbref
+          .child(user.uid)
+          .child("info")
+          .child("Name")
+          .once()
+          .then((value) {
+        profilename = value.value;
+      });
+    } catch (ex) {
+      print("exception in name fetching");
+    }
+
     //getting image url
     try {
       await dbref

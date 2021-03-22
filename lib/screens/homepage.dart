@@ -22,6 +22,7 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage>
     with SingleTickerProviderStateMixin {
   var _tapPosition;
+  String profilename = "default";
   var assetImageString;
   var assetImage;
   var image1;
@@ -49,6 +50,7 @@ class _HomepageState extends State<Homepage>
       'Other': "assets/logo.png"
     });
     super.initState();
+    fetchname();
     _roomData();
     _speech = stt.SpeechToText();
   }
@@ -73,7 +75,6 @@ class _HomepageState extends State<Homepage>
 
 // voice recognition speak
   void _listen() async {
-    
     if (!_speech.isListening) {
       bool available = await _speech.initialize(
         onStatus: (val) {
@@ -108,13 +109,11 @@ class _HomepageState extends State<Homepage>
         setState(() => _isListening = false);
         _speech.stop();
         print(_isListening);
-       
       }
     } else {
       setState(() => _isListening = false);
       _speech.stop();
       print(_isListening);
-     
     }
   }
 
@@ -158,7 +157,7 @@ class _HomepageState extends State<Homepage>
                 children: <Widget>[
                   new UserAccountsDrawerHeader(
                     accountName: new Text(
-                      "Name",
+                      profilename,
                       style: TextStyle(
                         fontFamily: "Amelia-Basic-Light",
                         fontSize: SizeConfig.textMultiplier * 2.5,
@@ -567,6 +566,22 @@ class _HomepageState extends State<Homepage>
             icon: Icon(Icons.add)),
       ),
     );
+  }
+
+  void fetchname() async {
+    try {
+      await dbref
+          .child(user.uid)
+          .child("info")
+          .child("Name")
+          .once()
+          .then((value) {
+        profilename = value.value;
+      });
+    } catch (ex) {
+      print("exception in name fetching");
+      profilename = "a";
+    }
   }
 }
 
