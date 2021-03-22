@@ -118,7 +118,7 @@ class _switchesState extends State<switches> {
         ),
 
         ////////////////////////////////////////////////////////////////////////////////////
-        body:SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Column(
             children: [
               AnimationLimiter(
@@ -214,15 +214,15 @@ class _switchesState extends State<switches> {
                                           ),
                                           onPressed: pressed
                                               ? null
-                                              : () async{
+                                              : () async {
                                                   setState(() {
                                                     pressed = true;
                                                   });
                                                   await favouritesdialogbox(
                                                       context, index);
-                                                      setState(() {
-                                                        pressed=false;
-                                                      });
+                                                  setState(() {
+                                                    pressed = false;
+                                                  });
                                                 },
                                         ),
                                       ],
@@ -903,7 +903,7 @@ _Rename(BuildContext context, int index) async {
 String validationofthename(String value) {
   Pattern pattern = r'^[a-zA-Z_ ]*$';
   RegExp regex = new RegExp(pattern);
-
+  print(fulldataofrooms.indexlist);
   if (value.isEmpty ||
       !regex.hasMatch(value) ||
       fulldataofrooms.indexlist.contains(value) == true) {
