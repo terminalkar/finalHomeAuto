@@ -16,6 +16,7 @@ class favourite extends StatefulWidget {
 class _favouriteState extends State<favourite> {
   var _tapPosition;
   int globalindex;
+  bool pressed = false;
   String globalvalue;
   final dbref = FirebaseDatabase.instance.reference().child('Users');
   User user = FirebaseAuth.instance.currentUser;
@@ -32,9 +33,17 @@ class _favouriteState extends State<favourite> {
                     child: Container(
                         height: SizeConfig.heightMultiplier * 5,
                         child: Center(child: Text(e))),
-                    onTap: () {
-                      confirm(index, e, context);
-                    }),
+                    onTap: pressed
+                        ? null
+                        : () async {
+                            setState(() {
+                              pressed = true;
+                            });
+                            await confirm(index, e, context);
+                            setState(() {
+                              pressed = false;
+                            });
+                          }),
               ))
           .toList();
       // print(fulldataofrooms.favroomsarray.length);
@@ -79,82 +88,113 @@ class _favouriteState extends State<favourite> {
                         _tapPosition = details.globalPosition;
                       },
                       //Rename
-                      onLongPress: () async {
-                        final RenderBox overlay =
-                            Overlay.of(context).context.findRenderObject();
-                        showMenu(
-                          shape: new RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(10.0)),
-                          items: <PopupMenuEntry>[
-                            PopupMenuItem(
-                              value: index,
-                              child: GestureDetector(
-                                onTap: () {
-                                  try {
-                                    dbref
-                                        .child(user.uid)
-                                        .child("favourites")
-                                        .child(fulldataofrooms
-                                            .favroomsarray[index + 1])
-                                        .remove();
-                                    setState(() {
-                                      fulldataofrooms.favouriteroomscontents
-                                          .remove(fulldataofrooms
-                                              .favroomsarray[index + 1]);
-                                      fulldataofrooms.favroomsarray.remove(
-                                          fulldataofrooms
-                                              .favroomsarray[index + 1]);
-                                    });
-                                  } catch (ex) {
-                                    print("pop");
-                                  }
-                                  Navigator.pop(context);
-                                },
-                                child: Row(
-                                  children: <Widget>[
-                                    Icon(Icons.delete),
-                                    SizedBox(
-                                      width: 25,
+                      onLongPress: pressed
+                          ? null
+                          : () async {
+                              setState(() {
+                                pressed = true;
+                              });
+                              final RenderBox overlay = Overlay.of(context)
+                                  .context
+                                  .findRenderObject();
+                              showMenu(
+                                shape: new RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(10.0)),
+                                items: <PopupMenuEntry>[
+                                  PopupMenuItem(
+                                    value: index,
+                                    child: GestureDetector(
+                                      onTap: pressed
+                                          ? null
+                                          : () {
+                                              setState(() {
+                                                pressed = true;
+                                              });
+                                              try {
+                                                dbref
+                                                    .child(user.uid)
+                                                    .child("favourites")
+                                                    .child(fulldataofrooms
+                                                            .favroomsarray[
+                                                        index + 1])
+                                                    .remove();
+                                                setState(() {
+                                                  fulldataofrooms
+                                                      .favouriteroomscontents
+                                                      .remove(fulldataofrooms
+                                                              .favroomsarray[
+                                                          index + 1]);
+                                                  fulldataofrooms.favroomsarray
+                                                      .remove(fulldataofrooms
+                                                              .favroomsarray[
+                                                          index + 1]);
+                                                });
+                                              } catch (ex) {
+                                                print("pop");
+                                              }
+                                              setState(() {
+                                                pressed = false;
+                                              });
+                                              Navigator.pop(context);
+                                            },
+                                      child: Row(
+                                        children: <Widget>[
+                                          Icon(Icons.delete),
+                                          SizedBox(
+                                            width: 25,
+                                          ),
+                                          Text(
+                                            "Delete Favourite",
+                                            style: TextStyle(
+                                                fontFamily:
+                                                    "Amelia-Basic-Light",
+                                                fontSize:
+                                                    SizeConfig.textMultiplier *
+                                                        2.5,
+                                                color: Color(0xff79848b)),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    Text(
-                                      "Delete Favourite",
-                                      style: TextStyle(
-                                          fontFamily: "Amelia-Basic-Light",
-                                          fontSize:
-                                              SizeConfig.textMultiplier * 2.5,
-                                          color: Color(0xff79848b)),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                          context: context,
-                          position: RelativeRect.fromRect(
-                              _tapPosition & const Size(40, 40),
-                              Offset.zero & overlay.size),
-                        );
-                        //
-                      },
+                                  )
+                                ],
+                                context: context,
+                                position: RelativeRect.fromRect(
+                                    _tapPosition & const Size(40, 40),
+                                    Offset.zero & overlay.size),
+                              );
+                              //
+                            },
 
                       //switches//////////////////////////////////////////////////////////////////////////////////
 
-                      onTap: () {
-                        final RenderBox overlay =
-                            Overlay.of(context).context.findRenderObject();
+                      onTap: pressed
+                          ? null
+                          : () {
+                              setState(() {
+                                pressed = true;
+                              });
+                              final RenderBox overlay = Overlay.of(context)
+                                  .context
+                                  .findRenderObject();
 
-                        showMenu(
-                            shape: new RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(10.0)),
-                            items: fun(
-                                context,
-                                fulldataofrooms.favroomsarray[index + 1],
-                                index),
-                            context: context,
-                            position: RelativeRect.fromRect(
-                                _tapPosition & const Size(40, 40),
-                                Offset.zero & overlay.size));
-                      },
+                              showMenu(
+                                  shape: new RoundedRectangleBorder(
+                                      borderRadius:
+                                          new BorderRadius.circular(10.0)),
+                                  items: fun(
+                                      context,
+                                      fulldataofrooms.favroomsarray[index + 1],
+                                      index),
+                                  context: context,
+                                  position: RelativeRect.fromRect(
+                                      _tapPosition & const Size(40, 40),
+                                      Offset.zero & overlay.size));
+                              setState(() {
+                                pressed = false;
+                              });
+                            },
                       child: Container(
                         child: Column(
                           children: [
@@ -295,23 +335,32 @@ class _favouriteState extends State<favourite> {
                 color: Colors.white, fontSize: 2.5 * SizeConfig.textMultiplier),
           ),
           // ignore: missing_return
-          onPressed: () async {
-            final dbref = FirebaseDatabase.instance.reference().child('Users');
-            User user = FirebaseAuth.instance.currentUser;
+          onPressed: pressed
+              ? null
+              : () async {
+                  setState(() {
+                    pressed = true;
+                  });
+                  final dbref =
+                      FirebaseDatabase.instance.reference().child('Users');
+                  User user = FirebaseAuth.instance.currentUser;
 
-            dbref
-                .child(user.uid)
-                .child("favourites")
-                .child(fulldataofrooms.favroomsarray[index + 1])
-                .child(fulldataofrooms.path[value])
-                .remove();
-            fulldataofrooms f = new fulldataofrooms();
-            await f.fetchfavourites();
-            await f.fetchfavouritescontentdata();
-            Navigator.pop(context);
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => favourite()));
-          },
+                  dbref
+                      .child(user.uid)
+                      .child("favourites")
+                      .child(fulldataofrooms.favroomsarray[index + 1])
+                      .child(fulldataofrooms.path[value])
+                      .remove();
+                  fulldataofrooms f = new fulldataofrooms();
+                  await f.fetchfavourites();
+                  await f.fetchfavouritescontentdata();
+                  Navigator.pop(context);
+                  setState(() {
+                    pressed = false;
+                  });
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => favourite()));
+                },
           color: Color.fromRGBO(0, 179, 134, 1.0),
         ),
         DialogButton(

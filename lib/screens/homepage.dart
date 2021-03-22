@@ -73,6 +73,7 @@ class _HomepageState extends State<Homepage>
 
 // voice recognition speak
   void _listen() async {
+    
     if (!_speech.isListening) {
       bool available = await _speech.initialize(
         onStatus: (val) {
@@ -106,11 +107,13 @@ class _HomepageState extends State<Homepage>
         setState(() => _isListening = false);
         _speech.stop();
         print(_isListening);
+       
       }
     } else {
       setState(() => _isListening = false);
       _speech.stop();
       print(_isListening);
+     
     }
   }
 
@@ -249,26 +252,42 @@ class _HomepageState extends State<Homepage>
                           Icons.arrow_right,
                           color: Color(0xff79848b),
                         ),
-                        onTap: () async {
-                          fulldataofrooms f1 = new fulldataofrooms();
-                          await f1.fetchfavourites();
-                          await f1.fetchfavouritescontentdata();
+                        onTap: pressed
+                            ? null
+                            : () async {
+                                setState(() {
+                                  pressed = true;
+                                });
+                                fulldataofrooms f1 = new fulldataofrooms();
+                                await f1.fetchfavourites();
+                                await f1.fetchfavouritescontentdata();
 
-                          if (_scaffoldKey.currentState.isDrawerOpen) {
-                            _scaffoldKey.currentState.openEndDrawer();
-                          } else
-                            _scaffoldKey.currentState.openDrawer();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => favourite()));
-                        }),
+                                if (_scaffoldKey.currentState.isDrawerOpen) {
+                                  _scaffoldKey.currentState.openEndDrawer();
+                                } else
+                                  _scaffoldKey.currentState.openDrawer();
+                                setState(() {
+                                  pressed = false;
+                                });
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => favourite()));
+                              }),
                   ),
                   // new Divider(),
                   InkWell(
-                    onTap: () {
-                      FirebaseAuth.instance.signOut();
-                    },
+                    onTap: pressed
+                        ? null
+                        : () {
+                            setState(() {
+                              pressed = true;
+                            });
+                            FirebaseAuth.instance.signOut();
+                            setState(() {
+                              pressed = false;
+                            });
+                          },
                     child: Card(
                       child: new ListTile(
                           title: Row(
@@ -341,78 +360,102 @@ class _HomepageState extends State<Homepage>
                                     _tapPosition = details.globalPosition;
                                   },
                                   //delete
-                                  onLongPress: () {
-                                    final RenderBox overlay =
-                                        Overlay.of(context)
-                                            .context
-                                            .findRenderObject();
-                                    showMenu(
-                                      shape: new RoundedRectangleBorder(
-                                          borderRadius:
-                                              new BorderRadius.circular(10.0)),
-                                      items: <PopupMenuEntry>[
-                                        PopupMenuItem(
-                                          value: index,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              try {
-                                                dbref
-                                                    .child(user.uid)
-                                                    .child("rooms")
-                                                    .child(fulldataofrooms
-                                                        .roomidarray[index])
-                                                    .remove();
-                                                setState(() {
-                                                  fulldataofrooms.roomidmap
-                                                      .remove(fulldataofrooms
-                                                          .roomidarray[index]);
-                                                  fulldataofrooms.roomidarray
-                                                      .remove(fulldataofrooms
-                                                          .roomidarray[index]);
-                                                });
-                                              } catch (ex) {
-                                                print("pop");
-                                              }
-                                              Navigator.pop(context);
-                                            },
-                                            child: Container(
-                                              height:
-                                                  SizeConfig.heightMultiplier *
-                                                      6,
-                                              child: Center(
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Icon(Icons.delete),
-                                                    SizedBox(
-                                                      width: SizeConfig
-                                                              .widthMultiplier *
-                                                          6,
+                                  onLongPress: pressed
+                                      ? null
+                                      : () {
+                                          setState(() {
+                                            pressed = true;
+                                          });
+                                          final RenderBox overlay =
+                                              Overlay.of(context)
+                                                  .context
+                                                  .findRenderObject();
+                                          showMenu(
+                                            shape: new RoundedRectangleBorder(
+                                                borderRadius:
+                                                    new BorderRadius.circular(
+                                                        10.0)),
+                                            items: <PopupMenuEntry>[
+                                              PopupMenuItem(
+                                                value: index,
+                                                child: GestureDetector(
+                                                  onTap: pressed
+                                                      ? null
+                                                      : () {
+                                                          setState(() {
+                                                            pressed = true;
+                                                          });
+                                                          try {
+                                                            dbref
+                                                                .child(user.uid)
+                                                                .child("rooms")
+                                                                .child(fulldataofrooms
+                                                                        .roomidarray[
+                                                                    index])
+                                                                .remove();
+                                                            setState(() {
+                                                              fulldataofrooms
+                                                                  .roomidmap
+                                                                  .remove(fulldataofrooms
+                                                                          .roomidarray[
+                                                                      index]);
+                                                              fulldataofrooms
+                                                                  .roomidarray
+                                                                  .remove(fulldataofrooms
+                                                                          .roomidarray[
+                                                                      index]);
+                                                            });
+                                                          } catch (ex) {
+                                                            print("pop");
+                                                          }
+                                                          setState(() {
+                                                            pressed = false;
+                                                          });
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                  child: Container(
+                                                    height: SizeConfig
+                                                            .heightMultiplier *
+                                                        6,
+                                                    child: Center(
+                                                      child: Row(
+                                                        children: <Widget>[
+                                                          Icon(Icons.delete),
+                                                          SizedBox(
+                                                            width: SizeConfig
+                                                                    .widthMultiplier *
+                                                                6,
+                                                          ),
+                                                          Text(
+                                                            "Delete Room",
+                                                            style: TextStyle(
+                                                                fontFamily:
+                                                                    "Amelia-Basic-Light",
+                                                                fontSize: SizeConfig
+                                                                        .textMultiplier *
+                                                                    2.5,
+                                                                color: Color(
+                                                                    0xff79848b)),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
-                                                    Text(
-                                                      "Delete Room",
-                                                      style: TextStyle(
-                                                          fontFamily:
-                                                              "Amelia-Basic-Light",
-                                                          fontSize: SizeConfig
-                                                                  .textMultiplier *
-                                                              2.5,
-                                                          color: Color(
-                                                              0xff79848b)),
-                                                    ),
-                                                  ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                      context: context,
-                                      position: RelativeRect.fromRect(
-                                          _tapPosition & const Size(40, 40),
-                                          Offset.zero & overlay.size),
-                                    );
-                                    //
-                                  },
+                                              )
+                                            ],
+                                            context: context,
+                                            position: RelativeRect.fromRect(
+                                                _tapPosition &
+                                                    const Size(40, 40),
+                                                Offset.zero & overlay.size),
+                                          );
+                                          setState(() {
+                                            pressed = false;
+                                          });
+                                          //
+                                        },
 
                                   //Rooms//////////////////////////////////////////////////////////////////////////////////
                                   onTap: pressed
@@ -503,13 +546,21 @@ class _HomepageState extends State<Homepage>
                   ),
         floatingActionButton: FloatingActionButton.extended(
             backgroundColor: Colors.blue,
-            onPressed: () {
-              try {
-                _addroom(context);
-              } catch (Exc) {
-                print(Exc);
-              }
-            },
+            onPressed: pressed
+                ? null
+                : () {
+                    setState(() {
+                      pressed = true;
+                    });
+                    try {
+                      _addroom(context);
+                    } catch (Exc) {
+                      print(Exc);
+                    }
+                    setState(() {
+                      pressed = false;
+                    });
+                  },
             tooltip: 'Increment',
             label: Text("Add Rooms"),
             icon: Icon(Icons.add)),
@@ -668,7 +719,7 @@ _addroom(BuildContext context) async {
                           ),
                         ),
                         onPressed: pressed
-                            ? () => print("df")
+                            ? () => null
                             : () async {
                                 setState(() {
                                   pressed = true;

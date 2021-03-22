@@ -12,6 +12,7 @@ class fulldataofrooms {
   static var id = Map();
   static var roomidarray = [], boardidarray = [], array = Map();
   static int index;
+  static bool fetched = true;
   static var switches = Map();
   static var boardindex, indexlist = [];
   static List<String> favroomsarray = [];
@@ -188,14 +189,16 @@ class fulldataofrooms {
       try {
         Map m = fulldataofrooms
             .favouriteroomscontents[fulldataofrooms.favroomsarray[index + 1]];
+
+        fulldataofrooms.favouriteroomscontents[
+            fulldataofrooms.favroomsarray[index + 1]]["val"] = state;
         await dbref
             .child(user.uid)
             .child("favourites")
             .child(fulldataofrooms.favroomsarray[index + 1])
             .child("val")
             .set(state);
-        fulldataofrooms.favouriteroomscontents[
-            fulldataofrooms.favroomsarray[index + 1]]["val"] = state;
+
         for (final i in m.values) {
           if (i == 1 || i == 0) continue;
           String s = i.toString();
@@ -232,8 +235,12 @@ class fulldataofrooms {
     var favlist = [];
     await dbref.child(user.uid).child("favourites").once().then((snap) {
       Map m1 = snap.value;
-      for (final k in m1.keys) {
-        favlist.add(k);
+      try {
+        for (final k in m1.keys) {
+          favlist.add(k);
+        }
+      } catch (e) {
+        print("solve query error");
       }
     });
     String fav = '';
@@ -273,6 +280,7 @@ class fulldataofrooms {
           }
         }
       }
+      print(key);
       // return [flag.toString(), key];
       try {
         String indexpath;

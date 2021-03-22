@@ -25,7 +25,8 @@ class _CircuittState extends State<Circuit> {
     super.dispose();
   }
 
-  // Future<bool> _onbackpressed() {}
+  final dbref = FirebaseDatabase.instance.reference().child('Users');
+  User user = FirebaseAuth.instance.currentUser;
   bool isboardfetch = true;
   @override
   void setState(fn) {
@@ -144,12 +145,6 @@ class _CircuittState extends State<Circuit> {
                                                   setState(() {
                                                     pressed = true;
                                                   });
-                                                  final dbref = FirebaseDatabase
-                                                      .instance
-                                                      .reference()
-                                                      .child('Users');
-                                                  User user = FirebaseAuth
-                                                      .instance.currentUser;
 
                                                   var indexdeletelist = [];
                                                   Map map = fulldataofrooms
@@ -162,20 +157,21 @@ class _CircuittState extends State<Circuit> {
                                                           .add(map[i]['name']);
                                                     } catch (e) {}
                                                   }
-                                                  print(indexdeletelist);
 
                                                   for (int i = 0;
                                                       i <
                                                           indexdeletelist
                                                               .length;
                                                       i++) {
-                                                    await dbref
-                                                        .child(user.uid)
-                                                        .child('index')
-                                                        .child(
-                                                            indexdeletelist[i])
-                                                        .remove();
-
+                                                    try {
+                                                      dbref
+                                                          .child(user.uid)
+                                                          .child('index')
+                                                          .child(
+                                                              indexdeletelist[
+                                                                  i])
+                                                          .remove();
+                                                    } catch (e) {}
                                                     for (int j = 1;
                                                         j <
                                                             fulldataofrooms
@@ -211,6 +207,10 @@ class _CircuittState extends State<Circuit> {
                                                       .remove();
 
                                                   setState(() {
+                                                    fulldataofrooms.boardidarray
+                                                        .remove(fulldataofrooms
+                                                                .boardidarray[
+                                                            index]);
                                                     pressed = false;
                                                   });
                                                   Navigator.of(context)
@@ -227,9 +227,17 @@ class _CircuittState extends State<Circuit> {
                                                 fontSize: 2.5 *
                                                     SizeConfig.textMultiplier),
                                           ),
-                                          onPressed: () {
-                                            Navigator.of(context).pop(false);
-                                          },
+                                          onPressed: pressed
+                                              ? null
+                                              : () {
+                                                  setState(() {
+                                                    pressed = true;
+                                                  });
+                                                  Navigator.pop(context);
+                                                  setState(() {
+                                                    pressed = false;
+                                                  });
+                                                },
                                           gradient: LinearGradient(colors: [
                                             Color(0xffe63900),
                                             Color(0xffe63900)
@@ -268,23 +276,48 @@ class _CircuittState extends State<Circuit> {
                                       ),
                                       child: Center(
                                         child: ListTile(
-                                          onTap: () async {
-                                            fulldataofrooms.switches =
-                                                fulldataofrooms.boardid[
-                                                    fulldataofrooms
-                                                        .boardidarray[index]];
-                                            fulldataofrooms.boardindex = index;
-                                            fulldataofrooms f1 =
-                                                new fulldataofrooms();
-                                            f1.fetchfavourites();
-                                            await f1.fetchindex();
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      switches(),
-                                                ));
-                                          },
+                                          onTap: pressed
+                                              ? null
+                                              : () async {
+                                                  setState(() {
+                                                    pressed = true;
+                                                    
+                                                  });
+                                                  fulldataofrooms.switches =
+                                                      fulldataofrooms.boardid[
+                                                          fulldataofrooms
+                                                                  .boardidarray[
+                                                              index]];
+                                                  fulldataofrooms.boardindex =
+                                                      index;
+                                                  fulldataofrooms f1 =
+                                                      new fulldataofrooms();
+                                                  setState(() {
+                                                    fulldataofrooms.fetched =
+                                                        false;
+                                                  });
+
+                                                  try {
+                                                    f1.fetchfavourites();
+                                                    await f1.fetchindex();
+
+                                                    await f1.fetchboards();
+                                                    fulldataofrooms.boardidarray
+                                                        .sort();
+                                                  } catch (Ex) {
+                                                    print("on tap circuit");
+                                                  }
+                                                  setState(() {
+                                                    pressed = false;
+                                                    
+                                                  });
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            switches(),
+                                                      ));
+                                                },
                                           isThreeLine: false,
                                           leading: Padding(
                                             padding: const EdgeInsets.all(10.0),
@@ -294,10 +327,11 @@ class _CircuittState extends State<Circuit> {
                                                 onPressed: () {
                                                   ScaffoldMessenger.of(context)
                                                       .showSnackBar(SnackBar(
-                                                    content: Text("ID = "+fulldataofrooms
-                                                        .boardid[fulldataofrooms
-                                                            .boardidarray[
-                                                        index]]["bid"]),
+                                                    content: Text("ID = " +
+                                                        fulldataofrooms.boardid[
+                                                            fulldataofrooms
+                                                                    .boardidarray[
+                                                                index]]["bid"]),
                                                     action: SnackBarAction(
                                                         label: 'hide',
                                                         onPressed: ScaffoldMessenger
