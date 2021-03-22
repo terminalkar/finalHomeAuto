@@ -47,6 +47,10 @@ class _HomepageState extends State<Homepage>
       "Children's Room": "assets/Children's_Room.png",
       "Temple": "assets/temple.png",
       "Balcony": "assets/balcony.png",
+      "Backyard": "assets/backyard.png",
+      "Gate": "assets/gate.png",
+      "Terrace": "assets/terrace.png",
+      "Doorway": "assets/doorway.png",
       'Other': "assets/logo.png"
     });
     super.initState();
@@ -600,6 +604,10 @@ _addroom(BuildContext context) async {
     "Children's Room",
     'Temple',
     'Balcony',
+    'Gate',
+    'Backyard',
+    'Terrace',
+    'Doorway',
     'Other',
   ];
   FocusNode focusNode = new FocusNode();

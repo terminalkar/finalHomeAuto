@@ -36,6 +36,8 @@ class _switchesState extends State<switches> {
         0: "assets/console-normal.png",
         1: "assets/console-green.png"
       },
+      "Bulb": {0: "assets/bulb.png", 1: "assets/bulb-green.png"},
+      "Exhaust Fan": {0: "assets/exhaust.png", 1: "assets/exhaust-green.png"},
       "A.C.": {
         0: "assets/air-conditioner-normal.png",
         1: "assets/air-conditioner-green.png"
