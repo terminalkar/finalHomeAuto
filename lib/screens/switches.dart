@@ -118,7 +118,7 @@ class _switchesState extends State<switches> {
         ),
 
         ////////////////////////////////////////////////////////////////////////////////////
-        body:SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Column(
             children: [
               AnimationLimiter(
@@ -214,15 +214,15 @@ class _switchesState extends State<switches> {
                                           ),
                                           onPressed: pressed
                                               ? null
-                                              : () async{
+                                              : () async {
                                                   setState(() {
                                                     pressed = true;
                                                   });
                                                   await favouritesdialogbox(
                                                       context, index);
-                                                      setState(() {
-                                                        pressed=false;
-                                                      });
+                                                  setState(() {
+                                                    pressed = false;
+                                                  });
                                                 },
                                         ),
                                       ],
@@ -659,8 +659,8 @@ _Rename(BuildContext context, int index) async {
                 ),
               ),
               content: Container(
-                height: SizeConfig.heightMultiplier * 100 / (5.33),
-                width: SizeConfig.widthMultiplier * 111,
+                height: 25 * SizeConfig.heightMultiplier,
+                width: 95 * SizeConfig.widthMultiplier,
                 child: Column(
                   children: <Widget>[
                     Form(
@@ -778,10 +778,8 @@ _Rename(BuildContext context, int index) async {
                                   });
                                   if (room != "Select Type" &&
                                       name.text != "") {
-                                    setState(() {
-                                      setState(() {
-                                        if (true) {
-                                          dbref
+                                        try{
+                                        await dbref
                                               .child(user.uid)
                                               .child("index")
                                               .child(fulldataofrooms.switches[
@@ -789,6 +787,10 @@ _Rename(BuildContext context, int index) async {
                                                       (index + 1)
                                                           .toString()]["name"])
                                               .remove();
+                                  
+                                      setState(() async{
+                                        if (true) {
+                                         
                                           fulldataofrooms.indexlist.remove(
                                               fulldataofrooms.switches["a" +
                                                       (index + 1).toString()]
@@ -798,20 +800,29 @@ _Rename(BuildContext context, int index) async {
                                           fulldataofrooms.switches[
                                                   "a" + (index + 1).toString()]
                                               ["name"] = name.text;
-                                          dbref
-                                              .child(user.uid)
-                                              .child("rooms")
-                                              .child(
-                                                  fulldataofrooms.roomidarray[
-                                                      fulldataofrooms.index])
-                                              .child("circuit")
-                                              .child(fulldataofrooms
-                                                      .boardidarray[
-                                                  fulldataofrooms.boardindex])
-                                              .child(
-                                                  "a" + (index + 1).toString())
-                                              .child("name")
-                                              .set(name.text);
+                                               fulldataofrooms.switches[
+                                              "a" + (index + 1).toString()]
+                                          ["icon"] = room;
+                                         
+                                        }
+                                      });
+
+                                     
+                                  
+                                    // await dbref
+                                    //           .child(user.uid)
+                                    //           .child("rooms")
+                                    //           .child(
+                                    //               fulldataofrooms.roomidarray[
+                                    //                   fulldataofrooms.index])
+                                    //           .child("circuit")
+                                    //           .child(fulldataofrooms
+                                    //                   .boardidarray[
+                                    //               fulldataofrooms.boardindex])
+                                    //           .child(
+                                    //               "a" + (index + 1).toString())
+                                    //           .child("name")
+                                    //           .set(name.text);
 
                                           dbref
                                               .child(user.uid)
@@ -826,14 +837,7 @@ _Rename(BuildContext context, int index) async {
                                                   " " +
                                                   "a" +
                                                   (index + 1).toString());
-                                        }
-                                      });
-
-                                      fulldataofrooms.switches[
-                                              "a" + (index + 1).toString()]
-                                          ["icon"] = room;
-                                    });
-                                    dbref
+                                    await dbref
                                         .child(user.uid)
                                         .child("rooms")
                                         .child(fulldataofrooms
@@ -842,7 +846,7 @@ _Rename(BuildContext context, int index) async {
                                         .child(fulldataofrooms.boardidarray[
                                             fulldataofrooms.boardindex])
                                         .set(fulldataofrooms.switches);
-
+                                        }catch(e){}
                                     Navigator.pop(context);
                                     Navigator.pushReplacement(
                                         context,
@@ -903,7 +907,7 @@ _Rename(BuildContext context, int index) async {
 String validationofthename(String value) {
   Pattern pattern = r'^[a-zA-Z_ ]*$';
   RegExp regex = new RegExp(pattern);
-
+  print(fulldataofrooms.indexlist);
   if (value.isEmpty ||
       !regex.hasMatch(value) ||
       fulldataofrooms.indexlist.contains(value) == true) {

@@ -173,6 +173,8 @@ class fulldataofrooms {
 
   Future<void> fetchindex() async {
     Map m1 = new Map();
+    indexlist.clear();
+    print(indexlist);
     final dbref = FirebaseDatabase.instance.reference().child('Users');
     User user = FirebaseAuth.instance.currentUser;
     await dbref.child(user.uid).child("index").once().then((snap) {
@@ -181,6 +183,7 @@ class fulldataofrooms {
         indexlist.add(k);
       }
     });
+    print(indexlist);
   }
 
   Future<void> ChangeStatus(int state, int index) async {
