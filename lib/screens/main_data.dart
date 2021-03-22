@@ -34,15 +34,16 @@ class fulldataofrooms {
 
     //getting image url
     try {
-      await dbref
-          .child(user.uid)
-          .child("info")
-          .child("profile")
-          .once()
-          .then((value) {
-        if (value.value != null) {
-          uploadedimageurl = value.value;
-        }
+      await dbref.child(user.uid).child("info").once().then((value) {
+        Map map = value.value;
+        try {
+          if (map['profile'] != null) {
+            uploadedimageurl = value.value;
+          }
+        } catch (e) {}
+        try {
+          profilename = map['Name'];
+        } catch (e) {}
       });
     } catch (ex) {
       print("exception in profile url");
@@ -127,9 +128,17 @@ class fulldataofrooms {
       Map id = snap.value;
       try {
         for (final i in id.keys) {
-          favroomsarray.add(i);
+          if (id[i].length > 1) {
+            favroomsarray.add(i);
 
-          favouriteroomscontents.addAll({i: id[i]});
+            favouriteroomscontents.addAll({i: id[i]});
+          } else {
+             dbref
+                .child(user.uid)
+                .child("favourites")
+                .child(i.toString())
+                .remove();
+          }
         }
         // Fluttertoast.showToast(msg: favouriteroomscontents.length.toString());
       } catch (ex) {

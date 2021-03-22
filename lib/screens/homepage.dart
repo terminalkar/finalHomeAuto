@@ -22,7 +22,7 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage>
     with SingleTickerProviderStateMixin {
   var _tapPosition;
-  String profilename = "default";
+  // String profilename = "default";
   var assetImageString;
   var assetImage;
   var image1;
@@ -54,7 +54,7 @@ class _HomepageState extends State<Homepage>
       'Other': "assets/logo.png"
     });
     super.initState();
-    fetchname();
+    
     _roomData();
     _speech = stt.SpeechToText();
   }
@@ -161,7 +161,7 @@ class _HomepageState extends State<Homepage>
                 children: <Widget>[
                   new UserAccountsDrawerHeader(
                     accountName: new Text(
-                      "profilename",
+                      fulldataofrooms.profilename,
                       style: TextStyle(
                         fontFamily: "Amelia-Basic-Light",
                         fontSize: SizeConfig.textMultiplier * 2.5,
@@ -572,264 +572,249 @@ class _HomepageState extends State<Homepage>
     );
   }
 
-  void fetchname() async {
-    try {
-      await dbref
-          .child(user.uid)
-          .child("info")
-          .child("Name")
-          .once()
-          .then((value) {
-        profilename = value.value;
-      });
-    } catch (ex) {
-      print("exception in name fetching");
-      profilename = "a";
-    }
-  }
-}
+  _addroom(BuildContext context) async {
+    bool pressed = false;
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    final form = new GlobalKey<FormState>();
+    Color dropcolor = Color(0xff79848b);
+    String room = 'Select';
+    List<String> Rooms = [
+      'Select',
+      'Hall',
+      'Kitchen',
+      'Bedroom',
+      'Bathroom',
+      "Children's Room",
+      'Temple',
+      'Balcony',
+      'Gate',
+      'Backyard',
+      'Terrace',
+      'Doorway',
+      'Other',
+    ];
+    FocusNode focusNode = new FocusNode();
+    TextEditingController name = TextEditingController();
 
-_addroom(BuildContext context) async {
-  bool pressed = false;
-  final dbref = FirebaseDatabase.instance.reference().child('Users');
-  final form = new GlobalKey<FormState>();
-  Color dropcolor = Color(0xff79848b);
-  String room = 'Select';
-  List<String> Rooms = [
-    'Select',
-    'Hall',
-    'Kitchen',
-    'Bedroom',
-    'Bathroom',
-    "Children's Room",
-    'Temple',
-    'Balcony',
-    'Gate',
-    'Backyard',
-    'Terrace',
-    'Doorway',
-    'Other',
-  ];
-  FocusNode focusNode = new FocusNode();
-  TextEditingController name = TextEditingController();
-
-  return showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              title: Center(
-                child: Text(
-                  'Details of Room',
-                  style: TextStyle(
-                    fontFamily: "Amelia-Basic-Light",
-                    fontSize: SizeConfig.heightMultiplier * 3,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff79848b),
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0)),
+                title: Center(
+                  child: Text(
+                    'Details of Room',
+                    style: TextStyle(
+                      fontFamily: "Amelia-Basic-Light",
+                      fontSize: SizeConfig.heightMultiplier * 3,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff79848b),
+                    ),
                   ),
                 ),
-              ),
-              content: Container(
-                height: SizeConfig.heightMultiplier * 100 / (5.33),
-                width: SizeConfig.widthMultiplier * 111,
-                child: Column(
-                  children: <Widget>[
-                    Form(
-                      key: form,
-                      child: new TextFormField(
-                        textAlign: TextAlign.center,
-                        controller: name,
-                        onChanged: (val) {},
-                        cursorColor: Colors.black87,
-                        focusNode: focusNode,
-                        style: TextStyle(
-                          fontFamily: "Amelia-Basic-Light",
-                          fontSize: SizeConfig.textMultiplier * 2.5,
-                          color: Color(0xff79848b),
-                        ),
-                        decoration: new InputDecoration(
-                          contentPadding: EdgeInsets.all(5),
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                width: 1,
-                                color: Color(0xff444422),
-                              ),
-                              borderRadius: BorderRadius.circular(10.00)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0)),
-                          labelText: "Room name",
-                          labelStyle: TextStyle(
+                content: Container(
+                  height: SizeConfig.heightMultiplier * 100 / (5.33),
+                  width: SizeConfig.widthMultiplier * 111,
+                  child: Column(
+                    children: <Widget>[
+                      Form(
+                        key: form,
+                        child: new TextFormField(
+                          textAlign: TextAlign.center,
+                          controller: name,
+                          onChanged: (val) {},
+                          cursorColor: Colors.black87,
+                          focusNode: focusNode,
+                          style: TextStyle(
                             fontFamily: "Amelia-Basic-Light",
-                            fontSize: SizeConfig.textMultiplier * 3.2,
+                            fontSize: SizeConfig.textMultiplier * 2.5,
                             color: Color(0xff79848b),
                           ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: SizeConfig.widthMultiplier * 2.5),
-                    Container(
-                      height: SizeConfig.heightMultiplier * 6,
-                      width: SizeConfig.widthMultiplier * 50,
-                      margin: EdgeInsets.all(10),
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Color(0xffffffff),
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(0.00, 3.00),
-                            color: Color(0xff0792ef).withOpacity(0.32),
-                            blurRadius: 6,
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(4.00),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          iconEnabledColor: dropcolor,
-                          items: Rooms.map((String listvalue) {
-                            return DropdownMenuItem<String>(
-                              value: listvalue,
-                              child: Text(
-                                listvalue,
-                                style: TextStyle(
-                                  fontFamily: "Amelia-Basic-Light",
-                                  fontSize: SizeConfig.textMultiplier * 2.5,
-                                  color: Color(0xff79848b),
+                          decoration: new InputDecoration(
+                            contentPadding: EdgeInsets.all(5),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  width: 1,
+                                  color: Color(0xff444422),
                                 ),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            setState(() {
-                              room = val;
-                              focusNode = new FocusNode();
-                            });
-                          },
-                          value: room,
+                                borderRadius: BorderRadius.circular(10.00)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0)),
+                            labelText: "Room name",
+                            labelStyle: TextStyle(
+                              fontFamily: "Amelia-Basic-Light",
+                              fontSize: SizeConfig.textMultiplier * 3.2,
+                              color: Color(0xff79848b),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: <Widget>[
-                Container(
-                  height: SizeConfig.heightMultiplier * 6,
-                  width: SizeConfig.widthMultiplier * 25,
-                  margin: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Color(0xffffffff),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: Offset(0.00, 3.00),
-                        color: Color(0xff0792ef).withOpacity(0.32),
-                        blurRadius: 6,
+                      SizedBox(height: SizeConfig.widthMultiplier * 2.5),
+                      Container(
+                        height: SizeConfig.heightMultiplier * 6,
+                        width: SizeConfig.widthMultiplier * 50,
+                        margin: EdgeInsets.all(10),
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Color(0xffffffff),
+                          boxShadow: [
+                            BoxShadow(
+                              offset: Offset(0.00, 3.00),
+                              color: Color(0xff0792ef).withOpacity(0.32),
+                              blurRadius: 6,
+                            ),
+                          ],
+                          borderRadius: BorderRadius.circular(4.00),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            iconEnabledColor: dropcolor,
+                            items: Rooms.map((String listvalue) {
+                              return DropdownMenuItem<String>(
+                                value: listvalue,
+                                child: Text(
+                                  listvalue,
+                                  style: TextStyle(
+                                    fontFamily: "Amelia-Basic-Light",
+                                    fontSize: SizeConfig.textMultiplier * 2.5,
+                                    color: Color(0xff79848b),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              setState(() {
+                                room = val;
+                                focusNode = new FocusNode();
+                              });
+                            },
+                            value: room,
+                          ),
+                        ),
                       ),
                     ],
-                    borderRadius: BorderRadius.circular(13.00),
                   ),
-                  child: Center(
-                    child: new FlatButton(
+                ),
+                actions: <Widget>[
+                  Container(
+                    height: SizeConfig.heightMultiplier * 6,
+                    width: SizeConfig.widthMultiplier * 25,
+                    margin: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Color(0xffffffff),
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0.00, 3.00),
+                          color: Color(0xff0792ef).withOpacity(0.32),
+                          blurRadius: 6,
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(13.00),
+                    ),
+                    child: Center(
+                      child: new FlatButton(
+                          child: new Text(
+                            'Submit',
+                            style: TextStyle(
+                              fontFamily: "Amelia-Basic-Light",
+                              fontSize: SizeConfig.textMultiplier * 2.5,
+                              color: Color(0xff79848b),
+                            ),
+                          ),
+                          onPressed: pressed
+                              ? () => null
+                              : () async {
+                                  setState(() {
+                                    pressed = true;
+                                  });
+                                  if (room != "Select" && name.text != "") {
+                                    String noofrooms;
+                                    int max = 0;
+                                    for (int i = 0;
+                                        i < fulldataofrooms.roomidarray.length;
+                                        i++) {
+                                      String s = fulldataofrooms.roomidarray[i];
+
+                                      int n = int.parse(s.substring(4));
+                                      if (n > max) max = n;
+                                    }
+                                    max++;
+                                    if (max < 10)
+                                      noofrooms = "0" + max.toString();
+                                    else
+                                      noofrooms = max.toString();
+
+                                    await dbref
+                                        .child(FirebaseAuth
+                                            .instance.currentUser.uid)
+                                        .child("rooms")
+                                        .child("room" + noofrooms)
+                                        .set({
+                                      "name": name.text,
+                                      "type": room,
+                                      "circuit": -1
+                                    });
+
+                                    setState(() async {
+                                      Navigator.pop(context);
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Homepage()));
+                                    });
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: "Please select the type of room");
+                                  }
+                                  setState(() {
+                                    pressed = false;
+                                  });
+                                }),
+                    ),
+                  ),
+                  SizedBox(width: SizeConfig.widthMultiplier * 2.5),
+                  Container(
+                    height: SizeConfig.heightMultiplier * 6,
+                    width: SizeConfig.widthMultiplier * 25,
+                    margin: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Color(0xffffffff),
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0.00, 3.00),
+                          color: Color(0xff0792ef).withOpacity(0.32),
+                          blurRadius: 6,
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(13.00),
+                    ),
+                    child: Center(
+                      child: new FlatButton(
                         child: new Text(
-                          'Submit',
+                          'Cancel',
                           style: TextStyle(
                             fontFamily: "Amelia-Basic-Light",
                             fontSize: SizeConfig.textMultiplier * 2.5,
                             color: Color(0xff79848b),
                           ),
                         ),
-                        onPressed: pressed
-                            ? () => null
-                            : () async {
-                                setState(() {
-                                  pressed = true;
-                                });
-                                if (room != "Select" && name.text != "") {
-                                  String noofrooms;
-                                  int max = 0;
-                                  for (int i = 0;
-                                      i < fulldataofrooms.roomidarray.length;
-                                      i++) {
-                                    String s = fulldataofrooms.roomidarray[i];
-
-                                    int n = int.parse(s.substring(4));
-                                    if (n > max) max = n;
-                                  }
-                                  max++;
-                                  if (max < 10)
-                                    noofrooms = "0" + max.toString();
-                                  else
-                                    noofrooms = max.toString();
-
-                                  await dbref
-                                      .child(
-                                          FirebaseAuth.instance.currentUser.uid)
-                                      .child("rooms")
-                                      .child("room" + noofrooms)
-                                      .set({
-                                    "name": name.text,
-                                    "type": room,
-                                    "circuit": -1
-                                  });
-
-                                  setState(() async {
-                                    Navigator.pop(context);
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Homepage()));
-                                  });
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg: "Please select the type of room");
-                                }
-                                setState(() {
-                                  pressed = false;
-                                });
-                              }),
-                  ),
-                ),
-                SizedBox(width: SizeConfig.widthMultiplier * 2.5),
-                Container(
-                  height: SizeConfig.heightMultiplier * 6,
-                  width: SizeConfig.widthMultiplier * 25,
-                  margin: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Color(0xffffffff),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: Offset(0.00, 3.00),
-                        color: Color(0xff0792ef).withOpacity(0.32),
-                        blurRadius: 6,
+                        onPressed: pressed == false
+                            ? () async {
+                                Navigator.of(context).pop();
+                              }
+                            : null,
                       ),
-                    ],
-                    borderRadius: BorderRadius.circular(13.00),
-                  ),
-                  child: Center(
-                    child: new FlatButton(
-                      child: new Text(
-                        'Cancel',
-                        style: TextStyle(
-                          fontFamily: "Amelia-Basic-Light",
-                          fontSize: SizeConfig.textMultiplier * 2.5,
-                          color: Color(0xff79848b),
-                        ),
-                      ),
-                      onPressed: pressed == false
-                          ? () async {
-                              Navigator.of(context).pop();
-                            }
-                          : null,
                     ),
-                  ),
-                )
-              ],
-            );
-          },
-        );
-      });
+                  )
+                ],
+              );
+            },
+          );
+        });
+  }
 }
