@@ -807,23 +807,6 @@ _Rename(BuildContext context, int index) async {
                                         }
                                       });
 
-                                     
-                                  
-                                    // await dbref
-                                    //           .child(user.uid)
-                                    //           .child("rooms")
-                                    //           .child(
-                                    //               fulldataofrooms.roomidarray[
-                                    //                   fulldataofrooms.index])
-                                    //           .child("circuit")
-                                    //           .child(fulldataofrooms
-                                    //                   .boardidarray[
-                                    //               fulldataofrooms.boardindex])
-                                    //           .child(
-                                    //               "a" + (index + 1).toString())
-                                    //           .child("name")
-                                    //           .set(name.text);
-
                                           dbref
                                               .child(user.uid)
                                               .child("index")
