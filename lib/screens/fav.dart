@@ -17,6 +17,9 @@ class _favouriteState extends State<favourite> {
   var _tapPosition;
   int globalindex;
   bool pressed = false;
+  bool pressed1 = false;
+  bool pressed3 = false;
+
   String globalvalue;
   final dbref = FirebaseDatabase.instance.reference().child('Users');
   User user = FirebaseAuth.instance.currentUser;
@@ -33,15 +36,16 @@ class _favouriteState extends State<favourite> {
                     child: Container(
                         height: SizeConfig.heightMultiplier * 5,
                         child: Center(child: Text(e))),
-                    onTap: pressed
+                    onTap: pressed1
                         ? null
                         : () async {
                             setState(() {
-                              pressed = true;
+                              pressed1 = true;
                             });
+                            print("ontap");
                             await confirm(index, e, context);
                             setState(() {
-                              pressed = false;
+                              pressed1 = false;
                             });
                           }),
               ))
@@ -105,39 +109,35 @@ class _favouriteState extends State<favourite> {
                                   PopupMenuItem(
                                     value: index,
                                     child: GestureDetector(
-                                      onTap: pressed
-                                          ? null
-                                          : () {
-                                              setState(() {
-                                                pressed = true;
-                                              });
-                                              try {
-                                                dbref
-                                                    .child(user.uid)
-                                                    .child("favourites")
-                                                    .child(fulldataofrooms
-                                                            .favroomsarray[
-                                                        index + 1])
-                                                    .remove();
-                                                setState(() {
-                                                  fulldataofrooms
-                                                      .favouriteroomscontents
-                                                      .remove(fulldataofrooms
-                                                              .favroomsarray[
-                                                          index + 1]);
-                                                  fulldataofrooms.favroomsarray
-                                                      .remove(fulldataofrooms
-                                                              .favroomsarray[
-                                                          index + 1]);
-                                                });
-                                              } catch (ex) {
-                                                print("pop");
-                                              }
-                                              setState(() {
-                                                pressed = false;
-                                              });
-                                              Navigator.pop(context);
-                                            },
+                                      onTap: () {
+                                        setState(() {
+                                          pressed3 = true;
+                                        });
+                                        try {
+                                          print("delete karbe");
+                                          dbref
+                                              .child(user.uid)
+                                              .child("favourites")
+                                              .child(fulldataofrooms
+                                                  .favroomsarray[index + 1])
+                                              .remove();
+                                          setState(() {
+                                            fulldataofrooms
+                                                .favouriteroomscontents
+                                                .remove(fulldataofrooms
+                                                    .favroomsarray[index + 1]);
+                                            fulldataofrooms.favroomsarray
+                                                .remove(fulldataofrooms
+                                                    .favroomsarray[index + 1]);
+                                          });
+                                        } catch (ex) {
+                                          print("pop");
+                                        }
+                                        setState(() {
+                                          pressed3 = false;
+                                        });
+                                        Navigator.pop(context);
+                                      },
                                       child: Row(
                                         children: <Widget>[
                                           Icon(Icons.delete),
@@ -164,6 +164,9 @@ class _favouriteState extends State<favourite> {
                                     _tapPosition & const Size(40, 40),
                                     Offset.zero & overlay.size),
                               );
+                              setState(() {
+                                pressed = false;
+                              });
                               //
                             },
 
@@ -249,6 +252,8 @@ class _favouriteState extends State<favourite> {
                                                       .favouriteroomscontents[
                                                   fulldataofrooms.favroomsarray[
                                                       index + 1]];
+                                              Map allfav = fulldataofrooms
+                                                  .favouriteroomscontents;
                                               await dbref
                                                   .child(user.uid)
                                                   .child("favourites")
@@ -261,20 +266,40 @@ class _favouriteState extends State<favourite> {
                                                   fulldataofrooms.favroomsarray[
                                                       index +
                                                           1]]["val"] = state;
+
                                               for (final i in m.values) {
+                                                int flagg = 0;
                                                 if (i == 1 || i == 0) continue;
                                                 String s = i.toString();
                                                 var list = s.split(" ");
-
-                                                await dbref
-                                                    .child(user.uid)
-                                                    .child("rooms")
-                                                    .child(list[0])
-                                                    .child("circuit")
-                                                    .child(list[1])
-                                                    .child(list[2])
-                                                    .child("val")
-                                                    .set(state);
+                                                for (final i in allfav.keys) {
+                                                  if (i !=
+                                                          fulldataofrooms
+                                                                  .favroomsarray[
+                                                              index + 1] &&
+                                                      allfav[i]["val"] == 1) {
+                                                    if (allfav[i][list[0] +
+                                                            list[1] +
+                                                            list[2]] ==
+                                                        s) {
+                                                      print(
+                                                          "Commonnnnnnnnnnnnnnnnn");
+                                                      flagg = 1;
+                                                      break;
+                                                    }
+                                                  }
+                                                }
+                                                if (flagg == 0) {
+                                                  await dbref
+                                                      .child(user.uid)
+                                                      .child("rooms")
+                                                      .child(list[0])
+                                                      .child("circuit")
+                                                      .child(list[1])
+                                                      .child(list[2])
+                                                      .child("val")
+                                                      .set(state);
+                                                }
                                               }
                                             } catch (Ex) {
                                               print("eception");
