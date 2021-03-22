@@ -257,8 +257,18 @@ class fulldataofrooms {
     };*/
 
     await dbref.child(user.uid).child("favourites").once().then((snap) {
+<<<<<<< HEAD
       for (final k in snap.value.keys) {
         favlist.add(k);
+=======
+      Map m1 = snap.value;
+      try {
+        for (final k in m1.keys) {
+          favlist.add(k);
+        }
+      } catch (e) {
+        print("solve query error");
+>>>>>>> eee7184a08a66b3673c39017f0e957ce62daf606
       }
     });
     String fav = '';

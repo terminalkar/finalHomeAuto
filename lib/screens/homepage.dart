@@ -92,6 +92,7 @@ class _HomepageState extends State<Homepage>
             onResult: (val) => setState(() {
                   _text = val.recognizedWords;
                   print(_text);
+
                   Fluttertoast.showToast(msg: "Running command " + _text);
                   if (val.hasConfidenceRating && val.confidence > 0) {
                     _confidence = val.confidence;
