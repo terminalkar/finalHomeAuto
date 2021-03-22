@@ -30,9 +30,7 @@ class _switchesState extends State<switches> {
   final _focusNode = FocusNode();
   Color dropcolor = Color(0xff79848b);
   String room = 'Select Type';
-
-  @override
-  void initState() {
+  void addicon() {
     iconlist.addAll({
       "Gaming Station": {
         0: "assets/console-normal.png",
@@ -92,17 +90,12 @@ class _switchesState extends State<switches> {
         1: "assets/water-filter-green.png"
       },
     });
-    iterate();
-    super.initState();
   }
 
-  void iterate() {
-    for (int i = 0; i < 4; i++) {
-      setState(() {
-        controllerlist[i].text =
-            fulldataofrooms.switches["a" + (i + 1).toString()]["name"];
-      });
-    }
+  @override
+  void initState() {
+    addicon();
+    super.initState();
   }
 
   @override
@@ -125,7 +118,7 @@ class _switchesState extends State<switches> {
         ),
 
         ////////////////////////////////////////////////////////////////////////////////////
-        body: SingleChildScrollView(
+        body:SingleChildScrollView(
           child: Column(
             children: [
               AnimationLimiter(
@@ -149,39 +142,46 @@ class _switchesState extends State<switches> {
                                 _tapPosition = details.globalPosition;
                               },
                               //switches//////////////////////////////////////////////////////////////////////////////////
-                              onTap: () {
-                                setState(() {
-                                  int flag = 0;
-
-                                  if (fulldataofrooms.switches["a" +
-                                          (index + 1).toString()]["val"] ==
-                                      0) {
-                                    flag = 1;
-                                  }
-                                  if (fulldataofrooms.switches["a" +
-                                          (index + 1).toString()]["icon"] ==
-                                      "null") {
-                                    icnstr = "assets/logo.png";
-                                  } else {
-                                    icnstr = iconlist[fulldataofrooms.switches[
-                                            "a" + (index + 1).toString()]
-                                        ["icon"]][flag];
-                                  }
-                                  fulldataofrooms.switches["a" +
-                                      (index + 1).toString()]["val"] = flag;
-                                  dbref
-                                      .child(user.uid)
-                                      .child("rooms")
-                                      .child(fulldataofrooms
-                                          .roomidarray[fulldataofrooms.index])
-                                      .child("circuit")
-                                      .child(fulldataofrooms.boardidarray[
-                                          fulldataofrooms.boardindex])
-                                      .child("a" + (index + 1).toString())
-                                      .child("val")
-                                      .set(flag);
-                                });
-                              },
+                              onTap: pressed
+                                  ? null
+                                  : () {
+                                      setState(() {
+                                        int flag = 0;
+                                        pressed = true;
+                                        if (fulldataofrooms.switches["a" +
+                                                    (index + 1).toString()]
+                                                ["val"] ==
+                                            0) {
+                                          flag = 1;
+                                        }
+                                        if (fulldataofrooms.switches["a" +
+                                                    (index + 1).toString()]
+                                                ["icon"] ==
+                                            "null") {
+                                          icnstr = "assets/logo.png";
+                                        } else {
+                                          icnstr = iconlist[fulldataofrooms
+                                                      .switches[
+                                                  "a" + (index + 1).toString()]
+                                              ["icon"]][flag];
+                                        }
+                                        fulldataofrooms.switches[
+                                                "a" + (index + 1).toString()]
+                                            ["val"] = flag;
+                                        dbref
+                                            .child(user.uid)
+                                            .child("rooms")
+                                            .child(fulldataofrooms.roomidarray[
+                                                fulldataofrooms.index])
+                                            .child("circuit")
+                                            .child(fulldataofrooms.boardidarray[
+                                                fulldataofrooms.boardindex])
+                                            .child("a" + (index + 1).toString())
+                                            .child("val")
+                                            .set(flag);
+                                        pressed = false;
+                                      });
+                                    },
                               child: Container(
                                 child: Column(
                                   children: [
@@ -212,9 +212,18 @@ class _switchesState extends State<switches> {
                                                 SizeConfig.widthMultiplier * 7,
                                             color: Colors.yellow[400],
                                           ),
-                                          onPressed: () {
-                                            favouritesdialogbox(context, index);
-                                          },
+                                          onPressed: pressed
+                                              ? null
+                                              : () async{
+                                                  setState(() {
+                                                    pressed = true;
+                                                  });
+                                                  await favouritesdialogbox(
+                                                      context, index);
+                                                      setState(() {
+                                                        pressed=false;
+                                                      });
+                                                },
                                         ),
                                       ],
                                     ),
@@ -459,7 +468,7 @@ class _switchesState extends State<switches> {
                           onChanged: (val) {
                             setState(() {
                               id.text = "";
-                              dropdownfavouriteroom = val;
+                              dropdownfavouriteroom = val.toString();
                             });
                           },
                         )
@@ -724,7 +733,7 @@ _Rename(BuildContext context, int index) async {
                           }).toList(),
                           onChanged: (val) {
                             setState(() {
-                              room = val;
+                              room = val.toString();
                             });
                           },
                           value: room,

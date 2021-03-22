@@ -159,12 +159,18 @@ class profileState extends State<profile> {
                               FontAwesomeIcons.camera,
                               size: SizeConfig.widthMultiplier * 7.5,
                             ),
-                            onPressed: () {
-                              setState(() {
-                                upload = true;
-                              });
-                              getImage();
-                            },
+                            onPressed: pressed
+                                ? null
+                                : () async {
+                                    setState(() {
+                                      pressed = true;
+                                      upload = true;
+                                    });
+                                    await getImage();
+                                    setState(() {
+                                      pressed = false;
+                                    });
+                                  },
                           ),
                         ),
                       ],
@@ -333,12 +339,18 @@ class profileState extends State<profile> {
                               ),
                               RaisedButton(
                                 color: Color(0xff476cfb),
-                                onPressed: () {
-                                  uploadPic(context);
-                                  setState(() {
-                                    upload = false;
-                                  });
-                                },
+                                onPressed: pressed
+                                    ? null
+                                    : () {
+                                        setState(() {
+                                          pressed = true;
+                                        });
+                                        uploadPic(context);
+                                        setState(() {
+                                          upload = false;
+                                          pressed = false;
+                                        });
+                                      },
                                 elevation: 4.0,
                                 splashColor: Colors.blueGrey,
                                 child: Text(
@@ -395,7 +407,7 @@ class profileState extends State<profile> {
                     ),
                     onPressed: pressed == false
                         ? () async {
-                            //Navigator.of(context).pop();
+                            //to be implemented
                           }
                         : null,
                   ),

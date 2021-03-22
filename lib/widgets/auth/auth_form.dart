@@ -23,6 +23,7 @@ class AuthForm extends StatefulWidget {
 class _AuthFormState extends State<AuthForm> {
   final _formkey = GlobalKey<FormState>();
   final _formkey2 = GlobalKey<FormState>();
+  bool pressed = false;
   var _isLogin = true;
   var _userEmail = '';
   var _userMobile = '';
@@ -56,16 +57,6 @@ class _AuthFormState extends State<AuthForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // decoration: BoxDecoration(
-      //   color: Color(0xffffffff).withOpacity(0.59),
-      //   boxShadow: [
-      //     BoxShadow(
-      //       offset: Offset(0.00, 5.00),
-      //       color: Color(0xff0792ef).withOpacity(0.19),
-      //       blurRadius: 10,
-      //     ),
-      //   ],
-      // ),
       child: Center(
         child: Column(
           children: [
@@ -110,7 +101,7 @@ class _AuthFormState extends State<AuthForm> {
                   margin: EdgeInsets.all(18),
                   child: SingleChildScrollView(
                     child: Padding(
-                       padding: EdgeInsets.all(2.1 * SizeConfig.textMultiplier),
+                      padding: EdgeInsets.all(2.1 * SizeConfig.textMultiplier),
 
                       /////////Form starts here
                       child: Form(
@@ -233,7 +224,7 @@ class _AuthFormState extends State<AuthForm> {
                                     'Login',
                                     style: TextStyle(color: Colors.white),
                                   ),
-                                  onPressed: _trySubmit,
+                                  onPressed: pressed ? null : _trySubmit,
                                 ),
                               ),
 
@@ -283,18 +274,23 @@ class _AuthFormState extends State<AuthForm> {
                                           color: Color(0xff707070),
                                         ),
                                       ),
-                                      onPressed: () {
-                                        setState(() {
-                                          cardKey.currentState.toggleCard();
-                                          _isLogin = !_isLogin;
-                                        });
-                                      },
+                                      onPressed: pressed
+                                          ? null
+                                          : () {
+                                              setState(() {
+                                                pressed = true;
+                                                cardKey.currentState
+                                                    .toggleCard();
+                                                _isLogin = !_isLogin;
+                                                pressed = false;
+                                              });
+                                            },
                                     ),
                                   ),
 
                                   //For Space
                                   SizedBox(
-                                      width: SizeConfig.widthMultiplier *6),
+                                      width: SizeConfig.widthMultiplier * 6),
 
                                   //forgot password////////////////////////////////////
                                   Container(
@@ -323,10 +319,18 @@ class _AuthFormState extends State<AuthForm> {
                                           color: Color(0xff707070),
                                         ),
                                       ),
-                                      onPressed: () {
-                                        //Forgot password logic goes here
-                                        fun(context);
-                                      },
+                                      onPressed: pressed
+                                          ? null
+                                          : () {
+                                              setState(() {
+                                                pressed = true;
+                                              });
+                                              //Forgot password logic goes here
+                                              fun(context);
+                                              setState(() {
+                                                pressed = false;
+                                              });
+                                            },
                                     ),
                                   ),
                                 ],
