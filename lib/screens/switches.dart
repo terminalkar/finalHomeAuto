@@ -633,6 +633,8 @@ _Rename(BuildContext context, int index) async {
     'Select Type',
     'A.C.',
     'Gaming Station',
+    'Bulb',
+    'Exhaust Fan',
     'Chimney',
     'Dressing Table',
     "Fan",
