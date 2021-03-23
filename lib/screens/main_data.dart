@@ -209,7 +209,7 @@ class fulldataofrooms {
     } catch (e) {}
   }
 
-  Future<void> roomdelete(String room) async {
+   Future<void> roomdelete(String room) async {
     await fetchfavourites();
     await fetchindex();
     //await fetchfavouritescontentdata();
@@ -230,12 +230,16 @@ class fulldataofrooms {
     //fav
     for (final i in favouriteroomscontents.keys) {
       var mapp = favouriteroomscontents[i];
-
+      var a = Map();
       for (final k in mapp.keys) {
         String s = k.toString();
-        if (!s.startsWith(room)) {}
+        if (!s.startsWith(room)) {
+          a.addAll({k: mapp[k]});
+        }
       }
+      localmapforfav.addAll({i: a});
     }
+    await dbref.child(user.uid).child("favourites").set(localmapforfav);
   }
 
   Future<void> fetchindex() async {

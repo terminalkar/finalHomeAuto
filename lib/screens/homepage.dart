@@ -384,11 +384,17 @@ class _HomepageState extends State<Homepage>
                                               PopupMenuItem(
                                                 value: index,
                                                 child: GestureDetector(
-                                                  onTap: () {
+                                                  onTap: () async {
                                                     setState(() {
                                                       pressed = true;
                                                     });
                                                     try {
+                                                      fulldataofrooms f =
+                                                          new fulldataofrooms();
+                                                      f.roomdelete(
+                                                          fulldataofrooms
+                                                                  .roomidarray[
+                                                              index]);
                                                       dbref
                                                           .child(user.uid)
                                                           .child("rooms")
