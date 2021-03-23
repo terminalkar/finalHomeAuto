@@ -8,6 +8,7 @@ import 'package:number_to_words/number_to_words.dart';
 //import 'package:numbers_to_words/numbers_to_words.dart';
 
 class fulldataofrooms {
+  static var indexlistmap = Map();
   static var roomidmap = Map();
   static var boardid = Map();
   static var id = Map();
@@ -208,15 +209,46 @@ class fulldataofrooms {
     } catch (e) {}
   }
 
+  Future<void> roomdelete(String room) async {
+    await fetchfavourites();
+    await fetchindex();
+    //await fetchfavouritescontentdata();
+
+    var localmap = Map();
+    var localmapforfav = Map();
+    for (final i in indexlistmap.keys) {
+      String s = indexlistmap[i];
+      if (!s.startsWith(room)) {
+        localmap.addAll({i: s});
+      }
+    }
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
+    await dbref.child(user.uid).child("index").set(localmap);
+    indexlistmap = localmap;
+
+    //fav
+    for (final i in favouriteroomscontents.keys) {
+      var mapp = favouriteroomscontents[i];
+
+      for (final k in mapp.keys) {
+        String s = k.toString();
+        if (!s.startsWith(room)) {}
+      }
+    }
+  }
+
   Future<void> fetchindex() async {
+    indexlistmap.clear();
     indexlist.clear();
     Map m1 = new Map();
-    indexlist.clear();
+    //indexlist.clear();
 
     final dbref = FirebaseDatabase.instance.reference().child('Users');
     User user = FirebaseAuth.instance.currentUser;
     await dbref.child(user.uid).child("index").once().then((snap) {
       m1 = snap.value;
+      indexlistmap = m1;
       for (final k in m1.keys) {
         indexlist.add(k);
       }
@@ -335,13 +367,23 @@ class fulldataofrooms {
           Map notation = {
             'one': ['on', 'oon', 'none'],
             'two': ['to', 'tu', 'too', 'tuu'],
+            'three': ['tree'],
             'four': ['for', 'foor', 'or', 'fore'],
             'five': ['fiv', 'hive', 'fi'],
+            'six': ['sin'],
+            'seven': ['seaven'],
           };
           if (stopwords.contains(l[i])) {
           } else {
             if (isNumeric(l[i])) {
               String s = NumberToWord().convert("en-in", int.parse(l[i]));
+
+              var slist = s.split(" ");
+              s = "";
+              for (int i = 0; i < slist.length; i++) {
+                s += slist[i];
+              }
+
               key += s;
               print("Converted" + s);
             } else {
@@ -369,10 +411,15 @@ class fulldataofrooms {
         print("final " + key);
       }
       print(key);
+      key = key.trim();
       // return [flag.toString(), key];
+      print(indexlist);
       try {
         String indexpath;
+        print(indexlist.contains(key));
+
         if (indexlist.contains(key) == true) {
+          print("index me toh haiiiiiiiiii");
           await dbref
               .child(user.uid)
               .child("index")
@@ -394,6 +441,7 @@ class fulldataofrooms {
               .set(flag);
           // Fluttertoast.showToast(msg: "done");
         }
+        print("end");
       } catch (E) {
         print("caught in sppech func");
       }

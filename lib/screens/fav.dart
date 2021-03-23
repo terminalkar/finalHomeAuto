@@ -109,35 +109,40 @@ class _favouriteState extends State<favourite> {
                                   PopupMenuItem(
                                     value: index,
                                     child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          pressed3 = true;
-                                        });
-                                        try {
-                                          print("delete karbe");
-                                          dbref
-                                              .child(user.uid)
-                                              .child("favourites")
-                                              .child(fulldataofrooms
-                                                  .favroomsarray[index + 1])
-                                              .remove();
-                                          setState(() {
-                                            fulldataofrooms
-                                                .favouriteroomscontents
-                                                .remove(fulldataofrooms
-                                                    .favroomsarray[index + 1]);
-                                            fulldataofrooms.favroomsarray
-                                                .remove(fulldataofrooms
-                                                    .favroomsarray[index + 1]);
-                                          });
-                                        } catch (ex) {
-                                          print("pop");
-                                        }
-                                        setState(() {
-                                          pressed3 = false;
-                                        });
-                                        Navigator.pop(context);
-                                      },
+                                      onTap: pressed3
+                                          ? null
+                                          : () {
+                                              setState(() {
+                                                pressed3 = true;
+                                              });
+                                              try {
+                                                print("delete karbe");
+                                                dbref
+                                                    .child(user.uid)
+                                                    .child("favourites")
+                                                    .child(fulldataofrooms
+                                                            .favroomsarray[
+                                                        index + 1])
+                                                    .remove();
+                                                setState(() {
+                                                  fulldataofrooms
+                                                      .favouriteroomscontents
+                                                      .remove(fulldataofrooms
+                                                              .favroomsarray[
+                                                          index + 1]);
+                                                  fulldataofrooms.favroomsarray
+                                                      .remove(fulldataofrooms
+                                                              .favroomsarray[
+                                                          index + 1]);
+                                                });
+                                              } catch (ex) {
+                                                print("pop");
+                                              }
+                                              setState(() {
+                                                pressed3 = false;
+                                              });
+                                              Navigator.pop(context);
+                                            },
                                       child: Row(
                                         children: <Widget>[
                                           Icon(Icons.delete),
@@ -394,8 +399,9 @@ class _favouriteState extends State<favourite> {
                   setState(() {
                     pressed = false;
                   });
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => favourite()));
+                  Navigator.pop(context);
+                  //Navigator.pushReplacement(context,
+                  //MaterialPageRoute(builder: (context) => favourite()));
                 },
           color: Color.fromRGBO(0, 179, 134, 1.0),
         ),

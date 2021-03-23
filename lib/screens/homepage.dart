@@ -54,7 +54,7 @@ class _HomepageState extends State<Homepage>
       'Other': "assets/logo.png"
     });
     super.initState();
-    
+
     _roomData();
     _speech = stt.SpeechToText();
   }
@@ -263,9 +263,10 @@ class _HomepageState extends State<Homepage>
                                   pressed = true;
                                 });
                                 fulldataofrooms f1 = new fulldataofrooms();
-                                await f1.fetchfavourites();
-                                await f1.fetchfavouritescontentdata();
 
+                                await f1.fetchfavourites();
+
+                                await f1.fetchfavouritescontentdata();
                                 if (_scaffoldKey.currentState.isDrawerOpen) {
                                   _scaffoldKey.currentState.openEndDrawer();
                                 } else
@@ -383,41 +384,38 @@ class _HomepageState extends State<Homepage>
                                               PopupMenuItem(
                                                 value: index,
                                                 child: GestureDetector(
-                                                  onTap: pressed
-                                                      ? null
-                                                      : () {
-                                                          setState(() {
-                                                            pressed = true;
-                                                          });
-                                                          try {
-                                                            dbref
-                                                                .child(user.uid)
-                                                                .child("rooms")
-                                                                .child(fulldataofrooms
-                                                                        .roomidarray[
-                                                                    index])
-                                                                .remove();
-                                                            setState(() {
-                                                              fulldataofrooms
-                                                                  .roomidmap
-                                                                  .remove(fulldataofrooms
-                                                                          .roomidarray[
-                                                                      index]);
-                                                              fulldataofrooms
-                                                                  .roomidarray
-                                                                  .remove(fulldataofrooms
-                                                                          .roomidarray[
-                                                                      index]);
-                                                            });
-                                                          } catch (ex) {
-                                                            print("pop");
-                                                          }
-                                                          setState(() {
-                                                            pressed = false;
-                                                          });
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
+                                                  onTap: () {
+                                                    setState(() {
+                                                      pressed = true;
+                                                    });
+                                                    try {
+                                                      dbref
+                                                          .child(user.uid)
+                                                          .child("rooms")
+                                                          .child(fulldataofrooms
+                                                                  .roomidarray[
+                                                              index])
+                                                          .remove();
+                                                      setState(() {
+                                                        fulldataofrooms
+                                                            .roomidmap
+                                                            .remove(fulldataofrooms
+                                                                    .roomidarray[
+                                                                index]);
+                                                        fulldataofrooms
+                                                            .roomidarray
+                                                            .remove(fulldataofrooms
+                                                                    .roomidarray[
+                                                                index]);
+                                                      });
+                                                    } catch (ex) {
+                                                      print("pop");
+                                                    }
+                                                    setState(() {
+                                                      pressed = false;
+                                                    });
+                                                    Navigator.pop(context);
+                                                  },
                                                   child: Container(
                                                     height: SizeConfig
                                                             .heightMultiplier *

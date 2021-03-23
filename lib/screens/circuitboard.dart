@@ -145,7 +145,17 @@ class _CircuittState extends State<Circuit> {
                                                   setState(() {
                                                     pressed = true;
                                                   });
-
+                                                  await dbref
+                                                      .child(user.uid)
+                                                      .child("rooms")
+                                                      .child(fulldataofrooms
+                                                              .roomidarray[
+                                                          fulldataofrooms
+                                                              .index])
+                                                      .child("circuit")
+                                                      .child(fulldataofrooms
+                                                          .boardidarray[index])
+                                                      .remove();
                                                   var indexdeletelist = [];
                                                   Map map = fulldataofrooms
                                                           .boardid[
@@ -172,7 +182,7 @@ class _CircuittState extends State<Circuit> {
                                                                   i])
                                                           .remove();
                                                     } catch (e) {}
-                                                   for (int j = 1;
+                                                    for (int j = 1;
                                                         j <
                                                             fulldataofrooms
                                                                 .favroomsarray
@@ -193,24 +203,12 @@ class _CircuittState extends State<Circuit> {
                                                                         .boardidarray[
                                                                     index] +
                                                                 "a" +
-                                                                (i+1 )
+                                                                (i + 1)
                                                                     .toString())
                                                             .remove();
-                                                        
                                                       } catch (e) {}
+                                                    }
                                                   }
-                                                 }
-                                                  await dbref
-                                                      .child(user.uid)
-                                                      .child("rooms")
-                                                      .child(fulldataofrooms
-                                                              .roomidarray[
-                                                          fulldataofrooms
-                                                              .index])
-                                                      .child("circuit")
-                                                      .child(fulldataofrooms
-                                                          .boardidarray[index])
-                                                      .remove();
 
                                                   setState(() {
                                                     fulldataofrooms.boardidarray
