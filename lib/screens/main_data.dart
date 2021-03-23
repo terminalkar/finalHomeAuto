@@ -133,7 +133,7 @@ class fulldataofrooms {
 
             favouriteroomscontents.addAll({i: id[i]});
           } else {
-             dbref
+            dbref
                 .child(user.uid)
                 .child("favourites")
                 .child(i.toString())
@@ -332,6 +332,12 @@ class fulldataofrooms {
           }
         } else {
           //remove stop words
+          Map notation = {
+            'one': ['on', 'oon', 'none'],
+            'two': ['to', 'tu', 'too', 'tuu'],
+            'four': ['for', 'foor', 'or', 'fore'],
+            'five': ['fiv', 'hive', 'fi'],
+          };
           if (stopwords.contains(l[i])) {
           } else {
             if (isNumeric(l[i])) {
@@ -339,7 +345,24 @@ class fulldataofrooms {
               key += s;
               print("Converted" + s);
             } else {
-              key += l[i];
+              String p = l[i];
+              int f = 0;
+              for (final k in notation.keys) {
+                var a = notation[k];
+                for (int i = 0; i < a.length; i++) {
+                  if (p.startsWith(a[i])) {
+                    p = k;
+                    f = 1;
+                    break;
+                  }
+                }
+                if (f == 1) break;
+              }
+              if (f == 1) {
+                key += p;
+              } else {
+                key += l[i];
+              }
             }
           }
         }
@@ -357,6 +380,9 @@ class fulldataofrooms {
               .once()
               .then((snap) => indexpath = snap.value);
           var list = indexpath.split(" ");
+          if (flag == 0) {
+            await linktofav(list[0] + list[1] + list[2]);
+          }
           await dbref
               .child(user.uid)
               .child("rooms")
