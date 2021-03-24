@@ -209,7 +209,7 @@ class fulldataofrooms {
     } catch (e) {}
   }
 
-   Future<void> roomdelete(String room) async {
+  Future<void> roomdelete(String room) async {
     await fetchfavourites();
     await fetchindex();
     //await fetchfavouritescontentdata();
@@ -264,6 +264,7 @@ class fulldataofrooms {
     User user = FirebaseAuth.instance.currentUser;
     if (true) {
       try {
+        Map allfav = fulldataofrooms.favouriteroomscontents;
         Map m = fulldataofrooms
             .favouriteroomscontents[fulldataofrooms.favroomsarray[index + 1]];
 
@@ -277,20 +278,31 @@ class fulldataofrooms {
             .set(state);
 
         for (final i in m.values) {
+          int flagg = 0;
           if (i == 1 || i == 0) continue;
           String s = i.toString();
           var list = s.split(" ");
-          // Fluttertoast.showToast(msg: list.toString());
-
-          await dbref
-              .child(user.uid)
-              .child("rooms")
-              .child(list[0])
-              .child("circuit")
-              .child(list[1])
-              .child(list[2])
-              .child("val")
-              .set(state);
+          for (final i in allfav.keys) {
+            if (i != fulldataofrooms.favroomsarray[index + 1] &&
+                allfav[i]["val"] == 1) {
+              if (allfav[i][list[0] + list[1] + list[2]] == s) {
+                print("Commonnnnnnnnnnnnnnnnn");
+                flagg = 1;
+                break;
+              }
+            }
+          }
+          if (flagg == 0) {
+            await dbref
+                .child(user.uid)
+                .child("rooms")
+                .child(list[0])
+                .child("circuit")
+                .child(list[1])
+                .child(list[2])
+                .child("val")
+                .set(state);
+          }
         }
       } catch (Ex) {
         print("exception");
@@ -337,21 +349,8 @@ class fulldataofrooms {
         favlist.add(k);
       }
     });
-    String fav = '';
-    for (int i = 0; i < favlist.length; i++) {
-      if (s.toLowerCase().contains(favlist[i].toString().toLowerCase())) {
-        fav = favlist[i];
-        break;
-      }
-    }
-    if (fav.length > 0) {
-      if (s.toLowerCase().contains('on')) {
-        await ChangeStatus(1, fulldataofrooms.favroomsarray.indexOf(fav) - 1);
-      } else if (s.toLowerCase().contains('off') ||
-          s.toLowerCase().contains('of')) {
-        await ChangeStatus(0, fulldataofrooms.favroomsarray.indexOf(fav) - 1);
-      }
-    } else {
+    print(favlist);
+    if (true) {
       print("out");
       for (int i = 0; i < (l.length); i++) {
         l[i] = l[i].toLowerCase();
@@ -421,6 +420,26 @@ class fulldataofrooms {
       try {
         String indexpath;
         print(indexlist.contains(key));
+        if (indexlist.contains(key) != true) {
+          String fav = '';
+          for (int i = 0; i < favlist.length; i++) {
+            if (key == favlist[i].toString().toLowerCase()) {
+              fav = favlist[i];
+              break;
+            }
+          }
+          print(fav + "00000");
+          if (fav.length > 0) {
+            if (s.toLowerCase().contains('on')) {
+              await ChangeStatus(
+                  1, fulldataofrooms.favroomsarray.indexOf(fav) - 1);
+            } else if (s.toLowerCase().contains('off') ||
+                s.toLowerCase().contains('of')) {
+              await ChangeStatus(
+                  0, fulldataofrooms.favroomsarray.indexOf(fav) - 1);
+            }
+          }
+        }
 
         if (indexlist.contains(key) == true) {
           print("index me toh haiiiiiiiiii");
