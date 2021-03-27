@@ -337,7 +337,7 @@ class fulldataofrooms {
       'three': 3,
       'four': 4,
       'five': 5,
-      'six': 6,
+      'six': {6:"1"},
       'seven': 7,
       'eight': 8,
       'nine': 9,
@@ -367,15 +367,15 @@ class fulldataofrooms {
           }
         } else {
           //remove stop words
-          Map notation = {
-            'one': ['on', 'oon', 'none'],
-            'two': ['to', 'tu', 'too', 'tuu'],
-            'three': ['tree'],
-            'four': ['for', 'foor', 'or', 'fore'],
-            'five': ['fiv', 'hive', 'fi'],
-            'six': ['sin'],
-            'seven': ['seaven'],
-          };
+          final dbref = FirebaseDatabase.instance.reference();
+          User user = FirebaseAuth.instance.currentUser;
+
+          Map notation;
+          await dbref
+              .child("notation")
+              .once()
+              .then((value) => notation = value.value);
+
           if (stopwords.contains(l[i])) {
           } else {
             if (isNumeric(l[i])) {
@@ -392,10 +392,11 @@ class fulldataofrooms {
             } else {
               String p = l[i];
               int f = 0;
+              print(notation);
               for (final k in notation.keys) {
                 var a = notation[k];
-                for (int i = 0; i < a.length; i++) {
-                  if (p.startsWith(a[i])) {
+                for (final k1 in a.keys) {
+                  if (p == k1) {
                     p = k;
                     f = 1;
                     break;
