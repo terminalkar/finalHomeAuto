@@ -325,12 +325,12 @@ class _AuthFormState extends State<AuthForm> {
                                       ),
                                       onPressed: pressed
                                           ? null
-                                          : () {
+                                          : () async{
                                               setState(() {
                                                 pressed = true;
                                               });
                                               //Forgot password logic goes here
-                                              fun(context);
+                                              await fun(context);
                                               setState(() {
                                                 pressed = false;
                                               });
@@ -735,21 +735,25 @@ fun(BuildContext context) async {
                     ),
                     onPressed: pressed == false
                         ? () async {
+                          setState(() {
+                              pressed = true;
+                            });
                             if (formKey.currentState.validate()) {
                               resetPassword(_controller.text.toLowerCase());
                               setState(() {
                                 disp = "email sent";
                               });
+                              Navigator.of(context).pop();
                               Fluttertoast.showToast(
                                   msg: "Check mail inbox",
                                   toastLength: Toast.LENGTH_LONG,
-                                  gravity: ToastGravity.CENTER,
+                                  // gravity: ToastGravity.BOTTOM_,
                                   backgroundColor: Colors.green,
                                   textColor: Colors.white,
                                   fontSize: 16.0);
                             }
                             setState(() {
-                              pressed = true;
+                              pressed = false;
                             });
                           }
                         : null),
