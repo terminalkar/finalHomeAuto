@@ -39,9 +39,11 @@ class fulldataofrooms {
         Map map = value.value;
         try {
           if (map['profile'] != null) {
-            uploadedimageurl = value.value;
+            uploadedimageurl = map['profile'];
           }
-        } catch (e) {}
+        } catch (e) {
+          print("exception in profile");
+        }
         try {
           profilename = map['Name'];
         } catch (e) {}

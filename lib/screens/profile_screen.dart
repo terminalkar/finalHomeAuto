@@ -47,6 +47,7 @@ class profileState extends State<profile> {
     _mailcontroller.text = user.email;
     _idcontroller.text = user.uid;
     super.initState();
+    Fluttertoast.showToast(msg: "Loading please wait",toastLength: Toast.LENGTH_SHORT);
   }
 
   Future<Void> getFirebaseImageFolder() async {
@@ -54,7 +55,6 @@ class profileState extends State<profile> {
         FirebaseStorage.instance.ref().child('advertisement');
     storageRef.listAll().then((result) async {
       result.items.forEach((Reference ref) async {
-        // print(ref.fullPath);
 
         String downloadURL =
             await FirebaseStorage.instance.ref(ref.fullPath).getDownloadURL();
@@ -93,7 +93,7 @@ class profileState extends State<profile> {
           .child("info")
           .child("profile")
           .set(imagedownloadurl);
-      //Fluttertoast.showToast(msg: imagedownloadurl);
+      
       setState(() {
         fulldataofrooms.uploadedimageurl = uploadedurl = imagedownloadurl;
 
