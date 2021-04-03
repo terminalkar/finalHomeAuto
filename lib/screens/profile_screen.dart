@@ -66,18 +66,25 @@ class profileState extends State<profile> {
     print(l);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Future getImage() async {
-      PickedFile image =
-          await ImagePicker().getImage(source: ImageSource.gallery);
-      profilepickflag = 1;
-      setState(() {
-        _image = image;
-        print('Image Path $_image');
-      });
-    }
+    _imgFromCamera() async {
+  PickedFile image = await ImagePicker().getImage(
+    source: ImageSource.camera, imageQuality: 50
+  );
 
+  setState(() {
+    _image = image;
+  });
+}
+
+_imgFromGallery() async {
+  PickedFile image = await ImagePicker().getImage(
+      source: ImageSource.gallery, imageQuality: 50
+  );
+
+  setState(() {
+    _image = image;
+  });
+}
     Future uploadPic(BuildContext context) async {
       String fileName = basename(_image.path);
       Reference firebaseStorageRef =
@@ -102,7 +109,41 @@ class profileState extends State<profile> {
             .showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
       });
     }
+void _showPicker(context) {
+  showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Container(
+            child: new Wrap(
+              children: <Widget>[
+                new ListTile(
+                    leading: new Icon(Icons.photo_library),
+                    title: new Text('Photo Library'),
+                    onTap: () {
+                      _imgFromGallery();
+                      Navigator.of(context).pop();
+                    }),
+                new ListTile(
+                  leading: new Icon(Icons.photo_camera),
+                  title: new Text('Camera'),
+                  onTap: () {
+                    _imgFromCamera();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    );
+}
+  @override
+  Widget build(BuildContext context) {
+   
 
+    
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -166,7 +207,7 @@ class profileState extends State<profile> {
                                       pressed = true;
                                       upload = true;
                                     });
-                                    await getImage();
+                                    await _showPicker(context);
                                     setState(() {
                                       pressed = false;
                                     });
