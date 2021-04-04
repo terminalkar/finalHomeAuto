@@ -8,6 +8,7 @@ import 'package:number_to_words/number_to_words.dart';
 //import 'package:numbers_to_words/numbers_to_words.dart';
 
 class fulldataofrooms {
+  static var indexlistmap = Map();
   static var roomidmap = Map();
   static var boardid = Map();
   static var id = Map();
@@ -38,9 +39,11 @@ class fulldataofrooms {
         Map map = value.value;
         try {
           if (map['profile'] != null) {
-            uploadedimageurl = value.value;
+            uploadedimageurl = map['profile'];
           }
-        } catch (e) {}
+        } catch (e) {
+          print("exception in profile");
+        }
         try {
           profilename = map['Name'];
         } catch (e) {}
@@ -133,7 +136,7 @@ class fulldataofrooms {
 
             favouriteroomscontents.addAll({i: id[i]});
           } else {
-             dbref
+            dbref
                 .child(user.uid)
                 .child("favourites")
                 .child(i.toString())
@@ -208,15 +211,50 @@ class fulldataofrooms {
     } catch (e) {}
   }
 
+  Future<void> roomdelete(String room) async {
+    await fetchfavourites();
+    await fetchindex();
+    //await fetchfavouritescontentdata();
+
+    var localmap = Map();
+    var localmapforfav = Map();
+    for (final i in indexlistmap.keys) {
+      String s = indexlistmap[i];
+      if (!s.startsWith(room)) {
+        localmap.addAll({i: s});
+      }
+    }
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
+    await dbref.child(user.uid).child("index").set(localmap);
+    indexlistmap = localmap;
+
+    //fav
+    for (final i in favouriteroomscontents.keys) {
+      var mapp = favouriteroomscontents[i];
+      var a = Map();
+      for (final k in mapp.keys) {
+        String s = k.toString();
+        if (!s.startsWith(room)) {
+          a.addAll({k: mapp[k]});
+        }
+      }
+      localmapforfav.addAll({i: a});
+    }
+    await dbref.child(user.uid).child("favourites").set(localmapforfav);
+  }
+
   Future<void> fetchindex() async {
+    indexlistmap.clear();
     indexlist.clear();
     Map m1 = new Map();
-    indexlist.clear();
+    //indexlist.clear();
 
     final dbref = FirebaseDatabase.instance.reference().child('Users');
     User user = FirebaseAuth.instance.currentUser;
     await dbref.child(user.uid).child("index").once().then((snap) {
       m1 = snap.value;
+      indexlistmap = m1;
       for (final k in m1.keys) {
         indexlist.add(k);
       }
@@ -228,6 +266,7 @@ class fulldataofrooms {
     User user = FirebaseAuth.instance.currentUser;
     if (true) {
       try {
+        Map allfav = fulldataofrooms.favouriteroomscontents;
         Map m = fulldataofrooms
             .favouriteroomscontents[fulldataofrooms.favroomsarray[index + 1]];
 
@@ -241,20 +280,31 @@ class fulldataofrooms {
             .set(state);
 
         for (final i in m.values) {
+          int flagg = 0;
           if (i == 1 || i == 0) continue;
           String s = i.toString();
           var list = s.split(" ");
-          // Fluttertoast.showToast(msg: list.toString());
-
-          await dbref
-              .child(user.uid)
-              .child("rooms")
-              .child(list[0])
-              .child("circuit")
-              .child(list[1])
-              .child(list[2])
-              .child("val")
-              .set(state);
+          for (final i in allfav.keys) {
+            if (i != fulldataofrooms.favroomsarray[index + 1] &&
+                allfav[i]["val"] == 1) {
+              if (allfav[i][list[0] + list[1] + list[2]] == s) {
+                print("Commonnnnnnnnnnnnnnnnn");
+                flagg = 1;
+                break;
+              }
+            }
+          }
+          if (flagg == 0) {
+            await dbref
+                .child(user.uid)
+                .child("rooms")
+                .child(list[0])
+                .child("circuit")
+                .child(list[1])
+                .child(list[2])
+                .child("val")
+                .set(state);
+          }
         }
       } catch (Ex) {
         print("exception");
@@ -289,7 +339,7 @@ class fulldataofrooms {
       'three': 3,
       'four': 4,
       'five': 5,
-      'six': 6,
+      'six': {6:"1"},
       'seven': 7,
       'eight': 8,
       'nine': 9,
@@ -301,21 +351,8 @@ class fulldataofrooms {
         favlist.add(k);
       }
     });
-    String fav = '';
-    for (int i = 0; i < favlist.length; i++) {
-      if (s.toLowerCase().contains(favlist[i].toString().toLowerCase())) {
-        fav = favlist[i];
-        break;
-      }
-    }
-    if (fav.length > 0) {
-      if (s.toLowerCase().contains('on')) {
-        await ChangeStatus(1, fulldataofrooms.favroomsarray.indexOf(fav) - 1);
-      } else if (s.toLowerCase().contains('off') ||
-          s.toLowerCase().contains('of')) {
-        await ChangeStatus(0, fulldataofrooms.favroomsarray.indexOf(fav) - 1);
-      }
-    } else {
+    print(favlist);
+    if (true) {
       print("out");
       for (int i = 0; i < (l.length); i++) {
         l[i] = l[i].toLowerCase();
@@ -332,24 +369,83 @@ class fulldataofrooms {
           }
         } else {
           //remove stop words
+          final dbref = FirebaseDatabase.instance.reference();
+          User user = FirebaseAuth.instance.currentUser;
+
+          Map notation;
+          await dbref
+              .child("notation")
+              .once()
+              .then((value) => notation = value.value);
+
           if (stopwords.contains(l[i])) {
           } else {
             if (isNumeric(l[i])) {
               String s = NumberToWord().convert("en-in", int.parse(l[i]));
+
+              var slist = s.split(" ");
+              s = "";
+              for (int i = 0; i < slist.length; i++) {
+                s += slist[i];
+              }
+
               key += s;
               print("Converted" + s);
             } else {
-              key += l[i];
+              String p = l[i];
+              int f = 0;
+              print(notation);
+              for (final k in notation.keys) {
+                var a = notation[k];
+                for (final k1 in a.keys) {
+                  if (p == k1) {
+                    p = k;
+                    f = 1;
+                    break;
+                  }
+                }
+                if (f == 1) break;
+              }
+              if (f == 1) {
+                key += p;
+              } else {
+                key += l[i];
+              }
             }
           }
         }
         print("final " + key);
       }
       print(key);
+      key = key.trim();
       // return [flag.toString(), key];
+      print(indexlist);
       try {
         String indexpath;
+        print(indexlist.contains(key));
+        if (indexlist.contains(key) != true) {
+          String fav = '';
+          for (int i = 0; i < favlist.length; i++) {
+            if (key == favlist[i].toString().toLowerCase()) {
+              fav = favlist[i];
+              break;
+            }
+          }
+          print(fav + "00000");
+          if (fav.length > 0) {
+            if (s.toLowerCase().contains('on')) {
+              await ChangeStatus(
+                  1, fulldataofrooms.favroomsarray.indexOf(fav) - 1);
+            } else if (s.toLowerCase().contains('off') ||
+                s.toLowerCase().contains('of')) {
+              await ChangeStatus(
+                  0, fulldataofrooms.favroomsarray.indexOf(fav) - 1);
+            }
+          }
+        }
+
         if (indexlist.contains(key) == true) {
+          print("index me toh haiiiiiiiiii");
           await dbref
               .child(user.uid)
               .child("index")
@@ -357,6 +453,9 @@ class fulldataofrooms {
               .once()
               .then((snap) => indexpath = snap.value);
           var list = indexpath.split(" ");
+          if (flag == 0) {
+            await linktofav(list[0] + list[1] + list[2]);
+          }
           await dbref
               .child(user.uid)
               .child("rooms")
@@ -368,6 +467,7 @@ class fulldataofrooms {
               .set(flag);
           // Fluttertoast.showToast(msg: "done");
         }
+        print("end");
       } catch (E) {
         print("caught in sppech func");
       }

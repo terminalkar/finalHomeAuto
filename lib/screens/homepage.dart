@@ -210,6 +210,7 @@ class _HomepageState extends State<Homepage>
                                 style: TextStyle(
                                   fontFamily: "Amelia-Basic-Light",
                                   fontSize: SizeConfig.textMultiplier * 2.5,
+<<<<<<< HEAD
                                   color: Color(0xff79848b),
                                 ),
                               )
@@ -233,6 +234,54 @@ class _HomepageState extends State<Homepage>
                     //new Divider(),
 
                     Card(
+=======
+                                  color: Color(0xff79848b)),
+                            ),
+                          ],
+                        ),
+                        trailing: Icon(
+                          Icons.arrow_right,
+                          color: Color(0xff79848b),
+                        ),
+                        onTap: pressed
+                            ? null
+                            : () async {
+                                setState(() {
+                                  pressed = true;
+                                });
+                                fulldataofrooms f1 = new fulldataofrooms();
+
+                                await f1.fetchfavourites();
+
+                                await f1.fetchfavouritescontentdata();
+                                if (_scaffoldKey.currentState.isDrawerOpen) {
+                                  _scaffoldKey.currentState.openEndDrawer();
+                                } else
+                                  _scaffoldKey.currentState.openDrawer();
+                                setState(() {
+                                  pressed = false;
+                                });
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => favourite()));
+                              }),
+                  ),
+                  // new Divider(),
+                  InkWell(
+                    onTap: pressed
+                        ? null
+                        : () {
+                            setState(() {
+                              pressed = true;
+                            });
+                            FirebaseAuth.instance.signOut();
+                            setState(() {
+                              pressed = false;
+                            });
+                          },
+                    child: Card(
+>>>>>>> cd99f2008826cefe7f1405bceac320c9e9c8738e
                       child: new ListTile(
                           title: Row(
                             children: <Widget>[
@@ -334,6 +383,7 @@ class _HomepageState extends State<Homepage>
               ),
             ),
           ),
+<<<<<<< HEAD
           ////////////////////////////////////////////////////////////////////////////////////
           body: _isRoomfetched
               ? Center(child: CircularProgressIndicator())
@@ -449,6 +499,123 @@ class _HomepageState extends State<Homepage>
                                                             ),
                                                           ],
                                                         ),
+=======
+        ),
+        ////////////////////////////////////////////////////////////////////////////////////
+        body: _isRoomfetched
+            ? Center(child: CircularProgressIndicator())
+            : fulldataofrooms.roomidmap.length == 0
+                ? Center(
+                    child: Text(
+                    "No rooms added",
+                    style: TextStyle(
+                        fontFamily: "Amelia-Basic-Light",
+                        fontSize: SizeConfig.textMultiplier * 2.5,
+                        color: Color(0xff79848b)),
+                  ))
+                : AnimationLimiter(
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      children: List.generate(
+                        fulldataofrooms.roomidarray.length,
+                        (index) {
+                          return AnimationConfiguration.staggeredGrid(
+                            position: index,
+                            duration: const Duration(milliseconds: 375),
+                            columnCount: 2,
+                            child: ScaleAnimation(
+                              child: FadeInAnimation(
+                                  child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: InkWell(
+                                  onTapDown: (TapDownDetails details) {
+                                    _tapPosition = details.globalPosition;
+                                  },
+                                  //delete
+                                  onLongPress: pressed
+                                      ? null
+                                      : () {
+                                          setState(() {
+                                            pressed = true;
+                                          });
+                                          final RenderBox overlay =
+                                              Overlay.of(context)
+                                                  .context
+                                                  .findRenderObject();
+                                          showMenu(
+                                            shape: new RoundedRectangleBorder(
+                                                borderRadius:
+                                                    new BorderRadius.circular(
+                                                        10.0)),
+                                            items: <PopupMenuEntry>[
+                                              PopupMenuItem(
+                                                value: index,
+                                                child: GestureDetector(
+                                                  onTap: () async {
+                                                    setState(() {
+                                                      pressed = true;
+                                                    });
+                                                    try {
+                                                      fulldataofrooms f =
+                                                          new fulldataofrooms();
+                                                      f.roomdelete(
+                                                          fulldataofrooms
+                                                                  .roomidarray[
+                                                              index]);
+                                                      dbref
+                                                          .child(user.uid)
+                                                          .child("rooms")
+                                                          .child(fulldataofrooms
+                                                                  .roomidarray[
+                                                              index])
+                                                          .remove();
+                                                      setState(() {
+                                                        fulldataofrooms
+                                                            .roomidmap
+                                                            .remove(fulldataofrooms
+                                                                    .roomidarray[
+                                                                index]);
+                                                        fulldataofrooms
+                                                            .roomidarray
+                                                            .remove(fulldataofrooms
+                                                                    .roomidarray[
+                                                                index]);
+                                                      });
+                                                    } catch (ex) {
+                                                      print("pop");
+                                                    }
+                                                    setState(() {
+                                                      pressed = false;
+                                                    });
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Container(
+                                                    height: SizeConfig
+                                                            .heightMultiplier *
+                                                        6,
+                                                    child: Center(
+                                                      child: Row(
+                                                        children: <Widget>[
+                                                          Icon(Icons.delete),
+                                                          SizedBox(
+                                                            width: SizeConfig
+                                                                    .widthMultiplier *
+                                                                6,
+                                                          ),
+                                                          Text(
+                                                            "Delete Room",
+                                                            style: TextStyle(
+                                                                fontFamily:
+                                                                    "Amelia-Basic-Light",
+                                                                fontSize: SizeConfig
+                                                                        .textMultiplier *
+                                                                    2.5,
+                                                                color: Color(
+                                                                    0xff79848b)),
+                                                          ),
+                                                        ],
+>>>>>>> cd99f2008826cefe7f1405bceac320c9e9c8738e
                                                       ),
                                                     ),
                                                   ),

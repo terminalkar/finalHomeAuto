@@ -47,6 +47,7 @@ class profileState extends State<profile> {
     _mailcontroller.text = user.email;
     _idcontroller.text = user.uid;
     super.initState();
+    Fluttertoast.showToast(msg: "Loading please wait",toastLength: Toast.LENGTH_SHORT);
   }
 
   Future<Void> getFirebaseImageFolder() async {
@@ -54,7 +55,6 @@ class profileState extends State<profile> {
         FirebaseStorage.instance.ref().child('advertisement');
     storageRef.listAll().then((result) async {
       result.items.forEach((Reference ref) async {
-        // print(ref.fullPath);
 
         String downloadURL =
             await FirebaseStorage.instance.ref(ref.fullPath).getDownloadURL();
@@ -66,18 +66,25 @@ class profileState extends State<profile> {
     print(l);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Future getImage() async {
-      PickedFile image =
-          await ImagePicker().getImage(source: ImageSource.gallery);
-      profilepickflag = 1;
-      setState(() {
-        _image = image;
-        print('Image Path $_image');
-      });
-    }
+    _imgFromCamera() async {
+  PickedFile image = await ImagePicker().getImage(
+    source: ImageSource.camera, imageQuality: 50
+  );
 
+  setState(() {
+    _image = image;
+  });
+}
+
+_imgFromGallery() async {
+  PickedFile image = await ImagePicker().getImage(
+      source: ImageSource.gallery, imageQuality: 50
+  );
+
+  setState(() {
+    _image = image;
+  });
+}
     Future uploadPic(BuildContext context) async {
       String fileName = basename(_image.path);
       Reference firebaseStorageRef =
@@ -93,7 +100,7 @@ class profileState extends State<profile> {
           .child("info")
           .child("profile")
           .set(imagedownloadurl);
-      //Fluttertoast.showToast(msg: imagedownloadurl);
+      
       setState(() {
         fulldataofrooms.uploadedimageurl = uploadedurl = imagedownloadurl;
 
@@ -102,7 +109,41 @@ class profileState extends State<profile> {
             .showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
       });
     }
+void _showPicker(context) {
+  showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Container(
+            child: new Wrap(
+              children: <Widget>[
+                new ListTile(
+                    leading: new Icon(Icons.photo_library),
+                    title: new Text('Photo Library'),
+                    onTap: () {
+                      _imgFromGallery();
+                      Navigator.of(context).pop();
+                    }),
+                new ListTile(
+                  leading: new Icon(Icons.photo_camera),
+                  title: new Text('Camera'),
+                  onTap: () {
+                    _imgFromCamera();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    );
+}
+  @override
+  Widget build(BuildContext context) {
+   
 
+    
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -166,7 +207,7 @@ class profileState extends State<profile> {
                                       pressed = true;
                                       upload = true;
                                     });
-                                    await getImage();
+                                    await _showPicker(context);
                                     setState(() {
                                       pressed = false;
                                     });
