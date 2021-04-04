@@ -11,6 +11,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 //import 'package:home_automation/maindata.dart';
 //import 'package:home_automation/circuit.dart';
 
@@ -23,6 +24,7 @@ class _HomepageState extends State<Homepage>
     with SingleTickerProviderStateMixin {
   var _tapPosition;
   // String profilename = "default";
+  var currentTab = 0;
   var assetImageString;
   var assetImage;
   var image1;
@@ -54,7 +56,7 @@ class _HomepageState extends State<Homepage>
       'Other': "assets/logo.png"
     });
     super.initState();
-    
+
     _roomData();
     _speech = stt.SpeechToText();
   }
@@ -125,174 +127,112 @@ class _HomepageState extends State<Homepage>
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-            title: Text(
-              'Home',
-              style: TextStyle(color: Colors.white),
-            ),
-            actions: [
-              AvatarGlow(
-                  animate: _isListening,
-                  glowColor: Theme.of(context).primaryColor,
-                  endRadius: SizeConfig.widthMultiplier * 8,
-                  duration: const Duration(milliseconds: 2000),
-                  repeatPauseDuration: const Duration(milliseconds: 100),
-                  repeat: true,
-                  child: IconButton(
-                    icon:
-                        Icon(_speech.isListening ? Icons.mic : Icons.mic_none),
-                    onPressed: _listen,
-                  ))
-            ]),
+          key: _scaffoldKey,
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+              title: Text(
+                'Home',
+                style: TextStyle(color: Colors.white),
+              ),
+              actions: [
+                AvatarGlow(
+                    animate: _isListening,
+                    glowColor: Theme.of(context).primaryColor,
+                    endRadius: SizeConfig.widthMultiplier * 8,
+                    duration: const Duration(milliseconds: 2000),
+                    repeatPauseDuration: const Duration(milliseconds: 100),
+                    repeat: true,
+                    child: IconButton(
+                      icon: Icon(
+                          _speech.isListening ? Icons.mic : Icons.mic_none),
+                      onPressed: _listen,
+                    ))
+              ]),
 
-        ////Drawer
-        drawer: Theme(
-          data: Theme.of(context).copyWith(
-              canvasColor: Colors.white,
-              //This will change the drawer background to blue.
-              //other styles
-              selectedRowColor: Colors.blue.shade300),
-          child: Container(
-            width: SizeConfig.widthMultiplier * 61,
-            child: Drawer(
-              child: new ListView(
-                children: <Widget>[
-                  new UserAccountsDrawerHeader(
-                    accountName: new Text(
-                      fulldataofrooms.profilename,
-                      style: TextStyle(
-                        fontFamily: "Amelia-Basic-Light",
-                        fontSize: SizeConfig.textMultiplier * 2.5,
-                        color: Color(0xff79848b),
-                      ),
-                    ),
-                    accountEmail: new Text(user.email,
+          ////Drawer
+          drawer: Theme(
+            data: Theme.of(context).copyWith(
+                canvasColor: Colors.white,
+                //This will change the drawer background to blue.
+                //other styles
+                selectedRowColor: Colors.blue.shade300),
+            child: Container(
+              width: SizeConfig.widthMultiplier * 61,
+              child: Drawer(
+                child: new ListView(
+                  children: <Widget>[
+                    new UserAccountsDrawerHeader(
+                      accountName: new Text(
+                        fulldataofrooms.profilename,
                         style: TextStyle(
                           fontFamily: "Amelia-Basic-Light",
                           fontSize: SizeConfig.textMultiplier * 2.5,
                           color: Color(0xff79848b),
-                        )),
-                    currentAccountPicture: new CircleAvatar(
-                      radius: SizeConfig.heightMultiplier * 4.5,
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        Icons.person,
-                        size: SizeConfig.imageSizeMultiplier * 15,
-                        color: Color(0xff79848b),
-                      ),
-                    ),
-                    // decoration: BoxDecoration(
-                    //   image: DecorationImage(
-                    //     image: new AssetImage("assets/profile.jpg"),
-                    //     fit: BoxFit.cover,
-                    //   ),
-                    // ),
-                  ),
-
-                  Card(
-                    child: new ListTile(
-                        title: Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(2.0, 0.0, 15.0, 0),
-                              child: new Icon(
-                                Icons.person,
-                                color: Color(0xff79848b),
-                                size: SizeConfig.imageSizeMultiplier * 5,
-                              ),
-                            ),
-                            new Text(
-                              "Profile",
-                              style: TextStyle(
-                                fontFamily: "Amelia-Basic-Light",
-                                fontSize: SizeConfig.textMultiplier * 2.5,
-                                color: Color(0xff79848b),
-                              ),
-                            )
-                          ],
                         ),
-                        trailing: Icon(
-                          Icons.arrow_right,
+                      ),
+                      accountEmail: new Text(user.email,
+                          style: TextStyle(
+                            fontFamily: "Amelia-Basic-Light",
+                            fontSize: SizeConfig.textMultiplier * 2.5,
+                            color: Color(0xff79848b),
+                          )),
+                      currentAccountPicture: new CircleAvatar(
+                        radius: SizeConfig.heightMultiplier * 4.5,
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          Icons.person,
+                          size: SizeConfig.imageSizeMultiplier * 15,
                           color: Color(0xff79848b),
                         ),
-                        onTap: () {
-                          if (_scaffoldKey.currentState.isDrawerOpen) {
-                            _scaffoldKey.currentState.openEndDrawer();
-                          } else
-                            _scaffoldKey.currentState.openDrawer();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => profile()));
-                        }),
-                  ),
-                  //new Divider(),
+                      ),
+                      // decoration: BoxDecoration(
+                      //   image: DecorationImage(
+                      //     image: new AssetImage("assets/profile.jpg"),
+                      //     fit: BoxFit.cover,
+                      //   ),
+                      // ),
+                    ),
 
-                  Card(
-                    child: new ListTile(
-                        title: Row(
-                          children: <Widget>[
-                            Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(2.0, 0.0, 10.0, 0),
-                              child: new Icon(
-                                Icons.thumb_up,
-                                color: Color(0xff79848b),
-                                size: SizeConfig.imageSizeMultiplier * 5,
+                    Card(
+                      child: new ListTile(
+                          title: Row(
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(2.0, 0.0, 15.0, 0),
+                                child: new Icon(
+                                  Icons.person,
+                                  color: Color(0xff79848b),
+                                  size: SizeConfig.imageSizeMultiplier * 5,
+                                ),
                               ),
-                            ),
-                            new Text(
-                              "Favourites",
-                              style: TextStyle(
+                              new Text(
+                                "Profile",
+                                style: TextStyle(
                                   fontFamily: "Amelia-Basic-Light",
                                   fontSize: SizeConfig.textMultiplier * 2.5,
-                                  color: Color(0xff79848b)),
-                            ),
-                          ],
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_right,
-                          color: Color(0xff79848b),
-                        ),
-                        onTap: pressed
-                            ? null
-                            : () async {
-                                setState(() {
-                                  pressed = true;
-                                });
-                                fulldataofrooms f1 = new fulldataofrooms();
-                                await f1.fetchfavourites();
-                                await f1.fetchfavouritescontentdata();
+                                  color: Color(0xff79848b),
+                                ),
+                              )
+                            ],
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_right,
+                            color: Color(0xff79848b),
+                          ),
+                          onTap: () {
+                            if (_scaffoldKey.currentState.isDrawerOpen) {
+                              _scaffoldKey.currentState.openEndDrawer();
+                            } else
+                              _scaffoldKey.currentState.openDrawer();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => profile()));
+                          }),
+                    ),
+                    //new Divider(),
 
-                                if (_scaffoldKey.currentState.isDrawerOpen) {
-                                  _scaffoldKey.currentState.openEndDrawer();
-                                } else
-                                  _scaffoldKey.currentState.openDrawer();
-                                setState(() {
-                                  pressed = false;
-                                });
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => favourite()));
-                              }),
-                  ),
-                  // new Divider(),
-                  InkWell(
-                    onTap: pressed
-                        ? null
-                        : () {
-                            setState(() {
-                              pressed = true;
-                            });
-                            FirebaseAuth.instance.signOut();
-                            setState(() {
-                              pressed = false;
-                            });
-                          },
-                    child: Card(
+                    Card(
                       child: new ListTile(
                           title: Row(
                             children: <Widget>[
@@ -300,13 +240,13 @@ class _HomepageState extends State<Homepage>
                                 padding: const EdgeInsets.fromLTRB(
                                     2.0, 0.0, 10.0, 0),
                                 child: new Icon(
-                                  Icons.phonelink_erase,
+                                  Icons.thumb_up,
                                   color: Color(0xff79848b),
                                   size: SizeConfig.imageSizeMultiplier * 5,
                                 ),
                               ),
                               new Text(
-                                "Log out",
+                                "Favourites",
                                 style: TextStyle(
                                     fontFamily: "Amelia-Basic-Light",
                                     fontSize: SizeConfig.textMultiplier * 2.5,
@@ -318,257 +258,404 @@ class _HomepageState extends State<Homepage>
                             Icons.arrow_right,
                             color: Color(0xff79848b),
                           ),
-                          onTap: () async {
+                          onTap: pressed
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    pressed = true;
+                                  });
+                                  fulldataofrooms f1 = new fulldataofrooms();
+                                  await f1.fetchfavourites();
+                                  await f1.fetchfavouritescontentdata();
+
+                                  if (_scaffoldKey.currentState.isDrawerOpen) {
+                                    _scaffoldKey.currentState.openEndDrawer();
+                                  } else
+                                    _scaffoldKey.currentState.openDrawer();
+                                  setState(() {
+                                    pressed = false;
+                                  });
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => favourite()));
+                                }),
+                    ),
+                    // new Divider(),
+                    InkWell(
+                      onTap: pressed
+                          ? null
+                          : () {
+                              setState(() {
+                                pressed = true;
+                              });
+                              FirebaseAuth.instance.signOut();
+                              setState(() {
+                                pressed = false;
+                              });
+                            },
+                      child: Card(
+                        child: new ListTile(
+                            title: Row(
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      2.0, 0.0, 10.0, 0),
+                                  child: new Icon(
+                                    Icons.phonelink_erase,
+                                    color: Color(0xff79848b),
+                                    size: SizeConfig.imageSizeMultiplier * 5,
+                                  ),
+                                ),
+                                new Text(
+                                  "Log out",
+                                  style: TextStyle(
+                                      fontFamily: "Amelia-Basic-Light",
+                                      fontSize: SizeConfig.textMultiplier * 2.5,
+                                      color: Color(0xff79848b)),
+                                ),
+                              ],
+                            ),
+                            trailing: Icon(
+                              Icons.arrow_right,
+                              color: Color(0xff79848b),
+                            ),
+                            onTap: () async {
+                              if (_scaffoldKey.currentState.isDrawerOpen) {
+                                _scaffoldKey.currentState.openEndDrawer();
+                              } else
+                                _scaffoldKey.currentState.openDrawer();
+                              FirebaseAuth.instance.signOut();
+                            }),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          ////////////////////////////////////////////////////////////////////////////////////
+          body: _isRoomfetched
+              ? Center(child: CircularProgressIndicator())
+              : fulldataofrooms.roomidmap.length == 0
+                  ? Center(
+                      child: Text(
+                      "No rooms added",
+                      style: TextStyle(
+                          fontFamily: "Amelia-Basic-Light",
+                          fontSize: SizeConfig.textMultiplier * 2.5,
+                          color: Color(0xff79848b)),
+                    ))
+                  : AnimationLimiter(
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        shrinkWrap: true,
+                        children: List.generate(
+                          fulldataofrooms.roomidarray.length,
+                          (index) {
+                            return AnimationConfiguration.staggeredGrid(
+                              position: index,
+                              duration: const Duration(milliseconds: 375),
+                              columnCount: 2,
+                              child: ScaleAnimation(
+                                child: FadeInAnimation(
+                                    child: Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: InkWell(
+                                    onTapDown: (TapDownDetails details) {
+                                      _tapPosition = details.globalPosition;
+                                    },
+                                    //delete
+                                    onLongPress: pressed
+                                        ? null
+                                        : () {
+                                            setState(() {
+                                              pressed = true;
+                                            });
+                                            final RenderBox overlay =
+                                                Overlay.of(context)
+                                                    .context
+                                                    .findRenderObject();
+                                            showMenu(
+                                              shape: new RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      new BorderRadius.circular(
+                                                          10.0)),
+                                              items: <PopupMenuEntry>[
+                                                PopupMenuItem(
+                                                  value: index,
+                                                  child: GestureDetector(
+                                                    onTap: pressed
+                                                        ? null
+                                                        : () {
+                                                            setState(() {
+                                                              pressed = true;
+                                                            });
+                                                            try {
+                                                              dbref
+                                                                  .child(
+                                                                      user.uid)
+                                                                  .child(
+                                                                      "rooms")
+                                                                  .child(fulldataofrooms
+                                                                          .roomidarray[
+                                                                      index])
+                                                                  .remove();
+                                                              setState(() {
+                                                                fulldataofrooms
+                                                                    .roomidmap
+                                                                    .remove(fulldataofrooms
+                                                                            .roomidarray[
+                                                                        index]);
+                                                                fulldataofrooms
+                                                                    .roomidarray
+                                                                    .remove(fulldataofrooms
+                                                                            .roomidarray[
+                                                                        index]);
+                                                              });
+                                                            } catch (ex) {
+                                                              print("pop");
+                                                            }
+                                                            setState(() {
+                                                              pressed = false;
+                                                            });
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                    child: Container(
+                                                      height: SizeConfig
+                                                              .heightMultiplier *
+                                                          6,
+                                                      child: Center(
+                                                        child: Row(
+                                                          children: <Widget>[
+                                                            Icon(Icons.delete),
+                                                            SizedBox(
+                                                              width: SizeConfig
+                                                                      .widthMultiplier *
+                                                                  6,
+                                                            ),
+                                                            Text(
+                                                              "Delete Room",
+                                                              style: TextStyle(
+                                                                  fontFamily:
+                                                                      "Amelia-Basic-Light",
+                                                                  fontSize:
+                                                                      SizeConfig
+                                                                              .textMultiplier *
+                                                                          2.5,
+                                                                  color: Color(
+                                                                      0xff79848b)),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                              context: context,
+                                              position: RelativeRect.fromRect(
+                                                  _tapPosition &
+                                                      const Size(40, 40),
+                                                  Offset.zero & overlay.size),
+                                            );
+                                            setState(() {
+                                              pressed = false;
+                                            });
+                                            //
+                                          },
+
+                                    //Rooms//////////////////////////////////////////////////////////////////////////////////
+                                    onTap: pressed
+                                        ? null
+                                        : () {
+                                            setState(() {
+                                              pressed = true;
+                                              fulldataofrooms.index = index;
+                                              fulldataofrooms.boardid =
+                                                  fulldataofrooms.id[
+                                                      fulldataofrooms
+                                                          .roomidarray[index]];
+                                              fulldataofrooms.boardidarray =
+                                                  fulldataofrooms.array[
+                                                      fulldataofrooms
+                                                          .roomidarray[index]];
+                                            });
+                                            if (fulldataofrooms.boardidarray ==
+                                                    null ||
+                                                fulldataofrooms.boardid ==
+                                                    null) {
+                                              fulldataofrooms.boardidarray = [];
+                                              fulldataofrooms.boardid =
+                                                  new Map();
+                                            } else {
+                                              fulldataofrooms.boardidarray
+                                                  .sort();
+                                            }
+                                            setState(() {
+                                              pressed = false;
+                                            });
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        Circuit()));
+                                          },
+                                    child: Container(
+                                      child: Column(
+                                        children: [
+                                          Center(
+                                            child: Container(
+                                              height: 100,
+                                              width: 100,
+                                              margin: EdgeInsets.all(10),
+                                              child: Image(
+                                                image: AssetImage(image[
+                                                    fulldataofrooms.roomidmap[
+                                                        fulldataofrooms
+                                                                .roomidarray[
+                                                            index]]["type"]]),
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                              fulldataofrooms.roomidmap[
+                                                      fulldataofrooms
+                                                          .roomidarray[index]]
+                                                  ["name"],
+                                              style: TextStyle(
+                                                fontFamily:
+                                                    "Amelia-Basic-Light",
+                                                fontSize:
+                                                    SizeConfig.textMultiplier *
+                                                        2.5,
+                                                color: Color(0xff79848b),
+                                              )),
+                                        ],
+                                      ),
+                                      height: SizeConfig.heightMultiplier * 18,
+                                      width: SizeConfig.widthMultiplier * 45,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xffffffff),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            offset: Offset(0.00, 5.00),
+                                            color: Color(0xff0792ef)
+                                                .withOpacity(0.60),
+                                            blurRadius: 18,
+                                          ),
+                                        ],
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                    ),
+                                  ),
+                                )),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+          floatingActionButton: FloatingActionButton.extended(
+              backgroundColor: Colors.blue,
+              onPressed: pressed
+                  ? null
+                  : () {
+                      setState(() {
+                        pressed = true;
+                      });
+                      try {
+                        _addroom(context);
+                      } catch (Exc) {
+                        print(Exc);
+                      }
+                      setState(() {
+                        pressed = false;
+                      });
+                    },
+              tooltip: 'Increment',
+              label: Text("Add Rooms"),
+              icon: Icon(Icons.add)),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: BottomAppBar(
+            shape: CircularNotchedRectangle(),
+            notchMargin: 10,
+            child: Container(
+              height: 60,
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        MaterialButton(
+                          minWidth: 100,
+                          onPressed: () async {
+                            fulldataofrooms f1 = new fulldataofrooms();
+                            await f1.fetchfavourites();
+                            await f1.fetchfavouritescontentdata();
+
                             if (_scaffoldKey.currentState.isDrawerOpen) {
                               _scaffoldKey.currentState.openEndDrawer();
                             } else
                               _scaffoldKey.currentState.openDrawer();
-                            FirebaseAuth.instance.signOut();
-                          }),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        ////////////////////////////////////////////////////////////////////////////////////
-        body: _isRoomfetched
-            ? Center(child: CircularProgressIndicator())
-            : fulldataofrooms.roomidmap.length == 0
-                ? Center(
-                    child: Text(
-                    "No rooms added",
-                    style: TextStyle(
-                        fontFamily: "Amelia-Basic-Light",
-                        fontSize: SizeConfig.textMultiplier * 2.5,
-                        color: Color(0xff79848b)),
-                  ))
-                : AnimationLimiter(
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      children: List.generate(
-                        fulldataofrooms.roomidarray.length,
-                        (index) {
-                          return AnimationConfiguration.staggeredGrid(
-                            position: index,
-                            duration: const Duration(milliseconds: 375),
-                            columnCount: 2,
-                            child: ScaleAnimation(
-                              child: FadeInAnimation(
-                                  child: Padding(
-                                padding: EdgeInsets.all(10),
-                                child: InkWell(
-                                  onTapDown: (TapDownDetails details) {
-                                    _tapPosition = details.globalPosition;
-                                  },
-                                  //delete
-                                  onLongPress: pressed
-                                      ? null
-                                      : () {
-                                          setState(() {
-                                            pressed = true;
-                                          });
-                                          final RenderBox overlay =
-                                              Overlay.of(context)
-                                                  .context
-                                                  .findRenderObject();
-                                          showMenu(
-                                            shape: new RoundedRectangleBorder(
-                                                borderRadius:
-                                                    new BorderRadius.circular(
-                                                        10.0)),
-                                            items: <PopupMenuEntry>[
-                                              PopupMenuItem(
-                                                value: index,
-                                                child: GestureDetector(
-                                                  onTap: pressed
-                                                      ? null
-                                                      : () {
-                                                          setState(() {
-                                                            pressed = true;
-                                                          });
-                                                          try {
-                                                            dbref
-                                                                .child(user.uid)
-                                                                .child("rooms")
-                                                                .child(fulldataofrooms
-                                                                        .roomidarray[
-                                                                    index])
-                                                                .remove();
-                                                            setState(() {
-                                                              fulldataofrooms
-                                                                  .roomidmap
-                                                                  .remove(fulldataofrooms
-                                                                          .roomidarray[
-                                                                      index]);
-                                                              fulldataofrooms
-                                                                  .roomidarray
-                                                                  .remove(fulldataofrooms
-                                                                          .roomidarray[
-                                                                      index]);
-                                                            });
-                                                          } catch (ex) {
-                                                            print("pop");
-                                                          }
-                                                          setState(() {
-                                                            pressed = false;
-                                                          });
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                  child: Container(
-                                                    height: SizeConfig
-                                                            .heightMultiplier *
-                                                        6,
-                                                    child: Center(
-                                                      child: Row(
-                                                        children: <Widget>[
-                                                          Icon(Icons.delete),
-                                                          SizedBox(
-                                                            width: SizeConfig
-                                                                    .widthMultiplier *
-                                                                6,
-                                                          ),
-                                                          Text(
-                                                            "Delete Room",
-                                                            style: TextStyle(
-                                                                fontFamily:
-                                                                    "Amelia-Basic-Light",
-                                                                fontSize: SizeConfig
-                                                                        .textMultiplier *
-                                                                    2.5,
-                                                                color: Color(
-                                                                    0xff79848b)),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                            context: context,
-                                            position: RelativeRect.fromRect(
-                                                _tapPosition &
-                                                    const Size(40, 40),
-                                                Offset.zero & overlay.size),
-                                          );
-                                          setState(() {
-                                            pressed = false;
-                                          });
-                                          //
-                                        },
+                            setState(() {
+                              pressed = false;
+                            });
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => favourite()));
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Icon(
+                                Icons.favorite,
+                                color: Colors.grey,
+                              ),
+                            ],
+                          ),
+                        ),
 
-                                  //Rooms//////////////////////////////////////////////////////////////////////////////////
-                                  onTap: pressed
-                                      ? null
-                                      : () {
-                                          setState(() {
-                                            pressed = true;
-                                            fulldataofrooms.index = index;
-                                            fulldataofrooms.boardid =
-                                                fulldataofrooms.id[
-                                                    fulldataofrooms
-                                                        .roomidarray[index]];
-                                            fulldataofrooms.boardidarray =
-                                                fulldataofrooms.array[
-                                                    fulldataofrooms
-                                                        .roomidarray[index]];
-                                          });
-                                          if (fulldataofrooms.boardidarray ==
-                                                  null ||
-                                              fulldataofrooms.boardid == null) {
-                                            fulldataofrooms.boardidarray = [];
-                                            fulldataofrooms.boardid = new Map();
-                                          } else {
-                                            fulldataofrooms.boardidarray.sort();
-                                          }
-                                          setState(() {
-                                            pressed = false;
-                                          });
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      Circuit()));
-                                        },
-                                  child: Container(
-                                    child: Column(
-                                      children: [
-                                        Center(
-                                          child: Container(
-                                            height: 100,
-                                            width: 100,
-                                            margin: EdgeInsets.all(10),
-                                            child: Image(
-                                              image: AssetImage(image[
-                                                  fulldataofrooms.roomidmap[
-                                                      fulldataofrooms
-                                                              .roomidarray[
-                                                          index]]["type"]]),
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                            fulldataofrooms.roomidmap[
-                                                    fulldataofrooms
-                                                        .roomidarray[index]]
-                                                ["name"],
-                                            style: TextStyle(
-                                              fontFamily: "Amelia-Basic-Light",
-                                              fontSize:
-                                                  SizeConfig.textMultiplier *
-                                                      2.5,
-                                              color: Color(0xff79848b),
-                                            )),
-                                      ],
+                        SizedBox(
+                          width: 200,
+                        ),
+
+                        // Right Tab bar icons
+
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Center(
+                              child: AvatarGlow(
+                                  animate: _isListening,
+                                  glowColor: Colors.grey,
+                                  endRadius: SizeConfig.widthMultiplier * 9,
+                                  duration: const Duration(milliseconds: 2000),
+                                  repeatPauseDuration:
+                                      const Duration(milliseconds: 100),
+                                  repeat: true,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      _speech.isListening
+                                          ? Icons.mic
+                                          : Icons.mic_none,
+                                      color: Colors.grey,
                                     ),
-                                    height: SizeConfig.heightMultiplier * 18,
-                                    width: SizeConfig.widthMultiplier * 45,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffffffff),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          offset: Offset(0.00, 5.00),
-                                          color: Color(0xff0792ef)
-                                              .withOpacity(0.60),
-                                          blurRadius: 18,
-                                        ),
-                                      ],
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                  ),
-                                ),
-                              )),
+                                    onPressed: _listen,
+                                  )),
                             ),
-                          );
-                        },
-                      ),
+                          ],
+                        )
+                      ],
                     ),
-                  ),
-        floatingActionButton: FloatingActionButton.extended(
-            backgroundColor: Colors.blue,
-            onPressed: pressed
-                ? null
-                : () {
-                    setState(() {
-                      pressed = true;
-                    });
-                    try {
-                      _addroom(context);
-                    } catch (Exc) {
-                      print(Exc);
-                    }
-                    setState(() {
-                      pressed = false;
-                    });
-                  },
-            tooltip: 'Increment',
-            label: Text("Add Rooms"),
-            icon: Icon(Icons.add)),
-      ),
+                  ]),
+            ),
+          )),
     );
   }
 
