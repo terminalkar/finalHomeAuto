@@ -30,8 +30,24 @@ class _AuthFormState extends State<AuthForm> {
   var _userMobile = '';
   var _name = '';
   var _userPassword = '';
+  FocusNode focusNode2;
+  FocusNode focusNode3;
+  FocusNode focusNode4;
+  FocusNode focusNode5;
+  FocusNode focusNode6;
+  FocusNode focusNode7;
+  void node() {
+    focusNode2 = new FocusNode();
+    focusNode3 = new FocusNode();
+    focusNode4 = new FocusNode();
+    focusNode5 = new FocusNode();
+    focusNode6 = new FocusNode();
+    focusNode7 = new FocusNode();
+  }
+
   GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
   void _trySubmit() {
+    node();
     //removes keyboard after form submission
     FocusScope.of(context).unfocus();
 
@@ -56,6 +72,13 @@ class _AuthFormState extends State<AuthForm> {
         context,
       );
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    node();
+    super.initState();
   }
 
   @override
@@ -133,7 +156,9 @@ class _AuthFormState extends State<AuthForm> {
 
                               //internal textfield
                               child: TextFormField(
+                                autofocus: true,
                                 key: ValueKey('email'),
+                                focusNode: focusNode2,
                                 //validotor  improved
                                 validator: validateEmail,
 
@@ -179,8 +204,9 @@ class _AuthFormState extends State<AuthForm> {
 
                               //internal textfield
                               child: TextFormField(
+                                autofocus: true,
                                 key: ValueKey('password'),
-
+                                focusNode: focusNode3,
                                 //validotor  improved
                                 validator: validatePassword,
 
@@ -325,7 +351,7 @@ class _AuthFormState extends State<AuthForm> {
                                       ),
                                       onPressed: pressed
                                           ? null
-                                          : () async{
+                                          : () async {
                                               setState(() {
                                                 pressed = true;
                                               });
@@ -385,10 +411,11 @@ class _AuthFormState extends State<AuthForm> {
 
                               //internal textfield
                               child: TextFormField(
+                                autofocus: true,
                                 key: ValueKey('email'),
                                 //validotor  improved
                                 validator: validateEmail,
-
+                                focusNode: focusNode4,
                                 //Saving email
                                 onChanged: (value) {
                                   _userEmail = value;
@@ -435,10 +462,11 @@ class _AuthFormState extends State<AuthForm> {
 
                                   //internal textfield
                                   child: TextFormField(
+                                    autofocus: true,
                                     key: ValueKey('mobile'),
                                     //validotor  improved
                                     validator: validatenumber,
-
+                                    focusNode: focusNode5,
                                     //Saving Username
                                     onChanged: (value) {
                                       _userMobile = value;
@@ -485,10 +513,11 @@ class _AuthFormState extends State<AuthForm> {
 
                                   //internal textfield
                                   child: TextFormField(
+                                    autofocus: true,
                                     //key: ValueKey('mobile'),
                                     //validotor  improved
                                     //validator: validatenumber,
-
+                                    focusNode: focusNode6,
                                     //Saving Username
                                     onChanged: (value) {
                                       _name = value;
@@ -531,12 +560,14 @@ class _AuthFormState extends State<AuthForm> {
 
                               //internal textfield
                               child: TextFormField(
+                                autofocus: true,
                                 key: ValueKey('password'),
+                                focusNode: focusNode7,
                                 //validotor  improved
                                 validator: validatePassword,
 
                                 //Saving Password
-                                onSaved: (value) {
+                                onChanged: (value) {
                                   _userPassword = value;
                                 },
                                 keyboardType: TextInputType.visiblePassword,
@@ -735,7 +766,7 @@ fun(BuildContext context) async {
                     ),
                     onPressed: pressed == false
                         ? () async {
-                          setState(() {
+                            setState(() {
                               pressed = true;
                             });
                             if (formKey.currentState.validate()) {
@@ -744,6 +775,7 @@ fun(BuildContext context) async {
                                 disp = "email sent";
                               });
                               Navigator.of(context).pop();
+                              focusNode1 = new FocusNode();
                               Fluttertoast.showToast(
                                   msg: "Check mail inbox",
                                   toastLength: Toast.LENGTH_LONG,

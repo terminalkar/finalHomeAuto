@@ -293,23 +293,6 @@ class _CircuittState extends State<Circuit> {
                                                               index]];
                                                   fulldataofrooms.boardindex =
                                                       index;
-                                                  fulldataofrooms f1 =
-                                                      new fulldataofrooms();
-                                                  setState(() {
-                                                    fulldataofrooms.fetched =
-                                                        false;
-                                                  });
-
-                                                  try {
-                                                    f1.fetchfavourites();
-                                                    await f1.fetchindex();
-
-                                                    await f1.fetchboards();
-                                                    fulldataofrooms.boardidarray
-                                                        .sort();
-                                                  } catch (Ex) {
-                                                    print("on tap circuit");
-                                                  }
                                                   setState(() {
                                                     pressed = false;
                                                   });

@@ -74,13 +74,19 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).viewInsets.bottom);
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       backgroundColor: Theme.of(context).primaryColor,
       body: SingleChildScrollView(
-        child: AuthForm(
-          _submitAuthForm,
-          _isLoading,
+        // reverse: true,
+        child: Padding(
+          padding:
+               EdgeInsets.all(0),
+          child: AuthForm(
+            _submitAuthForm,
+            _isLoading,
+          ),
         ),
       ),
     );

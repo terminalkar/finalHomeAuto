@@ -23,6 +23,7 @@ class _switchesState extends State<switches> {
   var edit = List.filled(5, false);
   var iconStr = false, pressed = false;
   Icon obj;
+  bool show = true;
   var icnstr = "assets/kitchen.png";
   var image = new Map();
   var iconlist = new Map();
@@ -94,9 +95,30 @@ class _switchesState extends State<switches> {
     });
   }
 
+  void fetch() async {
+    fulldataofrooms f1 = new fulldataofrooms();
+    setState(() {
+      fulldataofrooms.fetched = false;
+    });
+
+    try {
+      f1.fetchfavourites();
+      await f1.fetchindex();
+
+      await f1.fetchboards();
+      fulldataofrooms.boardidarray.sort();
+    } catch (Ex) {
+      print("on tap circuit");
+    }
+    setState(() {
+      show = false;
+    });
+  }
+
   @override
   void initState() {
     addicon();
+    fetch();
     super.initState();
   }
 
@@ -120,273 +142,301 @@ class _switchesState extends State<switches> {
         ),
 
         ////////////////////////////////////////////////////////////////////////////////////
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              AnimationLimiter(
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  children: List.generate(
-                    4,
-                    (index) {
-                      return AnimationConfiguration.staggeredGrid(
-                        position: index,
-                        duration: const Duration(milliseconds: 375),
-                        columnCount: 2,
-                        child: ScaleAnimation(
-                          child: FadeInAnimation(
-                              child: Padding(
-                            padding: EdgeInsets.all(
-                                SizeConfig.widthMultiplier * 2.8),
-                            child: InkWell(
-                              onTapDown: (TapDownDetails details) {
-                                _tapPosition = details.globalPosition;
-                              },
-                              //switches//////////////////////////////////////////////////////////////////////////////////
-                              onTap: pressed
-                                  ? null
-                                  : () {
-                                      setState(() {
-                                        int flag = 0;
-                                        pressed = true;
-                                        if (fulldataofrooms.switches["a" +
-                                                    (index + 1).toString()]
-                                                ["val"] ==
-                                            0) {
-                                          flag = 1;
-                                        }
-                                        if (flag == 0) {
-                                          fulldataofrooms.linktofav(
-                                              fulldataofrooms.roomidarray[
-                                                      fulldataofrooms.index] +
-                                                  fulldataofrooms.boardidarray[
-                                                      fulldataofrooms
-                                                          .boardindex] +
-                                                  "a" +
-                                                  (index + 1).toString());
-                                        }
-                                        if (fulldataofrooms.switches["a" +
-                                                    (index + 1).toString()]
-                                                ["icon"] ==
-                                            "null") {
-                                          icnstr = "assets/logo.png";
-                                        } else {
-                                          icnstr = iconlist[fulldataofrooms
-                                                      .switches[
-                                                  "a" + (index + 1).toString()]
-                                              ["icon"]][flag];
-                                        }
-                                        fulldataofrooms.switches[
-                                                "a" + (index + 1).toString()]
-                                            ["val"] = flag;
-                                        dbref
-                                            .child(user.uid)
-                                            .child("rooms")
-                                            .child(fulldataofrooms.roomidarray[
-                                                fulldataofrooms.index])
-                                            .child("circuit")
-                                            .child(fulldataofrooms.boardidarray[
-                                                fulldataofrooms.boardindex])
-                                            .child("a" + (index + 1).toString())
-                                            .child("val")
-                                            .set(flag);
-                                        pressed = false;
-                                      });
+        body: show
+            ? Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    AnimationLimiter(
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        shrinkWrap: true,
+                        children: List.generate(
+                          4,
+                          (index) {
+                            return AnimationConfiguration.staggeredGrid(
+                              position: index,
+                              duration: const Duration(milliseconds: 375),
+                              columnCount: 2,
+                              child: ScaleAnimation(
+                                child: FadeInAnimation(
+                                    child: Padding(
+                                  padding: EdgeInsets.all(
+                                      SizeConfig.widthMultiplier * 2.8),
+                                  child: InkWell(
+                                    onTapDown: (TapDownDetails details) {
+                                      _tapPosition = details.globalPosition;
                                     },
-                              child: Container(
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        IconButton(
-                                          icon: Icon(
-                                            Icons.edit,
-                                            size:
-                                                SizeConfig.widthMultiplier * 7,
-                                            color: Colors.grey[400],
-                                          ),
-                                          onPressed: pressed
-                                              ? null
-                                              : () async {
-                                                  await _Rename(context, index);
-                                                  edit = List.filled(5, false);
-                                                  focusnode =
-                                                      List.filled(5, false);
-                                                },
-                                        ),
-                                        IconButton(
-                                          icon: Icon(
-                                            Icons.star_border,
-                                            size:
-                                                SizeConfig.widthMultiplier * 7,
-                                            color: Colors.yellow[400],
-                                          ),
-                                          onPressed: pressed
-                                              ? null
-                                              : () async {
-                                                  setState(() {
-                                                    pressed = true;
-                                                  });
-                                                  await favouritesdialogbox(
-                                                      context, index);
-                                                  setState(() {
-                                                    pressed = false;
-                                                  });
-                                                },
-                                        ),
-                                      ],
-                                    ),
-
-                                    // SizedBox(
-                                    //   height: SizeConfig.widthMultiplier * 2.5,
-                                    // ),
-                                    Center(
-                                      child: Container(
-                                        height: 7 * SizeConfig.heightMultiplier,
-                                        width: 30 * SizeConfig.widthMultiplier,
-                                        child: Image(
-                                          image: fulldataofrooms.switches[
-                                                          "a" + (index + 1).toString()]
+                                    //switches//////////////////////////////////////////////////////////////////////////////////
+                                    onTap: pressed
+                                        ? null
+                                        : () {
+                                            setState(() {
+                                              int flag = 0;
+                                              pressed = true;
+                                              if (fulldataofrooms.switches["a" +
+                                                      (index + 1)
+                                                          .toString()]["val"] ==
+                                                  0) {
+                                                flag = 1;
+                                              }
+                                              if (flag == 0) {
+                                                fulldataofrooms.linktofav(
+                                                    fulldataofrooms.roomidarray[
+                                                            fulldataofrooms
+                                                                .index] +
+                                                        fulldataofrooms
+                                                                .boardidarray[
+                                                            fulldataofrooms
+                                                                .boardindex] +
+                                                        "a" +
+                                                        (index + 1).toString());
+                                              }
+                                              if (fulldataofrooms.switches["a" +
+                                                          (index + 1)
+                                                              .toString()]
                                                       ["icon"] ==
-                                                  "null"
-                                              ? AssetImage("assets/logo.png")
-                                              : AssetImage(iconlist[fulldataofrooms
-                                                      .switches["a" + (index + 1).toString()]
-                                                  ["icon"]][fulldataofrooms
-                                                      .switches["a" + (index + 1).toString()]
-                                                  ["val"]]),
-                                        ),
-                                      ),
-                                    ),
-                                    // SizedBox(
-                                    //   height: 20,
-                                    // ),
-                                    Center(
-                                      child: Container(
-                                        width: 14 * SizeConfig.heightMultiplier,
-                                        child: TextField(
-                                          enableInteractiveSelection: true,
-                                          autofocus: focusnode[index],
-                                          focusNode: new FocusNode(),
-                                          controller: TextEditingController()
-                                            ..text = fulldataofrooms.switches[
-                                                    "a" +
-                                                        (index + 1).toString()]
-                                                ["name"],
-                                          expands: false,
-                                          enabled: edit[index],
-                                          textInputAction: TextInputAction.go,
-                                          keyboardType: TextInputType.text,
-                                          style: TextStyle(
-                                            fontFamily: "Amelia-Basic-Light",
-                                            fontSize:
-                                                SizeConfig.textMultiplier * 2.5,
-                                            color: Color(0xff79848b),
+                                                  "null") {
+                                                icnstr = "assets/logo.png";
+                                              } else {
+                                                icnstr = iconlist[
+                                                    fulldataofrooms.switches[
+                                                            "a" +
+                                                                (index + 1)
+                                                                    .toString()]
+                                                        ["icon"]][flag];
+                                              }
+                                              fulldataofrooms.switches["a" +
+                                                      (index + 1).toString()]
+                                                  ["val"] = flag;
+                                              dbref
+                                                  .child(user.uid)
+                                                  .child("rooms")
+                                                  .child(fulldataofrooms
+                                                          .roomidarray[
+                                                      fulldataofrooms.index])
+                                                  .child("circuit")
+                                                  .child(fulldataofrooms
+                                                          .boardidarray[
+                                                      fulldataofrooms
+                                                          .boardindex])
+                                                  .child("a" +
+                                                      (index + 1).toString())
+                                                  .child("val")
+                                                  .set(flag);
+                                              pressed = false;
+                                            });
+                                          },
+                                    child: Container(
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              IconButton(
+                                                icon: Icon(
+                                                  Icons.edit,
+                                                  size: SizeConfig
+                                                          .widthMultiplier *
+                                                      7,
+                                                  color: Colors.grey[400],
+                                                ),
+                                                onPressed: pressed
+                                                    ? null
+                                                    : () async {
+                                                        await _Rename(
+                                                            context, index);
+                                                        edit = List.filled(
+                                                            5, false);
+                                                        focusnode = List.filled(
+                                                            5, false);
+                                                      },
+                                              ),
+                                              IconButton(
+                                                icon: Icon(
+                                                  Icons.star_border,
+                                                  size: SizeConfig
+                                                          .widthMultiplier *
+                                                      7,
+                                                  color: Colors.yellow[400],
+                                                ),
+                                                onPressed: pressed
+                                                    ? null
+                                                    : () async {
+                                                        setState(() {
+                                                          pressed = true;
+                                                        });
+                                                        await favouritesdialogbox(
+                                                            context, index);
+                                                        setState(() {
+                                                          pressed = false;
+                                                        });
+                                                      },
+                                              ),
+                                            ],
                                           ),
-                                          onSubmitted: (name) async {},
-                                        ),
+
+                                          // SizedBox(
+                                          //   height: SizeConfig.widthMultiplier * 2.5,
+                                          // ),
+                                          Center(
+                                            child: Container(
+                                              height: 7 *
+                                                  SizeConfig.heightMultiplier,
+                                              width: 30 *
+                                                  SizeConfig.widthMultiplier,
+                                              child: Image(
+                                                image: fulldataofrooms
+                                                                .switches["a" + (index + 1).toString()]
+                                                            ["icon"] ==
+                                                        "null"
+                                                    ? AssetImage(
+                                                        "assets/logo.png")
+                                                    : AssetImage(iconlist[fulldataofrooms
+                                                            .switches["a" + (index + 1).toString()]
+                                                        ["icon"]][fulldataofrooms
+                                                            .switches["a" + (index + 1).toString()]
+                                                        ["val"]]),
+                                              ),
+                                            ),
+                                          ),
+                                          // SizedBox(
+                                          //   height: 20,
+                                          // ),
+                                          Center(
+                                            child: Container(
+                                              width: 14 *
+                                                  SizeConfig.heightMultiplier,
+                                              child: TextField(
+                                                enableInteractiveSelection:
+                                                    true,
+                                                autofocus: focusnode[index],
+                                                focusNode: new FocusNode(),
+                                                controller:
+                                                    TextEditingController()
+                                                      ..text = fulldataofrooms
+                                                                  .switches[
+                                                              "a" +
+                                                                  (index + 1)
+                                                                      .toString()]
+                                                          ["name"],
+                                                expands: false,
+                                                enabled: edit[index],
+                                                textInputAction:
+                                                    TextInputAction.go,
+                                                keyboardType:
+                                                    TextInputType.text,
+                                                style: TextStyle(
+                                                  fontFamily:
+                                                      "Amelia-Basic-Light",
+                                                  fontSize: SizeConfig
+                                                          .textMultiplier *
+                                                      2.5,
+                                                  color: Color(0xff79848b),
+                                                ),
+                                                onSubmitted: (name) async {},
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xffffffff),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            offset: Offset(0.00, 5.00),
+                                            color: Color(0xff0792ef)
+                                                .withOpacity(0.60),
+                                            blurRadius: 18,
+                                          ),
+                                        ],
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
                                       ),
                                     ),
-                                  ],
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Color(0xffffffff),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      offset: Offset(0.00, 5.00),
-                                      color:
-                                          Color(0xff0792ef).withOpacity(0.60),
-                                      blurRadius: 18,
-                                    ),
-                                  ],
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
+                                  ),
+                                )),
                               ),
-                            ),
-                          )),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-              Container(
-                child: Center(
-                    child: Container(
-                  height: SizeConfig.grp > 3
-                      ? 35 * SizeConfig.heightMultiplier
-                      : 25 * SizeConfig.heightMultiplier,
-                  width: 55 * SizeConfig.widthMultiplier,
-                  child: SleekCircularSlider(
-                    appearance: CircularSliderAppearance(
-                      animDurationMultiplier: 2.0,
-                      size: 180,
-                      startAngle: 210,
-                      angleRange: 300,
-                      customWidths: CustomSliderWidths(
-                        progressBarWidth: 10,
-                      ),
-                      customColors: CustomSliderColors(
-                        hideShadow: false,
-                        trackColor: Color(0xff79848b),
-                        progressBarColor: Colors.blue[300],
-                        shadowMaxOpacity: 10,
-                      ),
-                      infoProperties: InfoProperties(
-                        topLabelText: 'Regulator Speed',
-                        modifier: (double value) {
-                          return "${value.toInt()}";
-                        },
-                        topLabelStyle: TextStyle(
-                            color: Color(0xff0792ef),
-                            fontSize: SizeConfig.heightMultiplier * 2.5),
                       ),
                     ),
-                    initialValue: fulldataofrooms
-                        .switches["a" + (4 + 1).toString()]["val"]
-                        .toDouble(),
-                    min: 0,
-                    max: 5,
-                    onChange: (double value) {
-                      print(value);
+                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                      setState(() {
-                        int flag = 0;
-                        if (fulldataofrooms.switches["a" + (4 + 1).toString()]
-                                    ["val"]
-                                .toDouble() >
-                            value) {
-                          flag = value.floor().toInt();
-                        } else {
-                          flag = value.ceil().toInt();
-                        }
+                    Container(
+                      child: Center(
+                          child: Container(
+                        height: SizeConfig.grp > 3
+                            ? 35 * SizeConfig.heightMultiplier
+                            : 25 * SizeConfig.heightMultiplier,
+                        width: 55 * SizeConfig.widthMultiplier,
+                        child: SleekCircularSlider(
+                          appearance: CircularSliderAppearance(
+                            animDurationMultiplier: 2.0,
+                            size: 180,
+                            startAngle: 210,
+                            angleRange: 300,
+                            customWidths: CustomSliderWidths(
+                              progressBarWidth: 10,
+                            ),
+                            customColors: CustomSliderColors(
+                              hideShadow: false,
+                              trackColor: Color(0xff79848b),
+                              progressBarColor: Colors.blue[300],
+                              shadowMaxOpacity: 10,
+                            ),
+                            infoProperties: InfoProperties(
+                              topLabelText: 'Regulator Speed',
+                              modifier: (double value) {
+                                return "${value.toInt()}";
+                              },
+                              topLabelStyle: TextStyle(
+                                  color: Color(0xff0792ef),
+                                  fontSize: SizeConfig.heightMultiplier * 2.5),
+                            ),
+                          ),
+                          initialValue: fulldataofrooms
+                              .switches["a" + (4 + 1).toString()]["val"]
+                              .toDouble(),
+                          min: 0,
+                          max: 5,
+                          onChange: (double value) {
+                            print(value);
 
-                        fulldataofrooms.switches["a" + (4 + 1).toString()]
-                            ["val"] = flag;
-                        dbref
-                            .child(user.uid)
-                            .child("rooms")
-                            .child(fulldataofrooms
-                                .roomidarray[fulldataofrooms.index])
-                            .child("circuit")
-                            .child(fulldataofrooms
-                                .boardidarray[fulldataofrooms.boardindex])
-                            .child("a" + (4 + 1).toString())
-                            .child("val")
-                            .set(flag);
-                      });
-                    },
-                  ),
-                )),
-              )
-            ],
-          ),
-        ),
+                            setState(() {
+                              int flag = 0;
+                              if (fulldataofrooms
+                                      .switches["a" + (4 + 1).toString()]["val"]
+                                      .toDouble() >
+                                  value) {
+                                flag = value.floor().toInt();
+                              } else {
+                                flag = value.ceil().toInt();
+                              }
+
+                              fulldataofrooms.switches["a" + (4 + 1).toString()]
+                                  ["val"] = flag;
+                              dbref
+                                  .child(user.uid)
+                                  .child("rooms")
+                                  .child(fulldataofrooms
+                                      .roomidarray[fulldataofrooms.index])
+                                  .child("circuit")
+                                  .child(fulldataofrooms
+                                      .boardidarray[fulldataofrooms.boardindex])
+                                  .child("a" + (4 + 1).toString())
+                                  .child("val")
+                                  .set(flag);
+                            });
+                          },
+                        ),
+                      )),
+                    )
+                  ],
+                ),
+              ),
       ),
     );
   }

@@ -10,6 +10,7 @@ import 'package:number_to_words/number_to_words.dart';
 class fulldataofrooms {
   static var indexlistmap = Map();
   static var roomidmap = Map();
+  static Map notation;
   static var boardid = Map();
   static var id = Map();
   static var roomidarray = [], boardidarray = [], array = Map();
@@ -26,7 +27,11 @@ class fulldataofrooms {
       "https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg";
   Future<void> fetchrooms() async {
     final dbref = FirebaseDatabase.instance.reference().child('Users');
-
+ 
+          await dbref
+              .child("notation")
+              .once()
+              .then((value) => notation = value.value);
     User user = FirebaseAuth.instance.currentUser;
 
     String name, type;
@@ -121,70 +126,77 @@ class fulldataofrooms {
   }
 
   Future<void> fetchfavourites() async {
-    favroomsarray.clear();
-    favroomsarray.add("Select");
-    favouriteroomscontents.clear();
-    final dbref = FirebaseDatabase.instance.reference().child('Users');
-    User user = FirebaseAuth.instance.currentUser;
+    try {
+      favroomsarray.clear();
+      favroomsarray.add("Select");
+      favouriteroomscontents.clear();
+       } catch (e) {}
+      final dbref = FirebaseDatabase.instance.reference().child('Users');
+      User user = FirebaseAuth.instance.currentUser;
 
-    await dbref.child(user.uid).child("favourites").once().then((snap) {
-      Map id = snap.value;
-      try {
-        for (final i in id.keys) {
-          if (id[i].length > 1) {
-            favroomsarray.add(i);
+      await dbref.child(user.uid).child("favourites").once().then((snap) {
+        Map id = snap.value;
+        try {
+          for (final i in id.keys) {
+            if (id[i].length > 1) {
+              favroomsarray.add(i);
 
-            favouriteroomscontents.addAll({i: id[i]});
-          } else {
-            dbref
-                .child(user.uid)
-                .child("favourites")
-                .child(i.toString())
-                .remove();
+              favouriteroomscontents.addAll({i: id[i]});
+            } else {
+              dbref
+                  .child(user.uid)
+                  .child("favourites")
+                  .child(i.toString())
+                  .remove();
+            }
           }
+          // Fluttertoast.showToast(msg: favouriteroomscontents.length.toString());
+        } catch (ex) {
+          print("Exception in fav maindata");
         }
-        // Fluttertoast.showToast(msg: favouriteroomscontents.length.toString());
-      } catch (ex) {
-        print("Exception in fav maindata");
-      }
-    });
+      });
+    
   }
 
   Future<void> fetchfavouritescontentdata() async {
-    final dbref = FirebaseDatabase.instance.reference().child('Users');
-    User user = FirebaseAuth.instance.currentUser;
-    favouritecontentnamesmap.clear();
-    path.clear();
-    try {
-      for (final i in favouriteroomscontents.keys) {
-        Map m = favouriteroomscontents[i];
-        var dummy = [];
+    
+      final dbref = FirebaseDatabase.instance.reference().child('Users');
+      User user = FirebaseAuth.instance.currentUser;
+      try {
+      favouritecontentnamesmap.clear();
+      path.clear();
+      } catch (e1) {}
+      try {
+        for (final i in favouriteroomscontents.keys) {
+          Map m = favouriteroomscontents[i];
+          var dummy = [];
 
-        for (final j in m.keys) {
-          if (j.toString() == "val") continue;
-          String s = m[j].toString();
-          var list = s.split(" ");
+          for (final j in m.keys) {
+            if (j.toString() == "val") continue;
+            String s = m[j].toString();
+            var list = s.split(" ");
 
-          //logic
-          await dbref
-              .child(user.uid)
-              .child("rooms")
-              .child(list[0])
-              .child("circuit")
-              .child(list[1])
-              .child(list[2])
-              .once()
-              .then((value) {
-            Map map = value.value;
-            dummy.add(map["name"]);
-            path.addAll({map["name"]: j});
-          });
+            //logic
+            await dbref
+                .child(user.uid)
+                .child("rooms")
+                .child(list[0])
+                .child("circuit")
+                .child(list[1])
+                .child(list[2])
+                .once()
+                .then((value) {
+              Map map = value.value;
+              dummy.add(map["name"]);
+              path.addAll({map["name"]: j});
+            });
+          }
+          favouritecontentnamesmap.addAll({i: dummy});
         }
-        favouritecontentnamesmap.addAll({i: dummy});
+      } catch (Ex) {
+        print("EXception in favourite content");
       }
-    } catch (Ex) {
-      print("EXception in favourite content");
-    }
+    
   }
 
   static Future<void> linktofav(String name) async {
@@ -245,20 +257,23 @@ class fulldataofrooms {
   }
 
   Future<void> fetchindex() async {
-    indexlistmap.clear();
-    indexlist.clear();
-    Map m1 = new Map();
-    //indexlist.clear();
+    try {
+      indexlistmap.clear();
+      indexlist.clear();
+       } catch (e) {}
+      Map m1 = new Map();
+      //indexlist.clear();
 
-    final dbref = FirebaseDatabase.instance.reference().child('Users');
-    User user = FirebaseAuth.instance.currentUser;
-    await dbref.child(user.uid).child("index").once().then((snap) {
-      m1 = snap.value;
-      indexlistmap = m1;
-      for (final k in m1.keys) {
-        indexlist.add(k);
-      }
-    });
+      final dbref = FirebaseDatabase.instance.reference().child('Users');
+      User user = FirebaseAuth.instance.currentUser;
+      await dbref.child(user.uid).child("index").once().then((snap) {
+        m1 = snap.value;
+        indexlistmap = m1;
+        for (final k in m1.keys) {
+          indexlist.add(k);
+        }
+      });
+   
   }
 
   Future<void> ChangeStatus(int state, int index) async {
@@ -331,7 +346,7 @@ class fulldataofrooms {
     String key = "";
     int flag = -1;
     var favlist = [];
-
+    String command = '';
     //
     /*var word_to_number = <String, num>{
       'one': 1,
@@ -345,12 +360,13 @@ class fulldataofrooms {
       'nine': 9,
       'ten': 10,
     };*/
-
-    await dbref.child(user.uid).child("favourites").once().then((snap) {
-      for (final k in snap.value.keys) {
-        favlist.add(k);
-      }
-    });
+    try {
+      await dbref.child(user.uid).child("favourites").once().then((snap) {
+        for (final k in snap.value.keys) {
+          favlist.add(k);
+        }
+      });
+    } catch (e1) {}
     print(favlist);
     if (true) {
       print("out");
@@ -359,12 +375,15 @@ class fulldataofrooms {
 
         if (flag == -1) {
           if (l[i] == "switch" || l[i] == "turn") {
+            command += l[i] + ' ';
             if (l[i + 1].toLowerCase() == "on" || l[l.length - 1] == "on") {
               flag = 1;
+              command += 'on' + ' ';
             } else if (l[i + 1].toLowerCase() == "off" ||
                 l[l.length - 1] == "off" ||
                 l[l.length - 1] == "of") {
               flag = 0;
+              command += 'off' + ' ';
             }
           }
         } else {
@@ -372,11 +391,7 @@ class fulldataofrooms {
           final dbref = FirebaseDatabase.instance.reference();
           User user = FirebaseAuth.instance.currentUser;
 
-          Map notation;
-          await dbref
-              .child("notation")
-              .once()
-              .then((value) => notation = value.value);
+         
 
           if (stopwords.contains(l[i])) {
           } else {
@@ -390,6 +405,7 @@ class fulldataofrooms {
               }
 
               key += s;
+              
               print("Converted" + s);
             } else {
               String p = l[i];
@@ -411,12 +427,14 @@ class fulldataofrooms {
               } else {
                 key += l[i];
               }
+              
             }
           }
         }
         print("final " + key);
       }
       print(key);
+      Fluttertoast.showToast(msg: "Running command " + command+key);
       key = key.trim();
       // return [flag.toString(), key];
       print(indexlist);

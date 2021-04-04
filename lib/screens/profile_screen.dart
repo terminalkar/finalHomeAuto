@@ -47,7 +47,8 @@ class profileState extends State<profile> {
     _mailcontroller.text = user.email;
     _idcontroller.text = user.uid;
     super.initState();
-    Fluttertoast.showToast(msg: "Loading please wait",toastLength: Toast.LENGTH_SHORT);
+    Fluttertoast.showToast(
+        msg: "Loading please wait", toastLength: Toast.LENGTH_SHORT);
   }
 
   Future<Void> getFirebaseImageFolder() async {
@@ -55,7 +56,6 @@ class profileState extends State<profile> {
         FirebaseStorage.instance.ref().child('advertisement');
     storageRef.listAll().then((result) async {
       result.items.forEach((Reference ref) async {
-
         String downloadURL =
             await FirebaseStorage.instance.ref(ref.fullPath).getDownloadURL();
         setState(() {
@@ -66,84 +66,85 @@ class profileState extends State<profile> {
     print(l);
   }
 
-    _imgFromCamera() async {
-  PickedFile image = await ImagePicker().getImage(
-    source: ImageSource.camera, imageQuality: 50
-  );
+  _imgFromCamera() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.camera, imageQuality: 50);
 
-  setState(() {
-    _image = image;
-  });
-}
+    setState(() {
+      _image = image;
+      profilepickflag = 1;
+    });
+  }
 
-_imgFromGallery() async {
-  PickedFile image = await ImagePicker().getImage(
-      source: ImageSource.gallery, imageQuality: 50
-  );
+  _imgFromGallery() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.gallery, imageQuality: 50);
 
-  setState(() {
-    _image = image;
-  });
-}
-    Future uploadPic(BuildContext context) async {
-      String fileName = basename(_image.path);
-      Reference firebaseStorageRef =
-          FirebaseStorage.instance.ref().child(fileName);
-      UploadTask uploadTask = firebaseStorageRef.putFile(File(_image.path));
-      TaskSnapshot taskSnapshot = await uploadTask;
+    setState(() {
+      _image = image;
+      profilepickflag = 1;
+    });
+  }
 
-      String imagedownloadurl = await taskSnapshot.ref.getDownloadURL();
+  Future uploadPic(BuildContext context) async {
+    String fileName = basename(_image.path);
+    Reference firebaseStorageRef =
+        FirebaseStorage.instance.ref().child(fileName);
+    UploadTask uploadTask = firebaseStorageRef.putFile(File(_image.path));
+    TaskSnapshot taskSnapshot = await uploadTask;
 
-      dbref
-          .child("Users")
-          .child(user.uid)
-          .child("info")
-          .child("profile")
-          .set(imagedownloadurl);
-      
-      setState(() {
-        fulldataofrooms.uploadedimageurl = uploadedurl = imagedownloadurl;
+    String imagedownloadurl = await taskSnapshot.ref.getDownloadURL();
 
-        print("Profile Picture uploaded");
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
-      });
-    }
-void _showPicker(context) {
-  showModalBottomSheet(
-      context: context,
-      builder: (BuildContext bc) {
-        return SafeArea(
-          child: Container(
-            child: new Wrap(
-              children: <Widget>[
-                new ListTile(
-                    leading: new Icon(Icons.photo_library),
-                    title: new Text('Photo Library'),
+    dbref
+        .child("Users")
+        .child(user.uid)
+        .child("info")
+        .child("profile")
+        .set(imagedownloadurl);
+
+    setState(() {
+      fulldataofrooms.uploadedimageurl = uploadedurl = imagedownloadurl;
+
+      print("Profile Picture uploaded");
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
+    });
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Photo Library'),
+                      onTap: () {
+                        _imgFromGallery();
+
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
                     onTap: () {
-                      _imgFromGallery();
+                      _imgFromCamera();
+
                       Navigator.of(context).pop();
-                    }),
-                new ListTile(
-                  leading: new Icon(Icons.photo_camera),
-                  title: new Text('Camera'),
-                  onTap: () {
-                    _imgFromCamera();
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      }
-    );
-}
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
-   
-
-    
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

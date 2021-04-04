@@ -19,6 +19,20 @@ class _favouriteState extends State<favourite> {
   bool pressed = false;
   bool pressed1 = false;
   bool pressed3 = false;
+  bool show = true;
+  void fetch() async {
+    fulldataofrooms f1 = new fulldataofrooms();
+    await f1.fetchfavourites();
+    await f1.fetchfavouritescontentdata();
+    setState(() {
+      show = false;
+    });
+  }
+
+  @override
+  void initState() {
+    fetch();
+  }
 
   String globalvalue;
   final dbref = FirebaseDatabase.instance.reference().child('Users');
@@ -75,7 +89,7 @@ class _favouriteState extends State<favourite> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: fulldataofrooms.favroomsarray.length - 1 <= 0
+      body:show?Center(child: CircularProgressIndicator()): fulldataofrooms.favroomsarray.length - 1 <= 0
           ? Container(
               child: Center(child: Text("No favourites added")),
             )
