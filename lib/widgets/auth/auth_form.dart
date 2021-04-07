@@ -30,27 +30,24 @@ class _AuthFormState extends State<AuthForm> {
   var _userMobile = '';
   var _name = '';
   var _userPassword = '';
-  FocusNode focusNode2;
-  FocusNode focusNode3;
-  FocusNode focusNode4;
-  FocusNode focusNode5;
-  FocusNode focusNode6;
-  FocusNode focusNode7;
-  void node() {
-    focusNode2 = new FocusNode();
-    focusNode3 = new FocusNode();
-    focusNode4 = new FocusNode();
-    focusNode5 = new FocusNode();
-    focusNode6 = new FocusNode();
-    focusNode7 = new FocusNode();
-  }
+  FocusNode focusNode2 = new FocusNode();
+ FocusNode focusNode3= new FocusNode();
+ FocusNode focusNode4= new FocusNode();
+FocusNode focusNode5
+  = new FocusNode();
+
+  FocusNode focusNode7= new FocusNode();
+FocusNode focusNode6= new FocusNode();
+ 
+ 
+  
+ 
 
   GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
   void _trySubmit() {
-    node();
+   
     //removes keyboard after form submission
     FocusScope.of(context).unfocus();
-
     if (_isLogin && _formkey.currentState.validate()) {
       _formkey.currentState.save();
       widget.submitFn(
@@ -77,7 +74,7 @@ class _AuthFormState extends State<AuthForm> {
   @override
   void initState() {
     // TODO: implement initState
-    node();
+
     super.initState();
   }
 

@@ -27,11 +27,12 @@ class fulldataofrooms {
       "https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg";
   Future<void> fetchrooms() async {
     final dbref = FirebaseDatabase.instance.reference().child('Users');
- 
-          await dbref
-              .child("notation")
-              .once()
-              .then((value) => notation = value.value);
+
+    await FirebaseDatabase.instance
+        .reference()
+        .child("notation")
+        .once()
+        .then((value) => notation = value.value);
     User user = FirebaseAuth.instance.currentUser;
 
     String name, type;
@@ -130,73 +131,70 @@ class fulldataofrooms {
       favroomsarray.clear();
       favroomsarray.add("Select");
       favouriteroomscontents.clear();
-       } catch (e) {}
-      final dbref = FirebaseDatabase.instance.reference().child('Users');
-      User user = FirebaseAuth.instance.currentUser;
+    } catch (e) {}
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
 
-      await dbref.child(user.uid).child("favourites").once().then((snap) {
-        Map id = snap.value;
-        try {
-          for (final i in id.keys) {
-            if (id[i].length > 1) {
-              favroomsarray.add(i);
+    await dbref.child(user.uid).child("favourites").once().then((snap) {
+      Map id = snap.value;
+      try {
+        for (final i in id.keys) {
+          if (id[i].length > 1) {
+            favroomsarray.add(i);
 
-              favouriteroomscontents.addAll({i: id[i]});
-            } else {
-              dbref
-                  .child(user.uid)
-                  .child("favourites")
-                  .child(i.toString())
-                  .remove();
-            }
+            favouriteroomscontents.addAll({i: id[i]});
+          } else {
+            dbref
+                .child(user.uid)
+                .child("favourites")
+                .child(i.toString())
+                .remove();
           }
-          // Fluttertoast.showToast(msg: favouriteroomscontents.length.toString());
-        } catch (ex) {
-          print("Exception in fav maindata");
         }
-      });
-    
+        // Fluttertoast.showToast(msg: favouriteroomscontents.length.toString());
+      } catch (ex) {
+        print("Exception in fav maindata");
+      }
+    });
   }
 
   Future<void> fetchfavouritescontentdata() async {
-    
-      final dbref = FirebaseDatabase.instance.reference().child('Users');
-      User user = FirebaseAuth.instance.currentUser;
-      try {
+    final dbref = FirebaseDatabase.instance.reference().child('Users');
+    User user = FirebaseAuth.instance.currentUser;
+    try {
       favouritecontentnamesmap.clear();
       path.clear();
-      } catch (e1) {}
-      try {
-        for (final i in favouriteroomscontents.keys) {
-          Map m = favouriteroomscontents[i];
-          var dummy = [];
+    } catch (e1) {}
+    try {
+      for (final i in favouriteroomscontents.keys) {
+        Map m = favouriteroomscontents[i];
+        var dummy = [];
 
-          for (final j in m.keys) {
-            if (j.toString() == "val") continue;
-            String s = m[j].toString();
-            var list = s.split(" ");
+        for (final j in m.keys) {
+          if (j.toString() == "val") continue;
+          String s = m[j].toString();
+          var list = s.split(" ");
 
-            //logic
-            await dbref
-                .child(user.uid)
-                .child("rooms")
-                .child(list[0])
-                .child("circuit")
-                .child(list[1])
-                .child(list[2])
-                .once()
-                .then((value) {
-              Map map = value.value;
-              dummy.add(map["name"]);
-              path.addAll({map["name"]: j});
-            });
-          }
-          favouritecontentnamesmap.addAll({i: dummy});
+          //logic
+          await dbref
+              .child(user.uid)
+              .child("rooms")
+              .child(list[0])
+              .child("circuit")
+              .child(list[1])
+              .child(list[2])
+              .once()
+              .then((value) {
+            Map map = value.value;
+            dummy.add(map["name"]);
+            path.addAll({map["name"]: j});
+          });
         }
-      } catch (Ex) {
-        print("EXception in favourite content");
+        favouritecontentnamesmap.addAll({i: dummy});
       }
-    
+    } catch (Ex) {
+      print("EXception in favourite content");
+    }
   }
 
   static Future<void> linktofav(String name) async {
@@ -260,10 +258,10 @@ class fulldataofrooms {
     try {
       indexlistmap.clear();
       indexlist.clear();
-       } catch (e) {}
-      Map m1 = new Map();
-      //indexlist.clear();
-
+    } catch (e) {}
+    Map m1 = new Map();
+    //indexlist.clear();
+    try {
       final dbref = FirebaseDatabase.instance.reference().child('Users');
       User user = FirebaseAuth.instance.currentUser;
       await dbref.child(user.uid).child("index").once().then((snap) {
@@ -273,7 +271,7 @@ class fulldataofrooms {
           indexlist.add(k);
         }
       });
-   
+    } catch (e) {}
   }
 
   Future<void> ChangeStatus(int state, int index) async {
@@ -391,8 +389,6 @@ class fulldataofrooms {
           final dbref = FirebaseDatabase.instance.reference();
           User user = FirebaseAuth.instance.currentUser;
 
-         
-
           if (stopwords.contains(l[i])) {
           } else {
             if (isNumeric(l[i])) {
@@ -405,7 +401,7 @@ class fulldataofrooms {
               }
 
               key += s;
-              
+
               print("Converted" + s);
             } else {
               String p = l[i];
@@ -427,14 +423,13 @@ class fulldataofrooms {
               } else {
                 key += l[i];
               }
-              
             }
           }
         }
         print("final " + key);
       }
       print(key);
-      Fluttertoast.showToast(msg: "Running command " + command+key);
+      Fluttertoast.showToast(msg: "Running command " + command + key);
       key = key.trim();
       // return [flag.toString(), key];
       print(indexlist);

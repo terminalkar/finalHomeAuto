@@ -733,7 +733,10 @@ _Rename(BuildContext context, int index) async {
                         validator: validationofthename,
                         textAlign: TextAlign.center,
                         controller: name,
-                        onChanged: (val) {},
+                        onChanged: (val) {
+                          val =
+                              val.toString().replaceAll(new RegExp(r'\W'), "");
+                        },
                         cursorColor: Colors.black87,
                         focusNode: focusNode,
                         style: TextStyle(
@@ -842,6 +845,8 @@ _Rename(BuildContext context, int index) async {
                                   });
                                   if (room != "Select Type" &&
                                       name.text != "") {
+                                    name.text = name.text
+                                        .replaceAll(new RegExp(r'\W'), "");
                                     try {
                                       await dbref
                                           .child(user.uid)
@@ -945,6 +950,7 @@ _Rename(BuildContext context, int index) async {
 }
 
 String validationofthename(String value) {
+  value=value.replaceAll(new RegExp(r'\W'), "");
   Pattern pattern = r'^[a-zA-Z_ ]*$';
   RegExp regex = new RegExp(pattern);
   print(fulldataofrooms.indexlist);
