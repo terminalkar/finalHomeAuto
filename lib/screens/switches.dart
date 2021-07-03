@@ -209,6 +209,12 @@ class _switchesState extends State<switches> {
                                               fulldataofrooms.switches["a" +
                                                       (index + 1).toString()]
                                                   ["val"] = flag;
+                                                  // fulldataofrooms.boardid=
+                                                  
+                                                      fulldataofrooms.boardid[
+                                                          fulldataofrooms
+                                                                  .boardidarray[
+                                                              fulldataofrooms.boardindex]]=fulldataofrooms.switches;
                                               dbref
                                                   .child(user.uid)
                                                   .child("rooms")
@@ -277,9 +283,7 @@ class _switchesState extends State<switches> {
                                             ],
                                           ),
 
-                                          // SizedBox(
-                                          //   height: SizeConfig.widthMultiplier * 2.5,
-                                          // ),
+                                          
                                           Center(
                                             child: Container(
                                               height: 7 *
