@@ -286,13 +286,16 @@ class _CircuittState extends State<Circuit> {
                                                   setState(() {
                                                     pressed = true;
                                                   });
+                                                  fulldataofrooms.boardindex =
+                                                      index;
+                                                  await fulldataofrooms
+                                                      .fetchswitchstate();
                                                   fulldataofrooms.switches =
                                                       fulldataofrooms.boardid[
                                                           fulldataofrooms
                                                                   .boardidarray[
                                                               index]];
-                                                  fulldataofrooms.boardindex =
-                                                      index;
+
                                                   setState(() {
                                                     pressed = false;
                                                   });

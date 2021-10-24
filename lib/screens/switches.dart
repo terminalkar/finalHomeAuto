@@ -23,7 +23,7 @@ class _switchesState extends State<switches> {
   var edit = List.filled(5, false);
   var iconStr = false, pressed = false;
   Icon obj;
-  bool show = true;
+  bool show = true, slide = true;
   var icnstr = "assets/kitchen.png";
   var image = new Map();
   var iconlist = new Map();
@@ -115,6 +115,10 @@ class _switchesState extends State<switches> {
     });
   }
 
+  Future<bool> stored() async {
+    return slide;
+  }
+
   @override
   void initState() {
     addicon();
@@ -174,15 +178,18 @@ class _switchesState extends State<switches> {
                                             setState(() {
                                               int flag = 0;
                                               pressed = true;
-                                              if (fulldataofrooms.switches["a" +
-                                                      (index + 1)
-                                                          .toString()]["val"] ==
+                                              if (fulldataofrooms.switches[
+                                                          "a" +
+                                                              (index + 1)
+                                                                  .toString()]
+                                                      ["val"] ==
                                                   0) {
                                                 flag = 1;
                                               }
                                               if (flag == 0) {
                                                 fulldataofrooms.linktofav(
-                                                    fulldataofrooms.roomidarray[
+                                                    fulldataofrooms
+                                                                .roomidarray[
                                                             fulldataofrooms
                                                                 .index] +
                                                         fulldataofrooms
@@ -190,11 +197,13 @@ class _switchesState extends State<switches> {
                                                             fulldataofrooms
                                                                 .boardindex] +
                                                         "a" +
-                                                        (index + 1).toString());
+                                                        (index + 1)
+                                                            .toString());
                                               }
-                                              if (fulldataofrooms.switches["a" +
-                                                          (index + 1)
-                                                              .toString()]
+                                              if (fulldataofrooms.switches[
+                                                          "a" +
+                                                              (index + 1)
+                                                                  .toString()]
                                                       ["icon"] ==
                                                   "null") {
                                                 icnstr = "assets/logo.png";
@@ -209,12 +218,13 @@ class _switchesState extends State<switches> {
                                               fulldataofrooms.switches["a" +
                                                       (index + 1).toString()]
                                                   ["val"] = flag;
-                                                  // fulldataofrooms.boardid=
-                                                  
-                                                      fulldataofrooms.boardid[
+
+                                              fulldataofrooms.boardid[
+                                                      fulldataofrooms
+                                                              .boardidarray[
                                                           fulldataofrooms
-                                                                  .boardidarray[
-                                                              fulldataofrooms.boardindex]]=fulldataofrooms.switches;
+                                                              .boardindex]] =
+                                                  fulldataofrooms.switches;
                                               dbref
                                                   .child(user.uid)
                                                   .child("rooms")
@@ -238,7 +248,8 @@ class _switchesState extends State<switches> {
                                         children: [
                                           Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment
+                                                    .spaceBetween,
                                             children: [
                                               IconButton(
                                                 icon: Icon(
@@ -255,8 +266,9 @@ class _switchesState extends State<switches> {
                                                             context, index);
                                                         edit = List.filled(
                                                             5, false);
-                                                        focusnode = List.filled(
-                                                            5, false);
+                                                        focusnode =
+                                                            List.filled(
+                                                                5, false);
                                                       },
                                               ),
                                               IconButton(
@@ -283,7 +295,6 @@ class _switchesState extends State<switches> {
                                             ],
                                           ),
 
-                                          
                                           Center(
                                             child: Container(
                                               height: 7 *
@@ -297,11 +308,13 @@ class _switchesState extends State<switches> {
                                                         "null"
                                                     ? AssetImage(
                                                         "assets/logo.png")
-                                                    : AssetImage(iconlist[fulldataofrooms
-                                                            .switches["a" + (index + 1).toString()]
-                                                        ["icon"]][fulldataofrooms
-                                                            .switches["a" + (index + 1).toString()]
-                                                        ["val"]]),
+                                                    : AssetImage(iconlist[
+                                                            fulldataofrooms
+                                                                    .switches["a" + (index + 1).toString()]
+                                                                ["icon"]][
+                                                        fulldataofrooms
+                                                                .switches["a" + (index + 1).toString()]
+                                                            ["val"]]),
                                               ),
                                             ),
                                           ),
@@ -398,7 +411,8 @@ class _switchesState extends State<switches> {
                               },
                               topLabelStyle: TextStyle(
                                   color: Color(0xff0792ef),
-                                  fontSize: SizeConfig.heightMultiplier * 2.5),
+                                  fontSize:
+                                      SizeConfig.heightMultiplier * 2.5),
                             ),
                           ),
                           initialValue: fulldataofrooms
@@ -407,12 +421,16 @@ class _switchesState extends State<switches> {
                           min: 0,
                           max: 5,
                           onChange: (double value) {
-                            print(value);
+                            // print(value);
 
                             setState(() {
+                              slide = false;
+
+                              Fluttertoast.showToast(msg: "just a sec");
                               int flag = 0;
                               if (fulldataofrooms
-                                      .switches["a" + (4 + 1).toString()]["val"]
+                                      .switches["a" + (4 + 1).toString()]
+                                          ["val"]
                                       .toDouble() >
                                   value) {
                                 flag = value.floor().toInt();
@@ -420,19 +438,27 @@ class _switchesState extends State<switches> {
                                 flag = value.ceil().toInt();
                               }
 
-                              fulldataofrooms.switches["a" + (4 + 1).toString()]
+                              fulldataofrooms
+                                      .switches["a" + (4 + 1).toString()]
                                   ["val"] = flag;
+                                   fulldataofrooms.boardid[
+                                                      fulldataofrooms
+                                                              .boardidarray[
+                                                          fulldataofrooms
+                                                              .boardindex]] =
+                                                  fulldataofrooms.switches;
                               dbref
                                   .child(user.uid)
                                   .child("rooms")
                                   .child(fulldataofrooms
                                       .roomidarray[fulldataofrooms.index])
                                   .child("circuit")
-                                  .child(fulldataofrooms
-                                      .boardidarray[fulldataofrooms.boardindex])
+                                  .child(fulldataofrooms.boardidarray[
+                                      fulldataofrooms.boardindex])
                                   .child("a" + (4 + 1).toString())
                                   .child("val")
                                   .set(flag);
+                              slide = true;
                             });
                           },
                         ),
@@ -737,10 +763,10 @@ _Rename(BuildContext context, int index) async {
                         validator: validationofthename,
                         textAlign: TextAlign.center,
                         controller: name,
-                        onChanged: (val) {
-                          val =
-                              val.toString().replaceAll(new RegExp(r'\W'), "");
-                        },
+                        // onChanged: (val) {
+                        //   val =
+                        //       val.toString().replaceAll(new RegExp(r'\W'), "");
+                        // },
                         cursorColor: Colors.black87,
                         focusNode: focusNode,
                         style: TextStyle(
@@ -849,8 +875,8 @@ _Rename(BuildContext context, int index) async {
                                   });
                                   if (room != "Select Type" &&
                                       name.text != "") {
-                                    name.text = name.text
-                                        .replaceAll(new RegExp(r'\W'), "");
+                                    // name.text = name.text
+                                    //     .replaceAll(new RegExp(r'\W'), "");
                                     try {
                                       await dbref
                                           .child(user.uid)
@@ -877,7 +903,7 @@ _Rename(BuildContext context, int index) async {
                                       dbref
                                           .child(user.uid)
                                           .child("index")
-                                          .child(name.text)
+                                          .child(name.text.replaceAll(new RegExp(r'\W'), ""))
                                           .set(fulldataofrooms.roomidarray[
                                                   fulldataofrooms.index] +
                                               " " +
@@ -954,7 +980,7 @@ _Rename(BuildContext context, int index) async {
 }
 
 String validationofthename(String value) {
-  value=value.replaceAll(new RegExp(r'\W'), "");
+  // value = value.replaceAll(new RegExp(r'\W'), "");
   Pattern pattern = r'^[a-zA-Z_ ]*$';
   RegExp regex = new RegExp(pattern);
   print(fulldataofrooms.indexlist);

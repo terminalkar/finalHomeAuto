@@ -1,11 +1,11 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'package:flutter/services.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:flutter/widgets.dart';
@@ -349,6 +349,14 @@ class profileState extends State<profile> {
                                           setState(() {});
                                         },
                                       ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.copy_outlined),
+                                      onPressed: () {
+                                        Clipboard.setData(ClipboardData(
+                                            text: _idcontroller.text));
+                                        Fluttertoast.showToast(msg: "UId copied");
+                                      },
                                     ),
                                   ],
                                 )),

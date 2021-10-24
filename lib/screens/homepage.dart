@@ -80,48 +80,48 @@ class _HomepageState extends State<Homepage>
   }
 
 // voice recognition speak
-  void _listen() async {
-    if (!_speech.isListening) {
-      bool available = await _speech.initialize(
-        onStatus: (val) {
-          print('onStatus: $val');
+  // void _listen() async {
+  //   if (!_speech.isListening) {
+  //     bool available = await _speech.initialize(
+  //       onStatus: (val) {
+  //         print('onStatus: $val');
 
-          if (val == "listening") {
-            setState(() => _isListening = true);
-          } else {
-            setState(() => _isListening = false);
-          }
-        },
-        onError: (val) => print('onError: $val'),
-      );
-      if (available) {
-        _speech.listen(
-            onResult: (val) => setState(() {
-                  _text = val.recognizedWords;
-                  print(_text);
+  //         if (val == "listening") {
+  //           setState(() => _isListening = true);
+  //         } else {
+  //           setState(() => _isListening = false);
+  //         }
+  //       },
+  //       onError: (val) => print('onError: $val'),
+  //     );
+  //     if (available) {
+  //       _speech.listen(
+  //           onResult: (val) => setState(() {
+  //                 _text = val.recognizedWords;
+  //                 print(_text);
 
-                  Fluttertoast.showToast(msg: "Converting command " );
-                  if (val.hasConfidenceRating && val.confidence > 0) {
-                    _confidence = val.confidence;
-                  }
-                  fulldataofrooms f = new fulldataofrooms();
-                  f.solvequery(_text);
-                }),
-            listenFor: Duration(seconds: 10),
-            partialResults: false,
-            cancelOnError: true,
-            listenMode: stt.ListenMode.confirmation);
-      } else {
-        setState(() => _isListening = false);
-        _speech.stop();
-        print(_isListening);
-      }
-    } else {
-      setState(() => _isListening = false);
-      _speech.stop();
-      print(_isListening);
-    }
-  }
+  //                 Fluttertoast.showToast(msg: "Converting command " );
+  //                 if (val.hasConfidenceRating && val.confidence > 0) {
+  //                   _confidence = val.confidence;
+  //                 }
+  //                 fulldataofrooms f = new fulldataofrooms();
+  //                 f.solvequery(_text);
+  //               }),
+  //           listenFor: Duration(seconds: 10),
+  //           partialResults: false,
+  //           cancelOnError: true,
+  //           listenMode: stt.ListenMode.confirmation);
+  //     } else {
+  //       setState(() => _isListening = false);
+  //       _speech.stop();
+  //       print(_isListening);
+  //     }
+  //   } else {
+  //     setState(() => _isListening = false);
+  //     _speech.stop();
+  //     print(_isListening);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -134,20 +134,7 @@ class _HomepageState extends State<Homepage>
                 'Home',
                 style: TextStyle(color: Colors.white),
               ),
-              // actions: [
-              //   AvatarGlow(
-              //       animate: _isListening,
-              //       glowColor: Theme.of(context).primaryColor,
-              //       endRadius: SizeConfig.widthMultiplier * 8,
-              //       duration: const Duration(milliseconds: 2000),
-              //       repeatPauseDuration: const Duration(milliseconds: 100),
-              //       repeat: true,
-              //       child: IconButton(
-              //         icon: Icon(
-              //             _speech.isListening ? Icons.mic : Icons.mic_none),
-              //         onPressed: _listen,
-              //       ))
-              // ]
+             
             ),
 
             ////Drawer
@@ -241,57 +228,7 @@ class _HomepageState extends State<Homepage>
                                             builder: (context) => profile()));
                                   }),
                       ),
-                      // new Divider(),
-                      // Card(
-                      //   child: new ListTile(
-                      //       title: Row(
-                      //         children: <Widget>[
-                      //           Padding(
-                      //             padding: const EdgeInsets.fromLTRB(
-                      //                 2.0, 0.0, 10.0, 0),
-                      //             child: new Icon(
-                      //               Icons.thumb_up,
-                      //               color: Color(0xff79848b),
-                      //               size: SizeConfig.imageSizeMultiplier * 5,
-                      //             ),
-                      //           ),
-                      //           new Text(
-                      //             "Favourites",
-                      //             style: TextStyle(
-                      //                 fontFamily: "Amelia-Basic-Light",
-                      //                 fontSize: SizeConfig.textMultiplier * 2.5,
-                      //                 color: Color(0xff79848b)),
-                      //           ),
-                      //         ],
-                      //       ),
-                      //       trailing: Icon(
-                      //         Icons.arrow_right,
-                      //         color: Color(0xff79848b),
-                      //       ),
-                      //       onTap: pressed
-                      //           ? null
-                      //           : () async {
-                      //               setState(() {
-                      //                 pressed = true;
-                      //               });
-                      //               fulldataofrooms f1 = new fulldataofrooms();
-                      //               await f1.fetchfavourites();
-                      //               await f1.fetchfavouritescontentdata();
-
-                      //               if (_scaffoldKey.currentState.isDrawerOpen) {
-                      //                 _scaffoldKey.currentState.openEndDrawer();
-                      //               } else
-                      //                 _scaffoldKey.currentState.openDrawer();
-                      //               setState(() {
-                      //                 pressed = false;
-                      //               });
-                      //               Navigator.push(
-                      //                   context,
-                      //                   MaterialPageRoute(
-                      //                       builder: (context) => favourite()));
-                      //             }),
-                      // ),
-                      // new Divider(),
+                     
                       Card(
                         child: new ListTile(
                             title: Row(
@@ -629,20 +566,20 @@ class _HomepageState extends State<Homepage>
 
                       // Right Tab bar icons
 
-                      AvatarGlow(
-                          animate: _isListening,
-                          glowColor: Theme.of(context).primaryColor,
-                          endRadius: SizeConfig.widthMultiplier * 9,
-                          duration: const Duration(milliseconds: 2000),
-                          repeatPauseDuration:
-                              const Duration(milliseconds: 100),
-                          repeat: true,
-                          child: IconButton(
-                            icon: Icon(_speech.isListening
-                                ? Icons.mic
-                                : Icons.mic_none),
-                            onPressed: _listen,
-                          )),
+                      // AvatarGlow(
+                      //     animate: _isListening,
+                      //     glowColor: Theme.of(context).primaryColor,
+                      //     endRadius: SizeConfig.widthMultiplier * 9,
+                      //     duration: const Duration(milliseconds: 2000),
+                      //     repeatPauseDuration:
+                      //         const Duration(milliseconds: 100),
+                      //     repeat: true,
+                      //     child: IconButton(
+                      //       icon: Icon(_speech.isListening
+                      //           ? Icons.mic
+                      //           : Icons.mic_none),
+                      //       onPressed: _listen,
+                      //     )),
                     ]),
               ),
             )));
