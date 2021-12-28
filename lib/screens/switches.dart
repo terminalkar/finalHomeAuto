@@ -130,7 +130,7 @@ class _switchesState extends State<switches> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        resizeToAvoidBottomPadding: false,
+        //resizeToAvoidBottomPadding: false,
         backgroundColor: Colors.white,
         appBar: AppBar(
           leading: IconButton(
@@ -391,18 +391,20 @@ class _switchesState extends State<switches> {
                         width: 55 * SizeConfig.widthMultiplier,
                         child: SleekCircularSlider(
                           appearance: CircularSliderAppearance(
-                            animDurationMultiplier: 2.0,
+                            animDurationMultiplier: 1.0,
                             size: 180,
                             startAngle: 210,
                             angleRange: 300,
                             customWidths: CustomSliderWidths(
-                              progressBarWidth: 10,
+                              progressBarWidth: 20,
                             ),
                             customColors: CustomSliderColors(
                               hideShadow: false,
-                              trackColor: Color(0xff79848b),
-                              progressBarColor: Colors.blue[300],
-                              shadowMaxOpacity: 10,
+                              trackColors: [Color(0xffFFF8CB), Color(0xffB9FFFF)],
+                              progressBarColors: [Color(0xffFFC84B), Color(0xff00BFD5)],
+                              shadowColor: Color(0xff5FC7B0),
+                              dynamicGradient: true,
+                              shadowMaxOpacity: 0.05
                             ),
                             infoProperties: InfoProperties(
                               topLabelText: 'Regulator Speed',
@@ -420,13 +422,13 @@ class _switchesState extends State<switches> {
                               .toDouble(),
                           min: 0,
                           max: 5,
-                          onChange: (double value) {
+                          onChangeEnd: (double value) {
                             // print(value);
 
                             setState(() {
                               slide = false;
 
-                              Fluttertoast.showToast(msg: "just a sec");
+                              //Fluttertoast.showToast(msg: "just a sec");
                               int flag = 0;
                               if (fulldataofrooms
                                       .switches["a" + (4 + 1).toString()]

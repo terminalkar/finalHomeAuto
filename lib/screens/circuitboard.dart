@@ -72,7 +72,7 @@ class _CircuittState extends State<Circuit> {
   Widget build(BuildContext context) {
     return new Scaffold(
         resizeToAvoidBottomInset: false,
-        resizeToAvoidBottomPadding: true,
+        //resizeToAvoidBottomInset: true,
         appBar: AppBar(
           leading: IconButton(
               icon: Icon(FontAwesomeIcons.arrowLeft, color: Colors.white),

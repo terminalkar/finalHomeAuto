@@ -39,6 +39,11 @@ class fulldataofrooms {
 
     //getting name
 
+    dbref.child(user.uid).child("rooms").onChildChanged.listen((event){
+    print('Triggered  -- CHANGED -- friend info');
+    dbref.child(user.uid).child("info").child("updateFlag").set(1);
+  });
+  
     //getting image url
     try {
       await dbref.child(user.uid).child("info").once().then((value) {
