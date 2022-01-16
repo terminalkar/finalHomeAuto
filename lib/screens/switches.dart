@@ -176,6 +176,7 @@ class _switchesState extends State<switches> {
                                         ? null
                                         : () {
                                             setState(() {
+                                              fulldataofrooms.changed = false;
                                               int flag = 0;
                                               pressed = true;
                                               if (fulldataofrooms.switches[
@@ -877,6 +878,7 @@ _Rename(BuildContext context, int index) async {
                                   });
                                   if (room != "Select Type" &&
                                       name.text != "") {
+                                        fulldataofrooms.changed = true;
                                     // name.text = name.text
                                     //     .replaceAll(new RegExp(r'\W'), "");
                                     try {

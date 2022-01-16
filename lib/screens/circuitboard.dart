@@ -7,7 +7,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:home_automation_app/responsive/Screensize.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_automation_app/screens/main_data.dart';
-import 'package:home_automation_app/screens/main_data.dart';
 import 'package:home_automation_app/screens/switches.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -144,6 +143,7 @@ class _CircuittState extends State<Circuit> {
                                               : () async {
                                                   setState(() {
                                                     pressed = true;
+                                                    fulldataofrooms.changed = true;
                                                   });
                                                   await dbref
                                                       .child(user.uid)
@@ -475,6 +475,7 @@ class _CircuittState extends State<Circuit> {
                                     });
 
                                     if (id.text != "") {
+                                       fulldataofrooms.changed = true;
                                       String noofboards;
                                       int max = 0;
                                       for (int i = 0;

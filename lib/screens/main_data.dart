@@ -23,6 +23,7 @@ class fulldataofrooms {
   static var favouritecontentnamesmap = Map();
   static var path = Map();
   static String profilename = "default";
+  static bool changed = false;
   static String uploadedimageurl =
       "https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg";
   Future<void> fetchrooms() async {
@@ -37,12 +38,45 @@ class fulldataofrooms {
 
     String name, type;
 
-    //getting name
-
+      //flag room
     dbref.child(user.uid).child("rooms").onChildChanged.listen((event){
-    print('Triggered  -- CHANGED -- friend info');
+      if(changed){
+        print('chnaged room');
+        dbref.child(user.uid).child("info").child("updateFlag").set(1);
+      }
+  });
+
+      dbref.child(user.uid).child("rooms").onChildAdded.listen((event){
+      print('added room');
+      dbref.child(user.uid).child("info").child("updateFlag").set(1);
+    });
+
+    dbref.child(user.uid).child("rooms").onChildRemoved.listen((event){
+    print('removed room');
     dbref.child(user.uid).child("info").child("updateFlag").set(1);
   });
+     //flag fav
+
+    dbref.child(user.uid).child("favourites").onChildChanged.listen((event){
+      if(changed){
+        print('changed fav');
+        dbref.child(user.uid).child("info").child("updateFlag").set(1);
+      }
+    
+  });
+
+    dbref.child(user.uid).child("favourites").onChildAdded.listen((event){
+    print('added fav');
+    dbref.child(user.uid).child("info").child("updateFlag").set(1);
+  });
+
+
+    dbref.child(user.uid).child("favourites").onChildRemoved.listen((event){
+    print('removed fav');
+    dbref.child(user.uid).child("info").child("updateFlag").set(1);
+  });
+
+  
   
     //getting image url
     try {

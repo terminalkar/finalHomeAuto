@@ -262,6 +262,7 @@ class _favouriteState extends State<favourite> {
                                           iconOn: Icons.lightbulb_outline,
                                           iconOff: Icons.power_settings_new,
                                           onChanged: (bool status) async {
+                                             fulldataofrooms.changed = false;
                                             print(
                                                 'turned ${(status) ? 'on' : 'off'}');
                                             int state = status ? 1 : 0;
