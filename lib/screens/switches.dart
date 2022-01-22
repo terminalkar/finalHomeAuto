@@ -592,7 +592,7 @@ class _switchesState extends State<switches> {
                               'Submit',
                               style: TextStyle(
                                 fontFamily: "Amelia-Basic-Light",
-                                fontSize: 2.5 * SizeConfig.textMultiplier,
+                                fontSize: 2.4 * SizeConfig.textMultiplier,
                                 color: Color(0xff79848b),
                               ),
                             ),
@@ -644,6 +644,7 @@ class _switchesState extends State<switches> {
                                               switchh);
 
                                       //change
+                                      dbref.child(user.uid).child("info").child("updateFlag").set(1);
                                       setState(() {
                                         dropdownfavouriteroom = "Select";
                                       });
@@ -652,6 +653,8 @@ class _switchesState extends State<switches> {
                                     }
                                     setState(() {
                                       pressed = false;
+
+                                      
                                       print("aaya");
                                       Navigator.pop(context);
                                     });
@@ -679,7 +682,7 @@ class _switchesState extends State<switches> {
                               'Cancel',
                               style: TextStyle(
                                 fontFamily: "Amelia-Basic-Light",
-                                fontSize: SizeConfig.textMultiplier * 2.5,
+                                fontSize: SizeConfig.textMultiplier * 2.4,
                                 color: Color(0xff79848b),
                               ),
                             ),

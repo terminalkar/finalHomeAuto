@@ -734,7 +734,7 @@ class _HomepageState extends State<Homepage>
                             'Submit',
                             style: TextStyle(
                               fontFamily: "Amelia-Basic-Light",
-                              fontSize: SizeConfig.textMultiplier * 2.5,
+                              fontSize: SizeConfig.textMultiplier * 2.4,
                               color: Color(0xff79848b),
                             ),
                           ),
@@ -812,7 +812,7 @@ class _HomepageState extends State<Homepage>
                           'Cancel',
                           style: TextStyle(
                             fontFamily: "Amelia-Basic-Light",
-                            fontSize: SizeConfig.textMultiplier * 2.5,
+                            fontSize: SizeConfig.textMultiplier * 2.4,
                             color: Color(0xff79848b),
                           ),
                         ),

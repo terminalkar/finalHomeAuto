@@ -228,7 +228,7 @@ class _CircuittState extends State<Circuit> {
                                             "Cancel",
                                             style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 2.5 *
+                                                fontSize: 2.4 *
                                                     SizeConfig.textMultiplier),
                                           ),
                                           onPressed: pressed
@@ -463,7 +463,7 @@ class _CircuittState extends State<Circuit> {
                               'Submit',
                               style: TextStyle(
                                 fontFamily: "Amelia-Basic-Light",
-                                fontSize: 2.5 * SizeConfig.textMultiplier,
+                                fontSize: 2.4 * SizeConfig.textMultiplier,
                                 color: Color(0xff79848b),
                               ),
                             ),
